@@ -36,12 +36,11 @@ export async function requireMember(request) {
   if (a && bearer) {
     try {
       const tok = await a.auth.verifyIdToken(bearer);
-      const team = await a.db.doc(`teams/${TEAM_ID}`).get();
-      const members = (team.exists && team.data().members) || [];
-      if (tok.email && tok.email_verified && members.includes(tok.email.toLowerCase())) {
-        return { name: tok.name || tok.email };
+      const prof = await a.db.doc(`users/${tok.uid}`).get();
+      if (prof.exists && prof.data().team === TEAM_ID && !prof.data().disabled) {
+        return { name: prof.data().name || tok.email };
       }
-      return json({ error: "บัญชีนี้ยังไม่อยู่ในทีม ให้หัวหน้าเพิ่มอีเมลใน Firestore: teams/" + TEAM_ID + ".members" }, 403);
+      return json({ error: "บัญชีนี้ยังไม่อยู่ในทีม ให้ผู้ดูแลเพิ่มที่ Management > บัญชีพนักงาน" }, 403);
     } catch {
       return json({ error: "เข้าสู่ระบบหมดอายุ ลองออกแล้วเข้าใหม่" }, 401);
     }

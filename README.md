@@ -57,6 +57,7 @@ firestore.rules     ให้เฉพาะอีเมลในรายชื
 ### 3. Firebase (บัญชีพนักงาน + บอร์ดร่วมทั้งทีม)
 1. สร้างโปรเจกต์ที่ console.firebase.google.com
 2. **Authentication** → Sign-in method → เปิด **Email/Password** และเพิ่มโดเมน Vercel ใน Authorized domains
+   และที่ Authentication → Settings → User actions ให้**ปิด "Enable create (sign-up)"** เพื่อให้มีแต่ผู้ดูแลที่สร้างบัญชีได้
 3. **Firestore** → Create database (production mode, region `asia-southeast1`)
 4. Project settings → Your apps → Web → คัดลอก config ไปวางใน `config.js` (ค่านี้ไม่ใช่ความลับ)
 5. Project settings → Service accounts → Generate new private key → วาง JSON ทั้งก้อนใน Vercel เป็น `FIREBASE_SERVICE_ACCOUNT` (อย่า commit ไฟล์นี้)

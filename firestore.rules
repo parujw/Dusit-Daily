@@ -1,34 +1,51 @@
 rules_version = '2';
-// Only people whose email is listed in teams/{teamId}.members can read or write that team.
-// Admins add people in the app (ตั้งค่า > จัดการทีม), which also fills this list.
+// Dusit Daily: only active accounts of the team can read or write the team's data.
+// An account is a users/{uid} profile with team == teamId and disabled != true.
+// Profiles are created and changed only by the server (Management > บัญชีพนักงาน,
+// or scripts/create-user.mjs), never from the app itself.
 service cloud.firestore {
   match /databases/{database}/documents {
+
+    function profile() {
+      return get(/databases/$(database)/documents/users/$(request.auth.uid)).data;
+    }
     function isMember(teamId) {
       return request.auth != null
-        && request.auth.token.email_verified == true
-        && request.auth.token.email.lower() in get(/databases/$(database)/documents/teams/$(teamId)).data.members;
+        && exists(/databases/$(database)/documents/users/$(request.auth.uid))
+        && profile().team == teamId
+        && profile().get('disabled', false) == false;
     }
-    // Profiles (name, role) are created by admins through the server. People read only their own.
+
+    // Own profile (name, role) is readable; nobody writes it from the app.
     match /users/{uid} {
       allow read: if request.auth != null && request.auth.uid == uid;
       allow write: if false;
     }
+
     match /teams/{teamId} {
       allow read: if isMember(teamId);
-      allow write: if false; // members list is edited in the console only
+      allow write: if false;
+
+      // Tasks
       match /items/{itemId} {
         allow read, delete: if isMember(teamId);
         allow create, update: if isMember(teamId)
-          && request.resource.data.keys().hasOnly(['room','guest','cat','pri','summary','action','due','done','doneBy','doneByUid','doneAt','createdAt','by','byUid','dueDate'])
-          && request.resource.data.summary is string && request.resource.data.summary.size() <= 600;
+          && request.resource.data.keys().hasOnly(['room','guest','cat','pri','summary','action','due','dueDate','done','doneBy','doneByUid','doneAt','createdAt','by','byUid'])
+          && request.resource.data.summary is string && request.resource.data.summary.size() <= 600
+          && request.resource.data.action is string && request.resource.data.action.size() <= 600
+          && request.resource.data.done is bool;
       }
+
+      // Daily summaries sent to LINE, and who acknowledged them
       match /briefs/{briefId} {
         allow read, create, update: if isMember(teamId);
         allow delete: if false;
       }
+
+      // LINE group settings, written by the server only
       match /meta/{doc} {
         allow read: if isMember(teamId);
-        allow write: if false; // written by the server (LINE webhook)
+        allow write: if false;
       }
     }
   }
