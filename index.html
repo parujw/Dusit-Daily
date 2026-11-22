@@ -24,7 +24,7 @@
 :root{
   --gold:#b08a4f; --gold-hi:#dcc08d; --gold-ink:#8a6a35; --gold-soft:#f3ead9;
   --night:#0e1524; --night-2:#1b2438; --night-ink:#c9d0de;
-  --bg:#f4f4f2; --card:#ffffff; --ink:#151821; --muted:#6c7280; --line:#e7e6e1;
+  --bg:#f4f4f2; --card:#ffffff; --ink:#151821; --muted:#5b6270; --line:#e7e6e1;
   --red:#d9473b; --red-ink:#b42318; --red-soft:#fbeae8;
   --amber:#e08a00; --amber-ink:#a35f00; --amber-soft:#fdf1dc;
   --green:#1f9d7a; --green-soft:#e2f4ee;
@@ -201,6 +201,60 @@ details.tbl-view summary{cursor:pointer;color:var(--gold-ink);font-weight:600;fo
 .t-cat{display:inline-flex;align-items:center;gap:4px;color:var(--muted)}
 .t-cat svg{width:14px;height:14px;color:var(--acc)}
 
+/* home: one-line day title + filter tabs */
+.day-line{display:flex;align-items:baseline;gap:10px;flex-wrap:wrap;margin:2px 0 12px}
+.day-line h1{font-size:26px;line-height:1.2}
+.day-line span{color:var(--muted);font-size:14px}
+.day-line .link{margin-left:auto}
+.filters{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:6px;padding:5px;border-radius:18px;background:var(--card);border:1px solid var(--line);box-shadow:var(--shadow)}
+.filters button{display:flex;flex-direction:column;align-items:center;gap:0;padding:7px 2px;border-radius:13px;font-size:13.5px;font-weight:600;color:var(--muted);transition:background .15s,color .15s}
+.filters b{font-family:var(--f-display);font-size:22px;line-height:1.15;color:var(--ink)}
+.filters .hot b{color:var(--red-ink)}
+.filters button[aria-selected="true"]{background:var(--ink);color:color-mix(in srgb,var(--bg) 80%,transparent)}
+.filters button[aria-selected="true"] b{color:var(--bg)}
+.filters .hot[aria-selected="true"] b{color:var(--red)}
+.nav-btn{font-size:12px;white-space:nowrap}
+.nav-btn svg{width:23px;height:23px}
+.nav-reactor{width:30px;height:30px;display:block}
+.nav-reactor .reactor{width:30px;height:30px;filter:drop-shadow(0 0 6px rgba(94,214,255,.6))}
+.nav-btn.help{color:#9fdcf5}
+.carrybox{margin-top:22px;border:1px solid color-mix(in srgb,var(--red) 30%,var(--line));border-radius:18px;background:var(--card);padding:4px 12px}
+.carrybox summary{cursor:pointer;list-style:none;display:flex;align-items:center;gap:8px;padding:10px 2px;font-family:var(--f-display);font-weight:700;font-size:16px}
+.carrybox summary::-webkit-details-marker{display:none}
+.carrybox summary small{font-family:var(--f-body);font-weight:500;color:var(--muted);font-size:13px}
+.carrybox summary::after{content:"ดู";margin-left:auto;font-family:var(--f-body);font-size:13.5px;font-weight:600;color:var(--gold-ink)}
+.carrybox[open] summary::after{content:"ซ่อน"}
+.carrybox .tasks{padding-bottom:10px}
+/* swipe right to finish */
+.swipe{position:relative;border-radius:18px}
+.swipe-bg{position:absolute;inset:0;border-radius:18px;background:var(--green);color:#fff;display:flex;align-items:center;gap:8px;padding-left:20px;font-family:var(--f-display);font-weight:700;opacity:0;transition:opacity .15s}
+.swipe-bg svg{width:22px;height:22px}
+.swipe.dragging .swipe-bg{opacity:1}
+.swipe .task{touch-action:pan-y;transition:transform .2s ease,opacity .2s}
+.swipe.dragging .task{transition:none}
+.swipe.leaving .task{transform:translateX(110%);opacity:0}
+.task .check{width:60px}
+.task .tb{padding-left:4px}
+/* short add form */
+.room-in{font-family:var(--f-display);font-size:24px;font-weight:700;letter-spacing:.02em}
+.pick{display:flex;gap:8px;overflow-x:auto;padding-bottom:2px;scrollbar-width:none}
+.pick::-webkit-scrollbar{display:none}
+.pick .chip{flex:none}
+.pick .chip[aria-pressed="true"]{background:var(--night);border-color:var(--night);color:#fff}
+.cat-row{display:flex;gap:8px;overflow-x:auto;padding-bottom:2px;scrollbar-width:none}
+.cat-row::-webkit-scrollbar{display:none}
+.cat-row .cat-chip{flex:none;min-height:44px;padding:6px 12px 6px 6px}
+.cat-row .cat-ic{width:30px;height:30px}
+.auto-tag{font-size:12px;font-weight:600;color:var(--gold-ink);background:var(--gold-soft);border-radius:6px;padding:1px 7px;margin-left:6px}
+details.more{border-top:1px solid var(--line);padding-top:10px}
+details.more summary{cursor:pointer;color:var(--gold-ink);font-weight:600;font-size:14px}
+details.more[open] summary{margin-bottom:12px}
+details.more > div{display:flex;flex-direction:column;gap:12px}
+.form-foot{position:sticky;bottom:calc(-24px - env(safe-area-inset-bottom,0px));margin:0 calc(-1 * max(16px,env(safe-area-inset-left,0px))) calc(-24px - env(safe-area-inset-bottom,0px));padding:10px max(16px,env(safe-area-inset-left,0px)) calc(16px + env(safe-area-inset-bottom,0px));background:linear-gradient(180deg,transparent,var(--bg) 30%)}
+.form-foot .btn{width:100%}
+.year-empty{text-align:center;padding:40px 16px}
+.year-empty b{display:block;font-family:var(--f-display);font-size:20px;margin-bottom:6px}
+
 /* status strip */
 .status{display:flex;align-items:center;gap:14px;flex-wrap:wrap;padding:16px 18px;border-radius:24px;color:#fff;
   background:radial-gradient(120% 120% at 100% 0%,rgba(220,192,141,.2),transparent 55%),linear-gradient(160deg,var(--night-2),var(--night));box-shadow:0 10px 30px rgba(14,21,36,.22)}
@@ -221,7 +275,7 @@ details.tbl-view summary{cursor:pointer;color:var(--gold-ink);font-weight:600;fo
 .group-h .cnt{font-family:var(--f-display);font-size:13px;font-weight:700;min-width:24px;height:24px;padding:0 7px;border-radius:99px;display:inline-grid;place-items:center;background:var(--line);color:var(--ink)}
 .group.now .cnt{background:var(--red);color:#fff}
 .group.timed .cnt{background:var(--amber);color:#1b1406}
-.group-h p{margin:0;color:var(--muted);font-size:13px}
+.group-h p{margin:0;color:var(--muted);font-size:13.5px}
 .tasks{display:flex;flex-direction:column;gap:8px}
 .task{display:flex;align-items:stretch;background:var(--card);border:1px solid var(--line);border-radius:18px;box-shadow:var(--shadow);overflow:hidden;position:relative}
 .task::before{content:"";width:4px;flex:none;background:var(--line)}
@@ -232,11 +286,11 @@ details.tbl-view summary{cursor:pointer;color:var(--gold-ink);font-weight:600;fo
 .check:hover svg{border-color:var(--gold);color:var(--gold)}
 .task.done .check svg{background:var(--green);border-color:var(--green);color:#fff}
 .tb{flex:1;min-width:0;display:grid;grid-template-columns:minmax(0,1fr) auto;gap:2px 12px;text-align:left;padding:12px 14px 12px 0}
-.t-who{grid-column:1;display:flex;align-items:center;gap:8px;flex-wrap:wrap;font-size:13px;color:var(--muted)}
+.t-who{grid-column:1;display:flex;align-items:center;gap:8px;flex-wrap:wrap;font-size:13.5px;color:var(--muted)}
 .t-room{font-family:var(--f-display);font-weight:700;font-size:15px;color:var(--ink);background:var(--bg);border:1px solid var(--line);border-radius:8px;padding:0 8px}
 .t-vip{font-size:11.5px;font-weight:700;color:var(--gold-ink);background:var(--gold-soft);border-radius:6px;padding:1px 6px}
 .t-do{grid-column:1;font-size:16px;font-weight:600;line-height:1.4;color:var(--ink)}
-.t-why{grid-column:1;font-size:13.5px;color:var(--muted);line-height:1.4}
+.t-why{grid-column:1;font-size:14px;color:var(--muted);line-height:1.4}
 .task.done .t-do{text-decoration:line-through;text-decoration-color:var(--muted)}
 .t-time{grid-column:2;grid-row:1 / span 3;align-self:center;text-align:right;display:flex;flex-direction:column;align-items:flex-end}
 .t-time b{font-family:var(--f-display);font-size:20px;line-height:1.1}
@@ -301,13 +355,13 @@ input[type=email]{width:100%;font:inherit;color:var(--ink);background:var(--card
 /* nav */
 .nav{position:fixed;left:0;right:0;bottom:0;z-index:30;pointer-events:none;
   padding:0 max(16px,env(safe-area-inset-right,0px)) calc(12px + env(safe-area-inset-bottom,0px)) max(16px,env(safe-area-inset-left,0px))}
-.nav-in{max-width:600px;margin:0 auto;height:76px;border-radius:38px;display:grid;grid-template-columns:1fr 112px 1fr;align-items:center;pointer-events:auto;
+.nav-in{max-width:600px;margin:0 auto;height:72px;border-radius:36px;display:grid;grid-template-columns:1fr 1fr 92px 1fr 1fr;padding:0 6px;align-items:center;pointer-events:auto;
   background:color-mix(in srgb,var(--night) 92%,transparent);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);box-shadow:0 12px 32px rgba(14,21,36,.3)}
 .nav-btn{position:relative;display:flex;flex-direction:column;align-items:center;gap:2px;color:#8d97ab;font-family:var(--f-display);font-weight:600;font-size:14px;padding:6px 0;transition:color .15s}
 .nav-btn.on{color:var(--gold-hi)}
 .nav-btn.on::after{content:"";position:absolute;bottom:-4px;width:18px;height:3px;border-radius:3px;background:var(--gold-hi)}
 .nav-btn svg{width:25px;height:25px}
-.fab{justify-self:center;width:94px;height:94px;margin-top:-36px;border-radius:50%;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:1px;
+.fab{justify-self:center;width:86px;height:86px;margin-top:-34px;border-radius:50%;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:1px;
   font-family:var(--f-display);font-weight:700;font-size:14px;color:#1b1406;border:6px solid var(--bg);
   background:linear-gradient(145deg,var(--gold-hi),var(--gold));box-shadow:0 10px 26px rgba(176,138,79,.45);transition:transform .15s}
 .fab:active{transform:scale(.95)}
@@ -382,7 +436,7 @@ textarea{min-height:140px;resize:vertical}
 .tag.urgent{background:var(--red-soft);color:var(--red-ink)} .tag.follow{background:var(--amber-soft);color:var(--amber-ink)} .tag.info{background:var(--green-soft);color:var(--green)}
 .tag.ex{background:var(--gold-soft);color:var(--gold-ink)}
 pre.brief{white-space:pre-wrap;word-break:break-word;margin:0;background:var(--card);border:1px solid var(--line);border-radius:18px;padding:16px;font-family:var(--f-body);font-size:14px;max-height:44vh;overflow:auto}
-.note{font-size:13px;color:var(--muted);margin:0}
+.note{font-size:13.5px;color:var(--muted);margin:0}
 .err{font-size:13.5px;color:var(--red-ink);margin:0}
 .toast{position:fixed;left:50%;bottom:calc(108px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);background:var(--night);color:#fff;padding:10px 18px;border-radius:99px;z-index:60;font-weight:600;font-size:14px;box-shadow:0 8px 24px rgba(0,0,0,.25);max-width:calc(100% - 32px);text-align:center}
 .grid2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
@@ -553,27 +607,18 @@ details.more summary{cursor:pointer;color:var(--gold-ink);font-size:13.5px;font-
       <button class="wk-nav" id="wkNext" aria-label="สัปดาห์ถัดไป"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 6 6 6-6 6"/></svg></button>
     </div>
 
-    <div class="day-head">
-      <div><h1 id="dayTitle">วันนี้</h1><p id="daySub"></p></div>
-      <div class="day-acts">
-        <button class="link" id="goToday" hidden>กลับไปวันนี้</button>
-        <button class="add-btn" id="addTask"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg>เพิ่มงาน</button>
-      </div>
+    <div class="day-line">
+      <h1 id="dayTitle">วันนี้</h1><span id="daySub"></span>
+      <button class="link" id="goToday" hidden>กลับไปวันนี้</button>
     </div>
 
-    <div class="status" id="status">
-      <div class="st-main"><b class="num" id="stOpen">0</b><span>งานค้าง</span></div>
-      <div class="st-chips" id="stChips"></div>
-      <button class="st-send" id="sendAll">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 2 11 13M22 2l-7 20-4-9-9-4 20-7z"/></svg>
-        สรุปส่งไลน์
-      </button>
+    <div class="filters" id="filters" role="tablist" aria-label="กรองงาน">
+      <button role="tab" data-f="all">ค้าง <b class="num" id="fAll">0</b></button>
+      <button role="tab" data-f="now" class="hot">ด่วน <b class="num" id="fNow">0</b></button>
+      <button role="tab" data-f="mine" id="fMineBtn">ถึงฉัน <b class="num" id="fMine">0</b></button>
+      <button role="tab" data-f="done">เสร็จ <b class="num" id="fDone">0</b></button>
     </div>
 
-    <div class="seg mine-seg" id="mineSeg" hidden>
-      <button data-mine="0" aria-pressed="true">งานทั้งหมด</button>
-      <button data-mine="1" aria-pressed="false">ส่งถึงฉัน <span class="num" id="mineN"></span></button>
-    </div>
     <div id="sections"></div>
   </section>
 
@@ -605,17 +650,25 @@ details.more summary{cursor:pointer;color:var(--gold-ink);font-size:13.5px;font-
 
 <nav class="nav" aria-label="เมนูหลัก">
   <div class="nav-in">
+    <button class="nav-btn" id="navHome">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 10.5 12 4l8 6.5V20h-5v-5h-6v5H4z"/></svg>
+      วันนี้
+    </button>
+    <button class="nav-btn" id="sendAll">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M21 3 10 14M21 3l-7 18-4-8-8-4 19-6z"/></svg>
+      สรุปไลน์
+    </button>
+    <button class="fab" id="fab" aria-label="เพิ่มงาน">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" id="fabIco"><path d="M12 5v14M5 12h14"/></svg>
+      <span id="fabTxt">เพิ่มงาน</span>
+    </button>
+    <button class="nav-btn help" id="navHelp" aria-label="Dusit Help">
+      <span class="nav-reactor" id="navReactor"></span>
+      Dusit Help
+    </button>
     <button class="nav-btn" id="navYear">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3.5" y="4.5" width="17" height="16" rx="3"/><path d="M3.5 9.5h17M8 3v3M16 3v3M8 13.5h2M14 13.5h2M8 17h2"/></svg>
-      <span id="navYearTxt">ภาพรวมปี</span>
-    </button>
-    <button class="fab" id="fab" aria-label="เปิดเมนูด่วน">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" id="fabIco"><path d="M12 5v14M5 12h14"/></svg>
-      <span id="fabTxt">เพิ่ม</span>
-    </button>
-    <button class="nav-btn" id="navBriefs">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M7 3h10v18l-2.5-1.5L12 21l-2.5-1.5L7 21z"/><path d="M10 8h4M10 12h4"/></svg>
-      สรุปที่ส่ง
+      <span id="navYearTxt">ประวัติ</span>
     </button>
   </div>
 </nav>
@@ -1237,7 +1290,7 @@ function taskHtml(it, tone) {
     ? `<div class="t-time"><small>${it.doneBy ? "ปิดโดย " + esc(it.doneBy) : "เสร็จแล้ว"}</small>${it.doneAt ? `<small>${esc(new Date(it.doneAt).toLocaleString("th-TH", sameDay(it.doneAt, TODAY()) ? { hour: "2-digit", minute: "2-digit" } : { day: "numeric", month: "short", hour: "2-digit", minute: "2-digit" }))}</small>` : ""}</div>`
     : old ? `<div class="t-time late"><b class="num">${old}</b><small>วันที่ค้าง</small></div>`
     : it.due ? `<div class="t-time ${timeCls}"><b class="num">${esc(it.due)}</b><small>${relTime(m)}</small></div>` : "";
-  return `<div class="task ${it.done ? "done" : tone}">
+  return `<div class="swipe" data-swipe="${esc(it.id)}"><div class="swipe-bg" aria-hidden="true">${IC.check}${it.done ? "เปิดอีกครั้ง" : "เสร็จแล้ว"}</div><div class="task ${it.done ? "done" : tone}">
     <button class="check" data-check="${esc(it.id)}" aria-label="${it.done ? "เปิดงานนี้อีกครั้ง" : "ทำเสร็จแล้ว"}: ${esc(it.room)}" aria-pressed="${!!it.done}">${IC.check}</button>
     <button class="tb" data-id="${esc(it.id)}">
       <span class="t-who"><span class="t-room num">${esc(it.room || "—")}</span>${guest ? `<span>${esc(guest)}</span>` : ""}${vip ? '<span class="t-vip">VIP</span>' : ""}${it.assignee ? `<span class="t-to ${it.assigneeUid === myUid() ? "me" : ""}">ถึง ${esc(it.assigneeUid === myUid() ? "ฉัน" : it.assignee)}</span>` : ""}${old ? `<span class="t-age">จาก ${esc(thDate(itemDate(it), { day: "numeric", month: "short" }))}</span>` : ""}<span class="t-cat" style="--acc:${(CAT_LOOK[it.cat] || CAT_LOOK.other).acc}">${IC[(CAT_LOOK[it.cat] || CAT_LOOK.other).ic]}${esc(CAT_NAME[it.cat] || "")}</span></span>
@@ -1245,8 +1298,37 @@ function taskHtml(it, tone) {
       ${why ? `<span class="t-why">${esc(why)}</span>` : ""}
       ${time}
     </button>
-  </div>`;
+  </div></div>`;
 }
+
+// Swipe a card to the right to finish it (or reopen a finished one).
+(() => {
+  let drag = null, justDragged = false;
+  document.addEventListener("pointerdown", e => {
+    const w = e.target.closest(".swipe"); if (!w || e.button > 0) return;
+    drag = { w, x: e.clientX, y: e.clientY, dx: 0, on: false };
+  });
+  document.addEventListener("pointermove", e => {
+    if (!drag) return;
+    const dx = e.clientX - drag.x, dy = e.clientY - drag.y;
+    if (!drag.on) { if (Math.abs(dy) > 10 && Math.abs(dy) > Math.abs(dx)) { drag = null; return; } if (dx < 12) return; drag.on = true; drag.w.classList.add("dragging"); }
+    drag.dx = Math.max(0, dx);
+    drag.w.querySelector(".task").style.transform = `translateX(${drag.dx}px)`;
+  });
+  const end = () => {
+    if (!drag) return;
+    const { w, dx, on } = drag; drag = null;
+    if (!on) return;
+    justDragged = true; setTimeout(() => justDragged = false, 60);
+    w.classList.remove("dragging");
+    const t = w.querySelector(".task");
+    if (dx > Math.min(110, w.offsetWidth * .32)) { t.style.transform = ""; toggleDone(w.dataset.swipe, w); }
+    else t.style.transform = "";
+  };
+  document.addEventListener("pointerup", end);
+  document.addEventListener("pointercancel", end);
+  document.addEventListener("click", e => { if (justDragged && e.target.closest(".swipe")) { e.stopPropagation(); e.preventDefault(); } }, true);
+})();
 
 const WD = ["อา", "จ", "อ", "พ", "พฤ", "ศ", "ส"];
 function renderWeek() {
@@ -1274,38 +1356,53 @@ function setDay(day) {
 function render() {
   renderAcct();
   renderWeek();
+  const me = myUid();
   const allDay = dayItems(SEL);
-  const mineN = myUid() ? allDay.filter(i => !i.done && i.assigneeUid === myUid()).length : 0;
-  $("#mineSeg").hidden = !myUid();
-  $("#mineN").textContent = mineN ? `(${mineN})` : "";
-  if (!myUid()) P.mine = false;
-  $("#mineSeg").querySelectorAll("[data-mine]").forEach(b => b.setAttribute("aria-pressed", String((b.dataset.mine === "1") === !!P.mine)));
-  const items = P.mine ? allDay.filter(i => i.assigneeUid === myUid()) : allDay;
-  const groups = groupTasks(items);
-  const open = items.filter(i => !i.done);
-  const late = open.filter(i => (minsUntil(i) ?? 1) < 0).length;
-  const doneDay = ITEMS.filter(i => i.done && (itemDate(i) === SEL || sameDay(i.doneAt, SEL)) && (!P.mine || i.assigneeUid === myUid()));
-  $("#stOpen").textContent = open.length;
-  const nowN = groups[0].list.length, carryN = groups[1].list.length;
-  $("#stChips").innerHTML = [
-    nowN ? `<span class="st-chip hot">ทำทันที ${nowN}</span>` : "",
-    carryN ? `<span class="st-chip hot">ค้างจากวันก่อน ${carryN}</span>` : "",
-    late && !carryN ? `<span class="st-chip hot">เลยเวลา ${late}</span>` : "",
-    `<span class="st-chip">เสร็จแล้ว ${doneDay.length}</span>`,
-  ].join("");
+  const groupsAll = groupTasks(allDay);
+  const openAll = allDay.filter(i => !i.done);
+  const mineOpen = me ? openAll.filter(i => i.assigneeUid === me) : [];
+  const doneDay = ITEMS.filter(i => i.done && (itemDate(i) === SEL || sameDay(i.doneAt, SEL)));
+  const urgentN = groupsAll[0].list.length + groupsAll[1].list.length;
+  if (!me && P.filter === "mine") P.filter = "all";
+  if (!["all", "now", "mine", "done"].includes(P.filter)) P.filter = "all";
+  $("#fAll").textContent = openAll.length; $("#fNow").textContent = urgentN; $("#fMine").textContent = mineOpen.length; $("#fDone").textContent = doneDay.length;
+  $("#fMineBtn").hidden = !me;
+  $("#filters").style.gridTemplateColumns = `repeat(${me ? 4 : 3},minmax(0,1fr))`;
+  $("#filters").querySelectorAll("[data-f]").forEach(b => b.setAttribute("aria-selected", String(b.dataset.f === P.filter)));
+  $("#navHome").classList.toggle("on", view === "home");
 
   let html = "";
   if (ITEMS.some(i => i.ex)) html += `<div class="exbar"><span class="tag ex">ตัวอย่าง</span>รายการตอนนี้เป็นข้อมูลสมมติ <button id="clearEx">ล้างตัวอย่าง</button></div>`;
-  for (const g of groups) {
-    if (!g.list.length) continue;
-    html += `<section class="group ${g.key === "carry" ? "now" : g.key}"><div class="group-h"><h2>${g.title}<span class="cnt num">${g.list.length}</span></h2><p>${g.hint}</p></div>
-      <div class="tasks">${g.list.map(it => taskHtml(it, g.key === "carry" ? "now" : g.key)).join("")}</div></section>`;
+  const section = (g, tone) => `<section class="group ${tone}"><div class="group-h"><h2>${g.title}<span class="cnt num">${g.list.length}</span></h2><p>${g.hint}</p></div>
+      <div class="tasks">${g.list.map(it => taskHtml(it, tone)).join("")}</div></section>`;
+  if (P.filter === "done") {
+    html += doneDay.length ? `<section class="group"><div class="tasks">${doneDay.sort((a, b) => (b.doneAt || 0) - (a.doneAt || 0)).map(it => taskHtml(it, "")).join("")}</div></section>`
+      : `<div class="empty"><b>ยังไม่มีงานที่เสร็จ</b>ปัดการ์ดไปทางขวา หรือแตะวงกลม เมื่อทำงานเสร็จ</div>`;
+  } else {
+    const items = P.filter === "mine" ? allDay.filter(i => i.assigneeUid === me) : allDay;
+    const groups = groupTasks(items);
+    const show = P.filter === "now" ? groups.slice(0, 2) : groups;
+    for (const g of show) {
+      if (!g.list.length) continue;
+      if (g.key === "carry" && P.filter === "all" && groups[0].list.length + groups[2].list.length + groups[3].list.length + groups[4].list.length > 0) {
+        const oldest = Math.max(...g.list.map(daysOld));
+        html += `<details class="carrybox" id="carryBox" ${P.carryOpen ? "open" : ""}><summary>ค้างจากวันก่อน <span class="cnt num" style="background:var(--red);color:#fff">${g.list.length}</span><small>เก่าสุด ${oldest} วัน</small></summary>
+          <div class="tasks">${g.list.map(it => taskHtml(it, "now")).join("")}</div></details>`;
+      } else html += section(g, g.key === "carry" ? "now" : g.key);
+    }
+    const open = items.filter(i => !i.done);
+    if (!open.length) {
+      const msg = P.filter === "mine" ? ["ไม่มีงานที่ส่งถึงคุณ", "งานที่เพื่อนส่งถึงคุณจะขึ้นที่นี่"]
+        : P.filter === "now" ? ["ไม่มีงานด่วน", "ไม่มีงานที่เลยเวลาหรือต้องทำทันที"]
+        : SEL < TODAY() ? ["ไม่มีงานค้างของวันนั้น", ""]
+        : items.length ? ["เคลียร์ครบแล้ว 👏", `วันนี้ปิดไป ${doneDay.length} งาน`]
+        : SEL > TODAY() ? ["ยังไม่มีงานที่นัดไว้", "แตะ “เพิ่มงาน” เพื่อเพิ่มงานล่วงหน้า"]
+        : ["ยังไม่มีงานวันนี้", "แตะ “เพิ่มงาน” ด้านล่าง หรือบอก Dusit Help"];
+      html += `<div class="empty"><b>${msg[0]}</b>${msg[1]}</div>`;
+    }
   }
-  const past = SEL < TODAY();
-  if (!open.length) html += `<div class="empty"><b>${past ? "ไม่มีงานค้างของวันนั้น" : "ไม่มีงานค้าง"}</b>${items.length ? "งานของวันนี้ปิดครบแล้ว" : SEL > TODAY() ? "ยังไม่มีงานที่นัดไว้วันนี้ บอก Dusit Help เพื่อเพิ่มงานล่วงหน้าได้" : "แตะปุ่มทองแล้วบอก Dusit Help ว่ามีอะไรต้องส่งต่อ"}</div>`;
-  if (doneDay.length) html += `<details class="donebox"><summary>เสร็จแล้ว <span class="cnt num">${doneDay.length}</span></summary>
-    <div class="tasks">${doneDay.sort((a, b) => (b.doneAt || 0) - (a.doneAt || 0)).map(it => taskHtml(it, "")).join("")}</div></details>`;
   $("#sections").innerHTML = html;
+  const cb = $("#carryBox"); if (cb) cb.addEventListener("toggle", () => { P.carryOpen = cb.open; savePrefs(); });
   renderBriefs();
   if (view === "year") renderYearSoon();
 }
@@ -1315,6 +1412,7 @@ listeners.add(render);
 
 function renderAcct() {
   renderMgmtTabs();
+  const nr = $("#navReactor"); if (nr && !nr.firstChild) nr.innerHTML = reactor();
   const b = $("#acctBtn");
   const n = myName();
   b.innerHTML = n ? esc(n.slice(0, 1).toUpperCase()) : '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round"><path d="M4 7h10M18 7h2M4 17h4M12 17h8"/><circle cx="16" cy="7" r="2"/><circle cx="10" cy="17" r="2"/></svg>';
@@ -1386,13 +1484,22 @@ document.addEventListener("click", e => {
   }
 });
 
-function toggleDone(id) {
+function toggleDone(id, wrap) {
   const it = ITEMS.find(i => i.id === id); if (!it) return;
   const prev = { done: !!it.done, doneBy: it.doneBy || "", doneByUid: it.doneByUid || "", doneAt: it.doneAt || 0 };
   const done = !it.done;
-  store.updateItem(id, donePatch(done))
-    .then(() => { toast(done ? `${it.room} เสร็จแล้ว${it.by && it.byUid !== myUid() ? " · แจ้ง " + it.by + " ให้แล้ว" : ""}` : `เปิด ${it.room} อีกครั้ง`, () => store.updateItem(id, prev)); if (done) afterClose(id); })
-    .catch(e => toast("บันทึกไม่สำเร็จ: " + (e.code || e.message)));
+  const w = wrap || document.querySelector(`.swipe[data-swipe="${CSS.escape(id)}"]`);
+  try { navigator.vibrate?.(done ? 15 : 8); } catch (e) {}
+  if (w && done) w.classList.add("leaving");
+  const go = () => store.updateItem(id, donePatch(done))
+    .then(() => {
+      const left = SEL === TODAY() ? dayItems(TODAY()).filter(i => !i.done && i.id !== id).length : 1;
+      if (done && left === 0) toast(`🎉 เคลียร์งานวันนี้ครบแล้ว`, () => store.updateItem(id, prev));
+      else toast(done ? `${it.room} เสร็จแล้ว${it.by && it.byUid !== myUid() ? " · แจ้ง " + it.by + " ให้แล้ว" : ""}` : `เปิด ${it.room} อีกครั้ง`, () => store.updateItem(id, prev));
+      if (done) afterClose(id);
+    })
+    .catch(e => { w?.classList.remove("leaving"); toast("บันทึกไม่สำเร็จ: " + (e.code || e.message)); });
+  if (w && done && !matchMedia("(prefers-reduced-motion: reduce)").matches) setTimeout(go, 200); else go();
 }
 
 // ---------------- year overview ----------------
@@ -1424,6 +1531,10 @@ async function renderYear() {
   let list;
   try { list = await store.yearItems(y); } catch (e) { body.innerHTML = `<p class="err">โหลดข้อมูลปีนี้ไม่ได้: ${esc(e.code || e.message)}</p>`; return; }
   if (y !== YEAR) return;
+  if (!list.length) {
+    body.innerHTML = `<div class="vcard year-empty"><b>ยังไม่มีงานในปี ${y + 543}</b><p class="note">ตัวเลขและกราฟจะเริ่มแสดงเมื่อทีมบันทึกงานแรกของปีนี้</p></div>`;
+    return;
+  }
   const t = TODAY();
   const open = list.filter(i => !i.done), done = list.filter(i => i.done);
   const late = open.filter(i => itemDate(i) < t);
@@ -1516,15 +1627,15 @@ function show(v) {
   view = v;
   if (document.body.classList.contains("locked")) return;
   ["home", "briefs", "year"].forEach(x => $("#v-" + x).hidden = x !== v);
-  if (!radialOpen) { $("#fabIco").innerHTML = v === "home" ? IC.plusPath : IC.home; $("#fabTxt").textContent = v === "home" ? "เพิ่ม" : "หน้าแรก"; }
-  $("#navBriefs").classList.toggle("on", v === "briefs");
-  $("#navYear").classList.toggle("on", v === "year");
+  $("#navHome").classList.toggle("on", v === "home");
+  $("#navYear").classList.toggle("on", v === "year" || v === "briefs");
   tip?.hide?.();
   if (v === "year") { renderMgmtTabs(); if (mgmtTab === "team") renderTeam(); else { $("#yearBody").innerHTML = '<p class="note">กำลังโหลด…</p>'; renderYear(); } }
   window.scrollTo(0, 0);
 }
-$("#navBriefs").onclick = () => { closeAll(); show("briefs"); };
-$("#navYear").onclick = () => { closeAll(); show("year"); };
+$("#navHome").onclick = () => { closeAll(); if (view === "home") { setDay(TODAY()); } else show("home"); };
+$("#navYear").onclick = () => { closeAll(); show(canManage() ? "year" : "briefs"); };
+$("#navHelp").onclick = () => { closeAll(); openJarvis(null, false); };
 $("#acctBtn").onclick = () => openSettings();
 $("#monthBtn").onclick = () => openMonthPicker();
 $("#wkPrev").onclick = () => setDay(addDays(SEL, -7));
@@ -1582,8 +1693,7 @@ function toggleRadial(force) {
 }
 $("#fab").onclick = () => {
   if (!$("#sheet").hidden) { closeAll(); return; }
-  if (view !== "home" && !radialOpen) show("home");
-  toggleRadial();
+  openTaskForm({ date: SEL });
 };
 $("#scrim").onclick = closeAll;
 $("#bellBtn").onclick = () => openInbox();
@@ -1934,7 +2044,9 @@ function briefSheet(items, title) {
       <button class="btn sec" id="cp">คัดลอก</button>
     </div>
     <p class="err" id="sendErr" hidden></p>
+    <button class="link" type="button" id="toHistory">ดูสรุปที่ส่งแล้ว และใครรับเวร</button>
     <p class="note">${SERVER.linePush ? "ส่งผ่านบัญชี LINE OA ของทีม เพื่อนตอบ “รับ” ในกลุ่มแล้วชื่อจะขึ้นในหน้าสรุปที่ส่ง" : "“เปิดใน LINE” จะเปิดหน้าเลือกแชท ถ้าไม่เปิด ให้คัดลอกแล้ววางในกลุ่มเอง"}</p>`);
+  $("#toHistory").onclick = () => { closeAll(); show("briefs"); };
   const upd = () => {
     if ($("#sender")) { P.name = $("#sender").value.trim(); savePrefs(); }
     const t = buildBrief(items, title);
@@ -1966,7 +2078,7 @@ function briefSheet(items, title) {
 }
 $("#sendAll").onclick = () => {
   const open = dayItems(SEL).filter(i => !i.done);
-  if (!open.length) { toast("ไม่มีงานค้างของวันนี้"); return; }
+  if (!open.length) { toast("ไม่มีงานค้างของวันนี้ ดูสรุปที่ส่งแล้วได้ที่ ประวัติ"); return; }
   briefSheet(open, "สรุปประจำวัน");
 };
 function copy(t) {
@@ -2001,54 +2113,72 @@ function reactor(state = "idle") {
 function assigneeOptions(selUid) {
   return `<option value="">ทุกคนในทีม</option>` + TEAM.map(m => `<option value="${esc(m.uid)}" ${m.uid === selUid ? "selected" : ""}>${esc(m.name)}${m.uid === myUid() ? " (ฉัน)" : ""}</option>`).join("");
 }
+function guessCat(t) {
+  t = String(t || "");
+  if (/vip|arrival|มาถึง|เช็คอิน|check.?in|วันเกิด|ครบรอบ|amenity/i.test(t)) return "vip";
+  if (/ร้องเรียน|complain|ไม่พอใจ|บ่น|โวย|เสียงดัง/i.test(t)) return "complaint";
+  if (/ซ่อม|แอร์|รั่ว|ไฟดับ|ไฟเสีย|ช่าง|เสีย|ตัน|ทีวี|ประตู|น้ำไม่ไหล|ม่าน.*พัง/i.test(t)) return "maint";
+  if (/บิล|มัดจำ|เงิน|บัตร|จ่าย|deposit|bill|โอน|ใบเสร็จ/i.test(t)) return "billing";
+  if (/ของหาย|ลืม|lost|found|เก็บได้|ตกหล่น/i.test(t)) return "lost";
+  if (/แม่บ้าน|hk|housekeep|ทำความสะอาด|ผ้า|หมอน|ผ้าห่ม|ผ้าม่าน|กลิ่น|สกปรก|late|เตียง|ห้องน้ำ|ทำห้อง/i.test(t)) return "room";
+  return "";
+}
 async function openTaskForm(pre = {}) {
-  let cat = pre.cat || "room", pri = pre.pri || "follow";
+  let cat = pre.cat || "room", pri = pre.pri || "follow", catPicked = !!pre.cat, to = pre.assigneeUid || "";
+  const toChips = () => `<button type="button" class="chip" data-to="" aria-pressed="${to === ""}">ทุกคน</button>` +
+    TEAM.filter(m => m.uid !== myUid()).map(m => `<button type="button" class="chip" data-to="${esc(m.uid)}" aria-pressed="${m.uid === to}">${esc(m.name)}</button>`).join("");
   openSheet(`<h3>เพิ่มงาน</h3>
     <form id="tForm" class="form" novalidate>
-      <div><span class="lab">หมวด</span><div class="cat-chips" id="tCats">${CATS.map(c => `<button type="button" class="cat-chip" data-cat="${c.id}" aria-pressed="${c.id === cat}">${catIcon(c.id)}<span>${esc(c.name)}</span></button>`).join("")}</div></div>
-      <div class="grid2">
-        <div><label class="lab" for="tRoom">ห้อง</label><input type="text" id="tRoom" inputmode="numeric" placeholder="เช่น 1208" autocomplete="off"></div>
-        <div><label class="lab" for="tGuest">แขก (ย่อ ไม่บังคับ)</label><input type="text" id="tGuest" placeholder="คุณ T." autocomplete="off"></div>
-      </div>
-      <div><label class="lab" for="tSum">เจออะไร / เกิดอะไรขึ้น</label><textarea id="tSum" style="min-height:80px" placeholder="เช่น ผ้าม่านขาด ห้องน้ำมีกลิ่น"></textarea></div>
-      <div><label class="lab" for="tAct">ต้องทำอะไรต่อ</label><textarea id="tAct" style="min-height:64px" placeholder="เช่น แจ้ง HK เปลี่ยนก่อนแขกเข้า 14:00"></textarea></div>
+      <div><label class="lab" for="tRoom">ห้อง</label><input type="text" id="tRoom" class="room-in" inputmode="numeric" placeholder="เช่น 1208" autocomplete="off" enterkeyhint="next"></div>
+      <div><label class="lab" for="tSum">เจออะไร / ต้องทำอะไร</label><textarea id="tSum" style="min-height:76px" placeholder="เช่น ผ้าม่านขาด ต้องเปลี่ยนก่อนแขกเข้า"></textarea></div>
+      <div><span class="lab">ส่งถึง</span><div class="pick" id="tTo">${toChips()}</div></div>
       <div><span class="lab">ความด่วน</span><div class="chips" id="tPri">${Object.keys(PRI).map(p => `<button type="button" class="chip ${p} ${p === pri ? "on" : ""}" data-p="${p}">${PRI[p]}</button>`).join("")}</div></div>
-      <div class="grid2">
-        <div><label class="lab" for="tDate">วันที่</label><input type="date" id="tDate" value="${esc(pre.date || SEL)}"></div>
-        <div><label class="lab" for="tDue">ภายในเวลา (ไม่บังคับ)</label><input type="time" id="tDue"></div>
-      </div>
-      <div><label class="lab" for="tTo">ส่งถึง</label><select id="tTo">${assigneeOptions(pre.assigneeUid || "")}</select>
-        <p class="note" style="margin-top:6px">คนที่เลือกจะได้รับแจ้งเตือนทันที${SERVER.linePush ? " และขึ้นในกลุ่ม LINE" : ""}</p></div>
+      <div><span class="lab">หมวด<span class="auto-tag" id="catAuto" hidden>เลือกให้จากข้อความ</span></span>
+        <div class="cat-row" id="tCats">${CATS.map(c => `<button type="button" class="cat-chip" data-cat="${c.id}" aria-pressed="${c.id === cat}">${catIcon(c.id)}<span>${esc(c.name)}</span></button>`).join("")}</div></div>
+      <details class="more"><summary>รายละเอียดเพิ่ม · แขก · ต้องทำต่อ · วันที่ · เวลา</summary><div>
+        <div><label class="lab" for="tGuest">แขก (ย่อ)</label><input type="text" id="tGuest" placeholder="คุณ T." autocomplete="off"></div>
+        <div><label class="lab" for="tAct">ต้องทำอะไรต่อ (ถ้าแยกจากด้านบน)</label><textarea id="tAct" style="min-height:60px" placeholder="เช่น แจ้ง HK เปลี่ยนก่อน 14:00"></textarea></div>
+        <div class="grid2">
+          <div><label class="lab" for="tDate">วันที่</label><input type="date" id="tDate" value="${esc(pre.date || SEL)}"></div>
+          <div><label class="lab" for="tDue">ภายในเวลา</label><input type="time" id="tDue"></div>
+        </div>
+      </div></details>
       <p class="err" id="tErr" hidden></p>
-      <button class="btn pri" type="submit" id="tSave">บันทึกงาน</button>
+      <div class="form-foot"><button class="btn pri" type="submit" id="tSave">${IC.check}บันทึกงาน</button></div>
     </form>`);
-  if (!TEAM.length && ME) loadTeam().then(() => { const sel = $("#tTo"); if (sel) sel.innerHTML = assigneeOptions(sel.value); });
-  $("#tCats").addEventListener("click", e => { const b = e.target.closest("[data-cat]"); if (!b) return; cat = b.dataset.cat; $("#tCats").querySelectorAll("[data-cat]").forEach(x => x.setAttribute("aria-pressed", String(x.dataset.cat === cat))); });
+  const drawTo = () => { const el = $("#tTo"); if (el) el.innerHTML = toChips(); };
+  if (!TEAM.length && ME) loadTeam().then(drawTo);
+  const setCat = (c, auto) => { cat = c; $("#tCats").querySelectorAll("[data-cat]").forEach(x => x.setAttribute("aria-pressed", String(x.dataset.cat === cat))); $("#catAuto").hidden = !auto; };
+  $("#tCats").addEventListener("click", e => { const b = e.target.closest("[data-cat]"); if (!b) return; catPicked = true; setCat(b.dataset.cat, false); });
+  $("#tSum").addEventListener("input", e => { if (catPicked) return; const g = guessCat(e.target.value); if (g) setCat(g, true); if (/ด่วน|ทันที|รีบ|urgent|ไม่พอใจ/i.test(e.target.value) && pri !== "urgent") { pri = "urgent"; $("#tPri").querySelectorAll("[data-p]").forEach(x => x.classList.toggle("on", x.dataset.p === pri)); } });
+  $("#tTo").addEventListener("click", e => { const b = e.target.closest("[data-to]"); if (!b) return; to = b.dataset.to; drawTo(); });
   $("#tPri").addEventListener("click", e => { const b = e.target.closest("[data-p]"); if (!b) return; pri = b.dataset.p; $("#tPri").querySelectorAll("[data-p]").forEach(x => x.classList.toggle("on", x.dataset.p === pri)); });
+  $("#tRoom").addEventListener("keydown", e => { if (e.key === "Enter") { e.preventDefault(); $("#tSum").focus(); } });
   setTimeout(() => $("#tRoom").focus(), 60);
   $("#tForm").addEventListener("submit", async e => {
     e.preventDefault();
     const err = m => { $("#tErr").textContent = m; $("#tErr").hidden = !m; };
     const summary = $("#tSum").value.trim(), action = $("#tAct").value.trim();
-    if (!summary && !action) return err("ใส่ว่าเจออะไร หรือต้องทำอะไรต่อ อย่างน้อยหนึ่งช่อง");
-    const toUid = $("#tTo").value, to = TEAM.find(m => m.uid === toUid);
+    if (!summary && !action) return err("ใส่ว่าเจออะไรหรือต้องทำอะไร");
+    const m = TEAM.find(x => x.uid === to);
     const it = {
       ...normalize({ room: $("#tRoom").value.trim() || "—", guest: $("#tGuest").value.trim(), cat, pri, summary: summary || action, action: summary ? action : "", due: $("#tDue").value, dueDate: $("#tDate").value || SEL }),
       createdAt: Date.now(), by: myName(), byUid: myUid(),
-      ...(to ? { assigneeUid: to.uid, assignee: to.name, assignedAt: Date.now() } : {}),
+      ...(m ? { assigneeUid: m.uid, assignee: m.name, assignedAt: Date.now() } : {}),
     };
     const btn = $("#tSave"); btn.disabled = true;
     try {
       await store.addItems([it]);
       closeAll();
+      if (view !== "home") show("home");
       if (it.dueDate !== SEL) setDay(it.dueDate);
-      toast(`เพิ่มงาน ${it.room} แล้ว${to ? " · ส่งถึง " + to.name : ""}`, () => store.deleteItem(it.id));
-      if (to && to.uid !== myUid()) setTimeout(() => { if (ITEMS.some(i => i.id === it.id)) afterAssign(it); }, 6000);
+      try { navigator.vibrate?.(10); } catch (x) {}
+      toast(`เพิ่มงาน ${it.room} แล้ว${m ? " · ส่งถึง " + m.name : ""}`, () => store.deleteItem(it.id));
+      if (m && m.uid !== myUid()) setTimeout(() => { if (ITEMS.some(i => i.id === it.id)) afterAssign(it); }, 6000);
     } catch (x) { err("บันทึกไม่สำเร็จ: " + (x.code || x.message)); btn.disabled = false; }
   });
 }
-$("#addTask").onclick = () => openTaskForm({ date: SEL });
-$("#mineSeg").addEventListener("click", e => { const b = e.target.closest("[data-mine]"); if (!b) return; P.mine = b.dataset.mine === "1"; savePrefs(); render(); });
+$("#filters").addEventListener("click", e => { const b = e.target.closest("[data-f]"); if (!b) return; P.filter = b.dataset.f; savePrefs(); render(); });
 
 // ---------------- item detail / edit ----------------
 function assignPatch(it, uidSel) {
@@ -2147,7 +2277,7 @@ function renderMgmtTabs() {
   $("#yrSwitch").hidden = mgmtTab !== "year";
   $("#teamBody").hidden = mgmtTab !== "team";
   $("#mgmtTitle").textContent = mgmtTab === "team" ? "บัญชีพนักงาน" : "งานค้างทั้งปี";
-  $("#navYearTxt").textContent = canManage() ? "Management" : "ภาพรวมปี";
+  $("#navYearTxt").textContent = canManage() ? "Management" : "ประวัติ";
 }
 $("#mgmtSeg").addEventListener("click", e => {
   const b = e.target.closest("[data-tab]"); if (!b) return;
