@@ -16,9 +16,10 @@ service cloud.firestore {
         && profile().get('disabled', false) == false;
     }
 
-    // Own profile (name, role) is readable; nobody writes it from the app.
+    // Profiles: your own, and teammates' (for "ส่งถึง"). Nobody writes them from the app.
     match /users/{uid} {
-      allow read: if request.auth != null && request.auth.uid == uid;
+      allow get: if request.auth != null && request.auth.uid == uid;
+      allow read: if request.auth != null && isMember(resource.data.team);
       allow write: if false;
     }
 
@@ -30,7 +31,7 @@ service cloud.firestore {
       match /items/{itemId} {
         allow read, delete: if isMember(teamId);
         allow create, update: if isMember(teamId)
-          && request.resource.data.keys().hasOnly(['room','guest','cat','pri','summary','action','due','dueDate','done','doneBy','doneByUid','doneAt','createdAt','by','byUid'])
+          && request.resource.data.keys().hasOnly(['room','guest','cat','pri','summary','action','due','dueDate','done','doneBy','doneByUid','doneAt','createdAt','by','byUid','assigneeUid','assignee','assignedAt'])
           && request.resource.data.summary is string && request.resource.data.summary.size() <= 600
           && request.resource.data.action is string && request.resource.data.action.size() <= 600
           && request.resource.data.done is bool;

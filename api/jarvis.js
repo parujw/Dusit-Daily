@@ -28,8 +28,9 @@ const SCHEMA = {
           action: { type: "string" },
           date: { type: "string" },
           due: { type: "string" },
+          assignee: { type: "string" },
         },
-        required: ["type", "id", "room", "guest", "cat", "pri", "summary", "action", "date", "due"],
+        required: ["type", "id", "room", "guest", "cat", "pri", "summary", "action", "date", "due", "assignee"],
         additionalProperties: false,
       },
     },
@@ -55,6 +56,7 @@ const SYSTEM = `คุณคือ Dusit Help ผู้ช่วยแผนก 
 - cat: vip (VIP, arrival, special request) | room (ห้อง, housekeeping, late check-out, upgrade) | complaint | maint (ซ่อมบำรุง) | billing (บิล มัดจำ ชำระเงิน) | lost (Lost & Found) | other
 - pri: urgent (ต้องทำทันทีหรือแขกไม่พอใจอยู่) | follow (ต้องติดตาม) | info (แจ้งทราบ)
 - due: HH:MM แบบ 24 ชม. เช่น "บ่ายสาม" = "15:00" ไม่มีให้ "" ห้องไม่ทราบใช้ "—"
+- assignee: ชื่อคนในทีมที่ผู้ใช้บอกให้ส่งงานถึง ต้องตรงกับรายชื่อทีม ไม่ได้บอกให้ ""
 - date: วันที่ของงาน YYYY-MM-DD ตีความ "พรุ่งนี้" "วันศุกร์" "25 นี้" จากวันนี้ ถ้าไม่ได้บอกวันให้ "" (ใช้วันที่ผู้ใช้เปิดดู) ตอน update ใส่เฉพาะเมื่อเลื่อนวัน
 - summary 1 ประโยคสั้น action ขึ้นต้นด้วยคำกริยา
 - guest ย่อตาม PDPA เช่น "คุณ T. (VIP)" ห้ามชื่อเต็ม เบอร์โทร อีเมล เลขพาสปอร์ต เลขบัตร
@@ -92,6 +94,7 @@ export async function POST(request) {
   const last = msgs[msgs.length - 1];
   last.content =
     `บอร์ดตอนนี้ (JSON):\n${JSON.stringify(board)}\n\n` +
+    `ทีม: ${(Array.isArray(body?.team) ? body.team.slice(0, 80).map((n) => clip(n, 40)) : []).join(", ") || "-"}\n` +
     `เวลา: ${clip(body?.now, 40)} · วันนี้: ${clip(body?.today, 10)} · วันที่ผู้ใช้เปิดดู: ${clip(body?.selected, 10)} · ผู้ใช้: ${clip(body?.name, 40) || "-"}` +
     (hintCat ? ` · หมวดที่ผู้ใช้เลือกไว้: ${hintCat}` : "") +
     `\n\nข้อความผู้ใช้:\n${last.content}`;
