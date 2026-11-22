@@ -1,7 +1,7 @@
 {
-  "name": "Jarvis ส่งเวร",
-  "short_name": "ส่งเวร",
-  "description": "พูดครั้งเดียว ทั้งกะรู้เรื่อง",
+  "name": "Dusit Daily",
+  "short_name": "Dusit Daily",
+  "description": "งานที่ต้องทำต่อของ Front Office ประจำวัน",
   "start_url": "./",
   "scope": "./",
   "display": "standalone",

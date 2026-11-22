@@ -92,7 +92,7 @@ export async function POST(request) {
   const last = msgs[msgs.length - 1];
   last.content =
     `บอร์ดตอนนี้ (JSON):\n${JSON.stringify(board)}\n\n` +
-    `เวลา: ${clip(body?.now, 40)} · วันนี้: ${clip(body?.today, 10)} · วันที่ผู้ใช้เปิดดู: ${clip(body?.selected, 10)} · กะ: ${clip(body?.shift, 60)} · ผู้ใช้: ${clip(body?.name, 40) || "-"}` +
+    `เวลา: ${clip(body?.now, 40)} · วันนี้: ${clip(body?.today, 10)} · วันที่ผู้ใช้เปิดดู: ${clip(body?.selected, 10)} · ผู้ใช้: ${clip(body?.name, 40) || "-"}` +
     (hintCat ? ` · หมวดที่ผู้ใช้เลือกไว้: ${hintCat}` : "") +
     `\n\nข้อความผู้ใช้:\n${last.content}`;
 

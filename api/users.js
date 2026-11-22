@@ -2,6 +2,8 @@
 // GET  /api/users                                   -> { users: [...] }
 // POST /api/users { action: "create", email, password, name, role }
 // POST /api/users { action: "password", uid, password }
+// POST /api/users { action: "role", uid, role }
+// POST /api/users { action: "enable", uid }
 // POST /api/users { action: "remove", uid }
 import { FieldValue } from "firebase-admin/firestore";
 import { admin, json, TEAM_ID } from "./_lib.js";
@@ -74,6 +76,20 @@ export async function POST(request) {
     if (password.length < 8) return json({ error: "รหัสผ่านต้องยาวอย่างน้อย 8 ตัว" }, 400);
     await a.auth.updateUser(uid, { password });
     await a.auth.revokeRefreshTokens(uid);
+    return json({ ok: true });
+  }
+
+  if (b.action === "role") {
+    if (uid === tok.uid) return json({ error: "เปลี่ยนสิทธิ์ของตัวเองไม่ได้" }, 400);
+    const role = b.role === "admin" ? "admin" : "staff";
+    await ref.set({ role }, { merge: true });
+    return json({ ok: true });
+  }
+
+  if (b.action === "enable") {
+    await a.auth.updateUser(uid, { disabled: false });
+    await ref.set({ disabled: false }, { merge: true });
+    await teamRef.set({ members: FieldValue.arrayUnion(doc.data().email) }, { merge: true });
     return json({ ok: true });
   }
 

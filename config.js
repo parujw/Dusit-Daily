@@ -3,7 +3,7 @@
 //   ถ้าเว้นเป็น null แอปจะเก็บข้อมูลในเครื่องอย่างเดียว ไม่แชร์กับทีม
 window.JARVIS_CONFIG = {
   teamId: "fo",            // ต้องตรงกับ TEAM_ID ใน Vercel
-  appName: "Jarvis ส่งเวร",
+  appName: "Dusit Daily",
   firebase: null
   // firebase: {
   //   apiKey: "...",

@@ -3,10 +3,11 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<title>Jarvis ส่งเวร</title>
+<title>Dusit Daily</title>
 <meta name="claude:viewport-fit-sides" content="cover">
 <meta name="theme-color" content="#0e1524">
-<meta name="description" content="พูดครั้งเดียว ทั้งกะรู้เรื่อง: ส่งเวร Front Office ด้วยเสียง สรุปด้วย AI ส่งเข้ากลุ่ม LINE">
+<meta name="description" content="งานที่ต้องทำต่อของ Front Office ประจำวัน: คุยกับ Jarvis ติ๊กงานเสร็จ สรุปส่งไลน์">
+<meta name="apple-mobile-web-app-title" content="Dusit Daily">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
 <link rel="manifest" href="manifest.webmanifest">
@@ -156,6 +157,24 @@ details.tbl-view summary{cursor:pointer;color:var(--gold-ink);font-weight:600;fo
 .dtable th:first-child,.dtable td:first-child{text-align:left}
 .dtable th{color:var(--muted);font-weight:600}
 .mo-h{font-family:var(--f-display);font-weight:700;font-size:15px;margin:16px 0 8px;color:var(--muted)}
+
+/* management */
+.seg{display:grid;grid-template-columns:1fr 1fr;gap:4px;padding:4px;border-radius:16px;background:var(--card);border:1px solid var(--line);margin-bottom:14px}
+.seg button{padding:10px;border-radius:12px;font-family:var(--f-display);font-weight:700;font-size:15px;color:var(--muted)}
+.seg button[aria-selected="true"]{background:var(--night);color:#fff}
+.tm-stats{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px}
+.tm-tools{display:flex;gap:8px;align-items:center;margin:18px 0 10px}
+.tm-tools h2{font-size:18px;flex:1}
+.tm-tools input{max-width:190px;padding:9px 13px}
+.member .role{font-size:11.5px;font-weight:700;border-radius:6px;padding:1px 7px;background:var(--line);color:var(--ink)}
+.member .role.admin{background:var(--gold-soft);color:var(--gold-ink)}
+.m-acts{display:flex;gap:6px;flex-wrap:wrap;flex-basis:100%;padding-left:52px}
+@media (max-width:380px){.m-acts{padding-left:0}}
+.pwrow{display:flex;gap:8px}
+.pwrow input{flex:1;min-width:0}
+.pwrow .mini{align-self:center}
+.setup{display:flex;flex-direction:column;gap:8px}
+.setup ol{margin:0;padding-left:1.2em}
 
 /* status strip */
 .status{display:flex;align-items:center;gap:14px;flex-wrap:wrap;padding:16px 18px;border-radius:24px;color:#fff;
@@ -389,7 +408,7 @@ details.more summary{cursor:pointer;color:var(--gold-ink);font-size:13.5px;font-
   <section id="v-login" class="login" hidden>
     <div class="login-brand">
       <span class="orb" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="9" y="3" width="6" height="11" rx="3"/><path d="M5 11a7 7 0 0 0 14 0M12 18v3"/></svg></span>
-      <h1>Jarvis ส่งเวร</h1>
+      <h1>Dusit Daily</h1>
       <p>เข้าสู่ระบบเพื่อดูงานที่ต้องทำต่อของทีม</p>
     </div>
     <form id="loginForm" class="form login-card" novalidate>
@@ -440,17 +459,22 @@ details.more summary{cursor:pointer;color:var(--gold-ink);font-size:13.5px;font-
     <div id="sections"></div>
   </section>
 
-  <!-- YEAR -->
+  <!-- MANAGEMENT: year overview + accounts -->
   <section id="v-year" hidden>
     <header class="top">
-      <div><div class="eyebrow">ภาพรวมสำหรับผู้บริหาร</div><h1>งานค้างทั้งปี</h1></div>
-      <div class="yr-switch">
+      <div><div class="eyebrow">Management</div><h1 id="mgmtTitle">งานค้างทั้งปี</h1></div>
+      <div class="yr-switch" id="yrSwitch">
         <button class="wk-nav" id="yrPrev" aria-label="ปีก่อน"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="m15 6-6 6 6 6"/></svg></button>
         <b class="num" id="yrLabel"></b>
         <button class="wk-nav" id="yrNext" aria-label="ปีถัดไป"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 6 6 6-6 6"/></svg></button>
       </div>
     </header>
+    <div class="seg" id="mgmtSeg" role="tablist" hidden>
+      <button role="tab" data-tab="year" aria-selected="true">ภาพรวมทั้งปี</button>
+      <button role="tab" data-tab="team" aria-selected="false">บัญชีพนักงาน</button>
+    </div>
     <div id="yearBody"><p class="note">กำลังโหลด…</p></div>
+    <div id="teamBody" hidden></div>
   </section>
 
   <!-- BRIEFS -->
@@ -465,7 +489,7 @@ details.more summary{cursor:pointer;color:var(--gold-ink);font-size:13.5px;font-
   <div class="nav-in">
     <button class="nav-btn" id="navYear">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3.5" y="4.5" width="17" height="16" rx="3"/><path d="M3.5 9.5h17M8 3v3M16 3v3M8 13.5h2M14 13.5h2M8 17h2"/></svg>
-      ภาพรวมปี
+      <span id="navYearTxt">ภาพรวมปี</span>
     </button>
     <button class="fab" id="fab" aria-label="เปิดเมนูด่วน">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" id="fabIco"><path d="M4 10.5 12 4l8 6.5V20h-5v-5h-6v5H4z"/></svg>
@@ -575,7 +599,7 @@ function toast(t, undo) {
 
 // ---------------- prefs (this device) ----------------
 const PKEY = "jarvis-prefs-v2";
-let P = { name: "", from: "กะเช้า", to: "กะบ่าย", pin: "" };
+let P = { name: "", pin: "" };
 try { Object.assign(P, JSON.parse(localStorage.getItem(PKEY) || "{}")); } catch (e) {}
 const savePrefs = () => { try { localStorage.setItem(PKEY, JSON.stringify(P)); } catch (e) {} };
 
@@ -628,7 +652,8 @@ const Demo = {
   async login(email, pass) {
     const e = email.trim().toLowerCase();
     const u = this.users().find(x => x.email === e);
-    if (!u || u.disabled || u.hash !== await sha256(e + ":" + pass)) throw { code: "auth/invalid-credential" };
+    if (!u || u.hash !== await sha256(e + ":" + pass)) throw { code: "auth/invalid-credential" };
+    if (u.disabled) throw { code: "auth/user-disabled" };
     this.setSession(u.uid);
     return u;
   },
@@ -800,6 +825,15 @@ const Team = {
     }
     await api("users", { action: "password", uid: id, password });
   },
+  async setRole(id, role) {
+    if (id === myUid()) throw new Error("เปลี่ยนสิทธิ์ของตัวเองไม่ได้");
+    if (AUTH === "demo") { const list = Demo.users(); list.find(x => x.uid === id).role = role; Demo.save(list); return; }
+    await api("users", { action: "role", uid: id, role });
+  },
+  async enable(id) {
+    if (AUTH === "demo") { const list = Demo.users(); list.find(x => x.uid === id).disabled = false; Demo.save(list); return; }
+    await api("users", { action: "enable", uid: id });
+  },
   async remove(id) {
     if (id === myUid()) throw new Error("ปิดบัญชีของตัวเองไม่ได้");
     if (AUTH === "demo") { const list = Demo.users(); list.find(x => x.uid === id).disabled = true; Demo.save(list); return; }
@@ -924,7 +958,7 @@ function checkNotifs() {
     toasted.add(it.id);
     const msg = `${it.room} ที่คุณแจ้ง เรียบร้อยแล้ว · โดย ${it.doneBy || "ทีม"}`;
     toast("✅ " + msg);
-    try { if (document.hidden && Notification.permission === "granted") new Notification("Jarvis ส่งเวร", { body: msg, icon: "icon-192.png" }); } catch (e) {}
+    try { if (document.hidden && Notification.permission === "granted") new Notification("Dusit Daily", { body: msg, icon: "icon-192.png" }); } catch (e) {}
   }
 }
 listeners.add(checkNotifs);
@@ -1080,6 +1114,7 @@ render.lastToday = TODAY();
 listeners.add(render);
 
 function renderAcct() {
+  renderMgmtTabs();
   const b = $("#acctBtn");
   const n = myName();
   b.innerHTML = n ? esc(n.slice(0, 1).toUpperCase()) : '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round"><path d="M4 7h10M18 7h2M4 17h4M12 17h8"/><circle cx="16" cy="7" r="2"/><circle cx="10" cy="17" r="2"/></svg>';
@@ -1130,7 +1165,7 @@ function renderBriefs() {
     const ackHtml = acks.length ? acks.map(a => `<span class="ack">✓ ${esc(a.name)} · ${new Date(a.at).toLocaleTimeString("th-TH", { hour: "2-digit", minute: "2-digit" })}</span>`).join("") : `<span class="ack wait">ยังไม่มีคนรับเวร</span>`;
     return `<article class="bcard">
       <div class="bmeta"><span>${esc(fmt(b.at))} · ${esc(b.by || "-")}</span><span>${b.n} เรื่อง${b.urgent ? ` · ด่วน ${b.urgent}` : ""}${b.via ? " · " + esc(b.via) : ""}</span></div>
-      <div class="bhead">${esc(b.title || "สรุป")} · ${esc(b.from || "")} → ${esc(b.to || "")}</div>
+      <div class="bhead">${esc(b.title || "สรุป")}${isYmd(b.day) ? " · " + esc(thDate(b.day, { day: "numeric", month: "short", year: "numeric" })) : ""}</div>
       <div class="acks">${ackHtml}</div>
       <details class="more"><summary>ดูข้อความ</summary><pre class="brief" style="margin-top:8px">${esc(b.text)}</pre></details>
       <div class="row"><button class="btn sec" data-copy="${esc(b.id)}">คัดลอก</button><button class="btn dark" data-ack="${esc(b.id)}">ฉันรับเวรแล้ว</button></div>
@@ -1182,7 +1217,7 @@ function bindTips(root) {
 }
 
 async function renderYear() {
-  if (view !== "year") return;
+  if (view !== "year" || mgmtTab !== "year") return;
   const y = YEAR, body = $("#yearBody");
   $("#yrLabel").textContent = y + 543;
   $("#yrNext").disabled = y >= new Date().getFullYear() + 1;
@@ -1284,7 +1319,7 @@ function show(v) {
   $("#navBriefs").classList.toggle("on", v === "briefs");
   $("#navYear").classList.toggle("on", v === "year");
   tip?.hide?.();
-  if (v === "year") { $("#yearBody").innerHTML = '<p class="note">กำลังโหลด…</p>'; renderYear(); }
+  if (v === "year") { renderMgmtTabs(); if (mgmtTab === "team") renderTeam(); else { $("#yearBody").innerHTML = '<p class="note">กำลังโหลด…</p>'; renderYear(); } }
   window.scrollTo(0, 0);
 }
 $("#navBriefs").onclick = () => { closeAll(); show("briefs"); };
@@ -1452,7 +1487,7 @@ function jarvisPayload() {
       .map(i => ({ id: i.id, room: i.room, guest: i.guest, cat: i.cat, pri: i.pri, summary: i.summary, action: i.action, date: itemDate(i), due: i.due, done: !!i.done })),
     today: TODAY(), selected: SEL,
     now: new Date().toLocaleString("th-TH", { weekday: "short", day: "numeric", month: "short", hour: "2-digit", minute: "2-digit" }),
-    shift: `${P.from} → ${P.to}`, name: myName(), hintCat,
+    name: myName(), hintCat,
   };
 }
 function jarvisPromptText(p) {
@@ -1461,7 +1496,7 @@ function jarvisPromptText(p) {
 บอร์ดตอนนี้ (JSON):
 ${JSON.stringify(p.board)}
 
-เวลา: ${p.now} · วันนี้: ${p.today} · วันที่ผู้ใช้เปิดดู: ${p.selected} · กะ: ${p.shift} · ผู้ใช้: ${p.name || "-"}${p.hintCat ? " · หมวดที่ผู้ใช้เลือกไว้: " + p.hintCat : ""}
+เวลา: ${p.now} · วันนี้: ${p.today} · วันที่ผู้ใช้เปิดดู: ${p.selected} · ผู้ใช้: ${p.name || "-"}${p.hintCat ? " · หมวดที่ผู้ใช้เลือกไว้: " + p.hintCat : ""}
 
 บทสนทนา (ข้อความล่าสุดอยู่ท้ายสุด):
 ${p.messages.map(m => (m.role === "user" ? "ผู้ใช้: " : "Jarvis: ") + m.content).join("\n")}
@@ -1522,7 +1557,7 @@ async function applyActions(acts) {
         const ids = String(a.id || "").split(",").map(s => s.trim()).filter(Boolean);
         const list = ids.length ? ITEMS.filter(i => ids.includes(i.id)) : dayItems(SEL).filter(i => !i.done);
         if (!list.length) { out.push({ kind: "miss", label: "ไม่มีเรื่องค้างให้ส่ง" }); continue; }
-        out.push({ kind: "brief", label: `สรุป ${list.length} งาน พร้อมส่งไลน์`, brief: { ids: list.map(i => i.id), title: ids.length ? "อัปเดตระหว่างกะ" : "สรุปทั้งกะ" } });
+        out.push({ kind: "brief", label: `สรุป ${list.length} งาน พร้อมส่งไลน์`, brief: { ids: list.map(i => i.id), title: ids.length ? "อัปเดตระหว่างวัน" : "สรุปประจำวัน" } });
       } else if (!it) {
         out.push({ kind: "miss", label: `ไม่พบเรื่อง${a?.room ? "ห้อง " + a.room : ""}บนบอร์ด` });
       } else if (type === "close" || type === "reopen") {
@@ -1613,7 +1648,7 @@ function buildBrief(items, title) {
   const groups = groupTasks(items);
   const nowN = groups[0].list.length, carryN = groups[1].list.length;
   const ICON = { now: "🔴", carry: "⏳", timed: "🟠", follow: "🟡", info: "🟢" };
-  let t = `📋 สรุปงาน FO · ${thDate(SEL, { weekday: "short", day: "numeric", month: "short", year: "numeric" })}\n${P.from} → ${P.to} · ${title}\n`;
+  let t = `📋 สรุปงาน FO · ${thDate(SEL, { weekday: "short", day: "numeric", month: "short", year: "numeric" })} · ${title}\n`;
   t += nowN || carryN ? `⚠️ ${[nowN ? `ทำทันที ${nowN}` : "", carryN ? `ค้างจากวันก่อน ${carryN}` : ""].filter(Boolean).join(" · ")} · ทั้งหมด ${items.length} งาน\n` : `ไม่มีงานด่วน · ทั้งหมด ${items.length} งาน\n`;
   for (const g of groups) {
     if (!g.list.length) continue;
@@ -1630,10 +1665,6 @@ function buildBrief(items, title) {
 function briefSheet(items, title) {
   let briefId = null;
   openSheet(`<h3>สรุปส่งไลน์</h3>
-    <div class="grid2">
-      <div><label class="lab" for="from">กะที่ส่ง</label><input type="text" id="from" value="${esc(P.from)}"></div>
-      <div><label class="lab" for="to">กะที่รับ</label><input type="text" id="to" value="${esc(P.to)}"></div>
-    </div>
     ${ME ? "" : `<div><label class="lab" for="sender">ชื่อผู้ส่ง</label><input type="text" id="sender" placeholder="เช่น คิว (FOM)" value="${esc(P.name)}"></div>`}
     <pre class="brief" id="briefTxt"></pre>
     <div class="row" id="sendRow">
@@ -1643,17 +1674,17 @@ function briefSheet(items, title) {
     <p class="err" id="sendErr" hidden></p>
     <p class="note">${SERVER.linePush ? "ส่งผ่านบัญชี LINE OA ของทีม เพื่อนตอบ “รับ” ในกลุ่มแล้วชื่อจะขึ้นในหน้าสรุปที่ส่ง" : "“เปิดใน LINE” จะเปิดหน้าเลือกแชท ถ้าไม่เปิด ให้คัดลอกแล้ววางในกลุ่มเอง"}</p>`);
   const upd = () => {
-    P.from = $("#from").value.trim() || "กะเช้า"; P.to = $("#to").value.trim() || "กะบ่าย"; if ($("#sender")) P.name = $("#sender").value.trim(); savePrefs();
+    if ($("#sender")) { P.name = $("#sender").value.trim(); savePrefs(); }
     const t = buildBrief(items, title);
     $("#briefTxt").textContent = t;
     const ln = $("#ln"); if (ln) ln.href = "https://line.me/R/share?text=" + encodeURIComponent(t);
     return t;
   };
-  ["from", "to", "sender"].forEach(id => $("#" + id)?.addEventListener("input", upd));
+  $("#sender")?.addEventListener("input", upd);
   upd();
   const log = async (text, via) => {
     if (briefId) { store.patchBrief(briefId, { text, via }).catch(() => {}); return briefId; }
-    briefId = await store.addBrief({ at: Date.now(), text, title, n: items.length, urgent: items.filter(i => i.pri === "urgent").length, by: myName(), byUid: myUid(), from: P.from, to: P.to, via, acks: [] }).catch(() => null);
+    briefId = await store.addBrief({ at: Date.now(), text, title, n: items.length, urgent: items.filter(i => i.pri === "urgent").length, by: myName(), byUid: myUid(), day: SEL, via, acks: [] }).catch(() => null);
     return briefId;
   };
   $("#cp").onclick = () => { const t = upd(); copy(t); log(t, "คัดลอก"); };
@@ -1674,7 +1705,7 @@ function briefSheet(items, title) {
 $("#sendAll").onclick = () => {
   const open = dayItems(SEL).filter(i => !i.done);
   if (!open.length) { toast("ไม่มีงานค้างของวันนี้"); return; }
-  briefSheet(open, "สรุปทั้งกะ");
+  briefSheet(open, "สรุปประจำวัน");
 };
 function copy(t) {
   const ok = () => toast("คัดลอกแล้ว วางในกลุ่ม LINE ได้เลย");
@@ -1725,12 +1756,8 @@ function openSettings() {
       <div class="acct-row"><span class="avatar">${esc((ME.name || "?").slice(0, 1).toUpperCase())}</span>
         <div><div class="bhead">${esc(ME.name)} ${isAdmin() ? '<span class="tag ex">ผู้ดูแล</span>' : ""}</div><p class="note">${esc(ME.email)}</p></div></div>
       <div class="row"><button class="btn sec" id="pwBtn">เปลี่ยนรหัสผ่าน</button><button class="btn sec" id="outBtn">ออกจากระบบ</button></div>
-      ${isAdmin() ? `<button class="btn dark" id="teamBtn">จัดการทีม</button>` : ""}
+      ${isAdmin() ? `<button class="btn dark" id="teamBtn">จัดการบัญชีพนักงาน</button>` : ""}
     </div>` : `<div><label class="lab" for="sName">ชื่อของคุณ (ขึ้นในสรุปและตอนรับเวร)</label><input type="text" id="sName" value="${esc(P.name)}" placeholder="เช่น คิว (FOM)"></div>`}
-    <div class="grid2">
-      <div><label class="lab" for="sFrom">กะที่ส่ง</label><input type="text" id="sFrom" value="${esc(P.from)}"></div>
-      <div><label class="lab" for="sTo">กะที่รับ</label><input type="text" id="sTo" value="${esc(P.to)}"></div>
-    </div>
     ${SERVER.linePush ? `<label class="switch"><input type="checkbox" id="sLineDone" ${P.lineOnDone === false ? "" : "checked"}><span>แจ้งในกลุ่ม LINE เมื่องานเสร็จ</span></label>` : ""}
     ${ME && canNotify ? `<button class="btn sec" id="notiBtn">เปิดการแจ้งเตือนบนเครื่องนี้</button>` : ""}
     ${AUTH === "none" && (SERVER.pin || SERVER.ai) ? `<div><label class="lab" for="sPin">PIN ทีม (ใช้ AI และส่ง LINE)</label><input type="password" id="sPin" value="${esc(P.pin)}" autocomplete="off"></div>` : ""}
@@ -1738,14 +1765,13 @@ function openSettings() {
     <button class="btn pri" id="saveSet">บันทึก</button>`);
   $("#saveSet").onclick = () => {
     if ($("#sName")) P.name = $("#sName").value.trim();
-    P.from = $("#sFrom").value.trim() || "กะเช้า"; P.to = $("#sTo").value.trim() || "กะบ่าย";
     if ($("#sLineDone")) P.lineOnDone = $("#sLineDone").checked;
     if ($("#sPin")) P.pin = $("#sPin").value.trim();
     savePrefs(); render(); closeAll(); toast("บันทึกแล้ว");
   };
   if ($("#outBtn")) $("#outBtn").onclick = () => { closeAll(); signOutNow(); };
   if ($("#pwBtn")) $("#pwBtn").onclick = openPassword;
-  if ($("#teamBtn")) $("#teamBtn").onclick = openTeam;
+  if ($("#teamBtn")) $("#teamBtn").onclick = () => { closeAll(); openMgmt("team"); };
   if ($("#notiBtn")) $("#notiBtn").onclick = () => Notification.requestPermission().then(r => { toast(r === "granted" ? "เปิดการแจ้งเตือนแล้ว" : "เบราว์เซอร์ไม่อนุญาตการแจ้งเตือน"); openSettings(); }).catch(() => toast("เบราว์เซอร์นี้ไม่รองรับ"));
 }
 
@@ -1767,48 +1793,115 @@ function openPassword() {
   });
 }
 
-async function openTeam() {
-  openSheet(`<h3>จัดการทีม</h3><div id="teamList" class="team"><p class="note">กำลังโหลด…</p></div>
-    <form id="addForm" class="bcard form" novalidate>
-      <div class="bhead">เพิ่มพนักงาน</div>
-      <div><label class="lab" for="mName">ชื่อที่แสดงในแอป</label><input type="text" id="mName" placeholder="เช่น ออม"></div>
-      <div><label class="lab" for="mEmail">อีเมล</label><input type="email" id="mEmail" autocomplete="off"></div>
-      <div><label class="lab" for="mPass">รหัสผ่านเริ่มต้น (อย่างน้อย 8 ตัว)</label><input type="text" id="mPass" autocomplete="off"></div>
-      <div><label class="lab" for="mRole">สิทธิ์</label><select id="mRole"><option value="staff">พนักงาน</option><option value="admin">ผู้ดูแล (เพิ่ม/ปิดบัญชีได้)</option></select></div>
+// ---------------- management: accounts ----------------
+let mgmtTab = "year";
+const canManage = () => isAdmin() || AUTH === "none";
+function openMgmt(tab) { mgmtTab = tab || mgmtTab; show("year"); }
+function renderMgmtTabs() {
+  $("#mgmtSeg").hidden = !canManage();
+  if (!canManage()) mgmtTab = "year";
+  $("#mgmtSeg").querySelectorAll("[data-tab]").forEach(b => b.setAttribute("aria-selected", String(b.dataset.tab === mgmtTab)));
+  $("#yearBody").hidden = mgmtTab !== "year";
+  $("#yrSwitch").hidden = mgmtTab !== "year";
+  $("#teamBody").hidden = mgmtTab !== "team";
+  $("#mgmtTitle").textContent = mgmtTab === "team" ? "บัญชีพนักงาน" : "งานค้างทั้งปี";
+  $("#navYearTxt").textContent = canManage() ? "Management" : "ภาพรวมปี";
+}
+$("#mgmtSeg").addEventListener("click", e => {
+  const b = e.target.closest("[data-tab]"); if (!b) return;
+  mgmtTab = b.dataset.tab; renderMgmtTabs();
+  if (mgmtTab === "team") renderTeam(); else renderYear();
+});
+
+function randomPassword() {
+  const abc = "abcdefghjkmnpqrstuvwxyzABCDEFGHJKMNPQRSTUVWXYZ23456789";
+  const a = new Uint32Array(10); crypto.getRandomValues(a);
+  return [...a].map(n => abc[n % abc.length]).join("");
+}
+
+async function renderTeam() {
+  const body = $("#teamBody");
+  if (AUTH === "none") {
+    body.innerHTML = `<div class="vcard setup"><h2>ยังไม่ได้เปิดระบบบัญชีพนักงาน</h2>
+      <p class="sub">เว็บนี้ยังไม่ได้เชื่อม Firebase จึงยังไม่มีหน้าเข้าสู่ระบบ ทำครั้งเดียวตาม README หัวข้อ Firebase:</p>
+      <ol><li>สร้างโปรเจกต์ Firebase เปิด Email/Password และ Firestore</li><li>วาง Web config ใน <code>config.js</code></li><li>ใส่ <code>FIREBASE_SERVICE_ACCOUNT</code> ใน Vercel แล้ว Redeploy</li><li>รัน <code>scripts/create-user.mjs</code> สร้างผู้ดูแลคนแรก</li></ol>
+      <p class="note">หลังจากนั้นหน้านี้ใช้เพิ่มบัญชี ตั้งรหัสผ่าน และปิดบัญชีพนักงานได้</p></div>`;
+    return;
+  }
+  body.innerHTML = `<div class="tm-stats" id="tmStats"></div>
+    <form id="addForm" class="vcard form" novalidate>
+      <h2>เพิ่มบัญชีพนักงาน</h2>
+      <div class="grid2">
+        <div><label class="lab" for="mName">ชื่อที่แสดงในแอป</label><input type="text" id="mName" placeholder="เช่น ออม" autocomplete="off"></div>
+        <div><label class="lab" for="mRole">สิทธิ์</label><select id="mRole"><option value="staff">พนักงาน</option><option value="admin">ผู้ดูแล</option></select></div>
+      </div>
+      <div><label class="lab" for="mEmail">อีเมล (ใช้เข้าสู่ระบบ)</label><input type="email" id="mEmail" autocomplete="off" placeholder="name@example.com"></div>
+      <div><label class="lab" for="mPass">รหัสผ่านเริ่มต้น (อย่างน้อย 8 ตัว)</label>
+        <div class="pwrow"><input type="text" id="mPass" autocomplete="off"><button class="mini" type="button" id="mGen">สุ่มรหัส</button></div></div>
       <p class="err" id="mErr" hidden></p>
-      <button class="btn pri" type="submit">เพิ่มเข้าทีม</button>
-      <p class="note">แจ้งอีเมลและรหัสผ่านเริ่มต้นให้พนักงานเอง แล้วให้เปลี่ยนรหัสผ่านหลังเข้าสู่ระบบครั้งแรก</p>
-    </form>`);
-  const draw = async () => {
-    let users;
-    try { users = await Team.list(); } catch (e) { $("#teamList").innerHTML = `<p class="err">${esc(e.message)}</p>`; return; }
-    $("#teamList").innerHTML = users.map(u => `<div class="member ${u.disabled ? "off" : ""}">
-      <span class="avatar">${esc((u.name || "?").slice(0, 1).toUpperCase())}</span>
-      <div class="m-t"><b>${esc(u.name)}${u.uid === myUid() ? " (คุณ)" : ""}</b><small>${esc(u.email)} · ${u.disabled ? "ปิดใช้งาน" : u.role === "admin" ? "ผู้ดูแล" : "พนักงาน"}</small></div>
-      ${u.disabled || u.uid === myUid() ? "" : `<button class="mini" data-pw="${esc(u.uid)}">ตั้งรหัสใหม่</button><button class="mini" data-rm="${esc(u.uid)}">ปิดบัญชี</button>`}
-    </div>`).join("");
-    $("#teamList").querySelectorAll("[data-pw]").forEach(b => b.onclick = async () => {
-      const row = b.closest(".member");
-      if (row.querySelector(".pw-inline")) return;
-      row.insertAdjacentHTML("beforeend", `<form class="pw-inline"><input type="text" placeholder="รหัสใหม่ อย่างน้อย 8 ตัว" aria-label="รหัสผ่านใหม่" autocomplete="off"><button class="mini gold" type="submit">บันทึก</button></form>`);
-      const f = row.querySelector(".pw-inline");
-      f.querySelector("input").focus();
-      f.onsubmit = async e => { e.preventDefault(); try { await Team.setPassword(b.dataset.pw, f.querySelector("input").value); toast("ตั้งรหัสผ่านใหม่แล้ว"); f.remove(); } catch (x) { toast(x.message); } };
-    });
-    $("#teamList").querySelectorAll("[data-rm]").forEach(b => b.onclick = async () => {
-      if (b.dataset.armed !== "1") { b.dataset.armed = "1"; b.textContent = "ยืนยันปิด"; return; }
-      try { await Team.remove(b.dataset.rm); toast("ปิดบัญชีแล้ว"); draw(); } catch (x) { toast(x.message); }
-    });
+      <button class="btn pri" type="submit" id="mAdd">สร้างบัญชี</button>
+      <p class="note">ผู้ดูแลเพิ่ม/ปิดบัญชีและดูภาพรวมได้ พนักงานใช้งานประจำวันได้ทุกอย่าง แจ้งอีเมลและรหัสเริ่มต้นให้พนักงานเอง แล้วให้เปลี่ยนรหัสหลังเข้าครั้งแรก</p>
+    </form>
+    <div class="tm-tools"><h2>รายชื่อ</h2><input type="search" id="tmQ" placeholder="ค้นหาชื่อหรืออีเมล" aria-label="ค้นหาพนักงาน"></div>
+    <div id="teamList" class="team"><p class="note">กำลังโหลด…</p></div>`;
+  let users = [];
+  const drawList = () => {
+    const q = ($("#tmQ").value || "").trim().toLowerCase();
+    const list = users.filter(u => !q || (u.name + " " + u.email).toLowerCase().includes(q));
+    const act = users.filter(u => !u.disabled);
+    $("#tmStats").innerHTML = `<div class="kpi"><div class="k">ใช้งานอยู่</div><div class="v num">${act.length}</div></div>
+      <div class="kpi"><div class="k">ผู้ดูแล</div><div class="v num">${act.filter(u => u.role === "admin").length}</div></div>
+      <div class="kpi"><div class="k">ปิดใช้งาน</div><div class="v num">${users.length - act.length}</div></div>`;
+    $("#teamList").innerHTML = list.map(u => {
+      const me = u.uid === myUid();
+      return `<div class="member ${u.disabled ? "off" : ""}" data-uid="${esc(u.uid)}">
+        <span class="avatar">${esc((u.name || "?").slice(0, 1).toUpperCase())}</span>
+        <div class="m-t"><b>${esc(u.name)}${me ? " (คุณ)" : ""} <span class="role ${u.role === "admin" ? "admin" : ""}">${u.disabled ? "ปิดใช้งาน" : u.role === "admin" ? "ผู้ดูแล" : "พนักงาน"}</span></b><small>${esc(u.email)}</small></div>
+        ${me ? "" : `<div class="m-acts">${u.disabled
+          ? `<button class="mini" data-act="enable">เปิดใช้อีกครั้ง</button>`
+          : `<button class="mini" data-act="pw">ตั้งรหัสใหม่</button><button class="mini" data-act="role">${u.role === "admin" ? "เปลี่ยนเป็นพนักงาน" : "ตั้งเป็นผู้ดูแล"}</button><button class="mini" data-act="remove">ปิดบัญชี</button>`}</div>`}
+      </div>`;
+    }).join("") || `<p class="note">ไม่พบรายชื่อ</p>`;
   };
-  draw();
+  const load = async () => {
+    try { users = await Team.list(); drawList(); }
+    catch (e) { $("#teamList").innerHTML = `<p class="err">${esc(e.message)}</p>`; }
+  };
+  $("#tmQ").addEventListener("input", drawList);
+  $("#mGen").onclick = () => { $("#mPass").value = randomPassword(); };
+  $("#teamList").addEventListener("click", async e => {
+    const b = e.target.closest("[data-act]"); if (!b) return;
+    const row = b.closest(".member"), id = row.dataset.uid, u = users.find(x => x.uid === id);
+    try {
+      if (b.dataset.act === "pw") {
+        if (row.querySelector(".pw-inline")) return;
+        row.insertAdjacentHTML("beforeend", `<form class="pw-inline"><input type="text" placeholder="รหัสใหม่ อย่างน้อย 8 ตัว" aria-label="รหัสผ่านใหม่ของ ${esc(u.name)}" autocomplete="off"><button class="mini" type="button" data-gen>สุ่ม</button><button class="mini gold" type="submit">บันทึก</button></form>`);
+        const f = row.querySelector(".pw-inline"), inp = f.querySelector("input");
+        inp.focus();
+        f.querySelector("[data-gen]").onclick = () => { inp.value = randomPassword(); };
+        f.onsubmit = async ev => { ev.preventDefault(); try { await Team.setPassword(id, inp.value); toast(`ตั้งรหัสใหม่ให้ ${u.name} แล้ว`); f.remove(); } catch (x) { toast(x.message); } };
+        return;
+      }
+      if (b.dataset.act === "remove" && b.dataset.armed !== "1") { b.dataset.armed = "1"; b.textContent = "ยืนยันปิดบัญชี"; return; }
+      b.disabled = true;
+      if (b.dataset.act === "remove") { await Team.remove(id); toast(`ปิดบัญชี ${u.name} แล้ว`); }
+      if (b.dataset.act === "enable") { await Team.enable(id); toast(`เปิดใช้ ${u.name} อีกครั้งแล้ว`); }
+      if (b.dataset.act === "role") { const r = u.role === "admin" ? "staff" : "admin"; await Team.setRole(id, r); toast(`${u.name} เป็น${r === "admin" ? "ผู้ดูแล" : "พนักงาน"}แล้ว`); }
+      load();
+    } catch (x) { b.disabled = false; toast(x.message || "ทำไม่สำเร็จ"); }
+  });
   $("#addForm").addEventListener("submit", async e => {
     e.preventDefault();
     const err = m => { $("#mErr").textContent = m; $("#mErr").hidden = !m; };
+    const btn = $("#mAdd"); btn.disabled = true;
     try {
-      await Team.add({ name: $("#mName").value.trim(), email: $("#mEmail").value.trim(), password: $("#mPass").value, role: $("#mRole").value });
-      err(""); toast("เพิ่มเข้าทีมแล้ว"); ["mName", "mEmail", "mPass"].forEach(id => $("#" + id).value = ""); draw();
-    } catch (x) { err(x.message || "เพิ่มไม่สำเร็จ"); }
+      const m = { name: $("#mName").value.trim(), email: $("#mEmail").value.trim(), password: $("#mPass").value, role: $("#mRole").value };
+      await Team.add(m);
+      err(""); toast(`สร้างบัญชี ${m.name} แล้ว`); ["mName", "mEmail", "mPass"].forEach(id => $("#" + id).value = ""); load();
+    } catch (x) { err(x.message || "สร้างไม่สำเร็จ"); }
+    btn.disabled = false;
   });
+  load();
 }
 
 // ---------------- boot ----------------
