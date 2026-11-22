@@ -1,6 +1,7 @@
 // First-time setup from a phone: create the team's first admin.
 // GET  /api/setup  -> { needsSetup }   (true while the team has no active admin)
 // POST /api/setup  { code, name, email, password }
+// POST /api/setup  { action: "recover", code, email, password }  (reset a forgotten admin password)
 // Works only while no admin exists, and only with SETUP_CODE set in Vercel.
 import crypto from "node:crypto";
 import { admin, adminProblem, json, TEAM_ID } from "./_lib.js";
@@ -32,6 +33,27 @@ export async function POST(request) {
   const code = String(b?.code || "");
   const ok = code.length === want.length && crypto.timingSafeEqual(Buffer.from(code), Buffer.from(want));
   if (!ok) return json({ error: "รหัสตั้งค่าไม่ถูกต้อง" }, 403);
+
+  // Forgotten admin password: set a new one for an existing admin of this team.
+  if (b.action === "recover") {
+    const email = String(b.email || "").trim().toLowerCase();
+    const password = String(b.password || "");
+    if (password.length < 6) return json({ error: "รหัสผ่านต้องยาวอย่างน้อย 6 ตัว" }, 400);
+    try {
+      const user = await a.auth.getUserByEmail(email);
+      const prof = await a.db.doc(`users/${user.uid}`).get();
+      if (!prof.exists || prof.data().team !== TEAM_ID || prof.data().role !== "admin") return json({ error: "ไม่พบบัญชีผู้ดูแลนี้ในทีม" }, 404);
+      await a.auth.updateUser(user.uid, { password, disabled: false });
+      await a.auth.revokeRefreshTokens(user.uid);
+      await a.db.doc(`users/${user.uid}`).set({ disabled: false }, { merge: true });
+      return json({ ok: true });
+    } catch (e) {
+      if (e.code === "auth/user-not-found") return json({ error: "ไม่พบบัญชีผู้ดูแลนี้ในทีม" }, 404);
+      console.error(e);
+      return json({ error: "ตั้งรหัสใหม่ไม่สำเร็จ" }, 500);
+    }
+  }
+
   if (await hasAdmin(a)) return json({ error: "ทีมนี้มีผู้ดูแลแล้ว ให้เข้าสู่ระบบตามปกติ" }, 409);
 
   const email = String(b.email || "").trim().toLowerCase();

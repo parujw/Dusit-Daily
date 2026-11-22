@@ -599,6 +599,16 @@ details.more summary{cursor:pointer;color:var(--gold-ink);font-size:13.5px;font-
       <button class="link" type="button" id="lForgot">ลืมรหัสผ่าน</button>
       <p class="note" id="lNote"></p>
       <button class="btn sec" type="button" id="setupOpen" hidden>ตั้งค่าครั้งแรก: สร้างผู้ดูแล</button>
+      <button class="link" type="button" id="recoverOpen" hidden>ผู้ดูแลลืมรหัสผ่าน</button>
+    </form>
+    <form id="recoverForm" class="form login-card" novalidate hidden>
+      <div><b class="bhead">ตั้งรหัสผู้ดูแลใหม่</b><p class="note">ใช้รหัสตั้งค่า (SETUP_CODE) ที่ตั้งไว้ใน Vercel</p></div>
+      <div><label class="lab" for="rcCode">รหัสตั้งค่า</label><input type="password" id="rcCode" autocomplete="off"></div>
+      <div><label class="lab" for="rcUser">ชื่อผู้ใช้หรืออีเมลของผู้ดูแล</label><input type="text" id="rcUser" autocomplete="username" autocapitalize="none" spellcheck="false" placeholder="เช่น admin"></div>
+      <div><label class="lab" for="rcPass">รหัสผ่านใหม่ (อย่างน้อย 6 ตัว)</label><input type="password" id="rcPass" autocomplete="new-password"></div>
+      <p class="err" id="rcErr" hidden></p>
+      <button class="btn pri" type="submit" id="rcBtn">ตั้งรหัสใหม่และเข้าสู่ระบบ</button>
+      <button class="link" type="button" id="recoverBack">กลับไปหน้าเข้าสู่ระบบ</button>
     </form>
     <form id="setupForm" class="form login-card" novalidate hidden>
       <div><b class="bhead">ตั้งค่าครั้งแรก</b><p class="note">สร้างบัญชีผู้ดูแลคนแรกของทีม ใช้ได้ครั้งเดียว ต้องใช้รหัสตั้งค่า (SETUP_CODE) ที่ตั้งไว้ใน Vercel</p></div>
@@ -976,6 +986,7 @@ function loginReady(ok) {
   $("#lBtn").disabled = !ok; $("#lNote").textContent = ok ? "" : "กำลังเชื่อมต่อ…";
   if (ok && AUTH === "firebase") fetch("api/setup", { cache: "no-store" }).then(r => r.ok ? r.json() : {}).then(j => {
     $("#setupOpen").hidden = !j.needsSetup;
+    $("#recoverOpen").hidden = !(j.ready && !j.needsSetup && j.setupCode);
     const why = {
       no_service_account: "ระบบหลังบ้านยังไม่พร้อม: ไม่พบ FIREBASE_SERVICE_ACCOUNT ใน Vercel (ตรวจว่าเลือก Production แล้วกด Redeploy)",
       bad_service_account: "ระบบหลังบ้านยังไม่พร้อม: FIREBASE_SERVICE_ACCOUNT อ่านไม่ได้ ให้วางเนื้อหาไฟล์ JSON ใหม่ทั้งไฟล์ แล้ว Redeploy",
@@ -988,6 +999,24 @@ function loginReady(ok) {
 }
 $("#setupOpen").onclick = () => { $("#loginForm").hidden = true; $("#setupForm").hidden = false; $("#suCode").focus(); };
 $("#setupBack").onclick = () => { $("#setupForm").hidden = true; $("#loginForm").hidden = false; };
+$("#recoverOpen").onclick = () => { $("#loginForm").hidden = true; $("#recoverForm").hidden = false; $("#rcUser").value = $("#lEmail").value; $("#rcCode").focus(); };
+$("#recoverBack").onclick = () => { $("#recoverForm").hidden = true; $("#loginForm").hidden = false; };
+$("#recoverForm").addEventListener("submit", async e => {
+  e.preventDefault();
+  const err = m => { $("#rcErr").textContent = m; $("#rcErr").hidden = !m; };
+  const btn = $("#rcBtn"); btn.disabled = true; err("");
+  try {
+    const email = checkId($("#rcUser").value), password = $("#rcPass").value;
+    const r = await fetch("api/setup", { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify({ action: "recover", code: $("#rcCode").value, email, password }) });
+    const j = await r.json().catch(() => ({}));
+    if (!r.ok) throw new Error(j.error || "ตั้งรหัสใหม่ไม่สำเร็จ");
+    $("#recoverForm").hidden = true; $("#loginForm").hidden = false;
+    $("#lEmail").value = showId(email);
+    await fb.authM.signInWithEmailAndPassword(fb.auth, email, password);
+    toast("ตั้งรหัสใหม่แล้ว");
+  } catch (x) { err(x.message); }
+  btn.disabled = false;
+});
 $("#setupForm").addEventListener("submit", async e => {
   e.preventDefault();
   const err = m => { $("#suErr").textContent = m; $("#suErr").hidden = !m; };
