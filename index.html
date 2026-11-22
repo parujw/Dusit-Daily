@@ -977,11 +977,11 @@ function needsTr(t) {
   if (TL() === "zh") return th || ((lat || /[぀-ヿ가-힯]/.test(t)) && !/[一-鿿]/.test(t));
   return !th && (cjk || lat);
 }
-let trQueue = new Set(), trTimer = null, trBusy = false, trPause = 0, trWarned = false;
+let trQueue = new Set(), trSending = new Set(), trTimer = null, trBusy = false, trPause = 0, trWarned = false;
 async function trFlush() {
   if (trBusy || !trQueue.size || !canTr() || Date.now() < trPause) return;
   const lang = TL();
-  const texts = [...trQueue].slice(0, 30); texts.forEach(t => trQueue.delete(t));
+  const texts = [...trQueue].slice(0, 30); texts.forEach(t => { trQueue.delete(t); trSending.add(t); });
   trBusy = true;
   try {
     let out = null;
@@ -996,6 +996,7 @@ async function trFlush() {
     trPause = Date.now() + (quota ? 30 : 2) * 60000; // try again later, not on every screen update
     if (quota && !trWarned) { trWarned = true; toast(e.message); }
   }
+  texts.forEach(t => trSending.delete(t));
   trBusy = false;
   if (trQueue.size) trFlush();
 }
@@ -1019,7 +1020,7 @@ function applyI18n(root = document.body) {
         if (!needsTr(src)) return;
         const hit = TR[TL() + "\u0001" + src];
         if (hit) { if (el.textContent !== hit) { el.dataset.src = src; el.textContent = hit; el.classList.add("tr"); } }
-        else trQueue.add(src);
+        else if (!trSending.has(src)) trQueue.add(src); // not already on its way
       });
       if (trQueue.size && Date.now() >= trPause) { clearTimeout(trTimer); trTimer = setTimeout(trFlush, 400); }
     }

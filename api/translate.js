@@ -77,6 +77,7 @@ export async function POST(request) {
   try { b = await request.json(); } catch { return json({ error: "ข้อมูลไม่ถูกต้อง" }, 400); }
   const lang = LANG[b?.lang] ? b.lang : null;
   const texts = Array.isArray(b?.texts) ? b.texts.slice(0, 40).map((t) => String(t || "").slice(0, 500)) : [];
+  // Same text twice in one request is sent to the provider once.
   if (!lang || !texts.length) return json({ error: "ไม่มีข้อความให้แปล" }, 400);
 
   const gkey = process.env.GOOGLE_TRANSLATE_API_KEY;
@@ -98,8 +99,10 @@ export async function POST(request) {
   }
 
   // 2. Translate only what the team has not translated before.
-  const missIdx = out.map((v, i) => (v === null ? i : -1)).filter((i) => i >= 0);
-  let hits = texts.length - missIdx.length;
+  const firstOf = new Map();
+  const missIdx = out.map((v, i) => (v === null ? i : -1)).filter((i) => i >= 0)
+    .filter((i) => (firstOf.has(texts[i]) ? false : (firstOf.set(texts[i], i), true)));
+  let hits = out.filter((v) => v !== null).length;
   let via = missIdx.length ? null : "cache";
   if (missIdx.length) {
     if (!gkey && !process.env.ANTHROPIC_API_KEY) return json({ error: "ยังไม่ได้ตั้งตัวแปลภาษาใน Vercel" }, 503);
@@ -113,6 +116,7 @@ export async function POST(request) {
     }
     if (tr.length !== missTexts.length) return json({ error: "แปลไม่ครบ" }, 502);
     missIdx.forEach((i, k) => { out[i] = tr[k]; });
+    out.forEach((v, i) => { if (v === null) out[i] = out[firstOf.get(texts[i])]; });
 
     // 3. Save for the rest of the team (best effort: a failed save never blocks the answer).
     if (a && refs.length) {
