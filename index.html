@@ -301,6 +301,7 @@ details.more > div{display:flex;flex-direction:column;gap:12px}
 
 .tr{-webkit-touch-callout:none;-webkit-user-select:none;user-select:none;text-decoration:underline dotted color-mix(in srgb,var(--muted) 50%,transparent);text-underline-offset:3px}
 .lang-row{display:flex;gap:8px;flex-wrap:wrap}
+.lab-hint{font-weight:400;color:var(--muted);margin-left:4px}
 .lang-row .chip[aria-pressed="true"]{background:var(--night);border-color:var(--night);color:#fff}
 
 
@@ -866,7 +867,7 @@ const UI_EN = {
   "พร้อม": "Ready", "กำลังฟัง…": "Listening…", "กำลังคิด…": "Thinking…", "สั่งได้เลยครับ": "Go ahead", "มีอะไรรอทำ": "What's to do", "พิมพ์หรือแตะไมค์": "Type or tap the mic",
   "ย้อนกลับ": "Undo", "ย้อนกลับแล้ว": "Undone", "ดูและส่ง": "Review & send", "สรุปพร้อมส่งครับ": "Summary ready",
   "ประวัติ": "History", "รับทราบ": "Got it", "ยังไม่มีใครรับทราบ": "No one has acknowledged yet", "ดูข้อความ": "Show text",
-  "ภาษา": "Language", "แปลเฉพาะเมนู": "Menus only", "แปลเมนูและเนื้อหางาน": "Menus and task text",
+  "ภาษา": "Language", "แตะแล้วเปลี่ยนทันที": "applies right away", "แปลเฉพาะเมนู": "Menus only", "แปลเมนูและเนื้อหางาน": "Menus and task text",
   "ไม่มีงานที่ต้องรีบ 🌿": "Nothing urgent 🌿", "ทำงานที่เหลือตามจังหวะของคุณได้เลย": "Work through the rest at your own pace",
   "วันนี้ยังโล่ง 🌿": "Quiet day so far 🌿", "เรียบร้อยครบแล้ว 🌿": "All done 🌿", "ยังไม่มีงานที่เสร็จ": "Nothing done yet",
   "ปัดการ์ดไปทางขวา หรือแตะวงกลม เมื่อทำงานเสร็จ": "Swipe a card right, or tap the circle, when it's done",
@@ -910,7 +911,7 @@ const UI_ZH = {
   "พร้อม": "就绪", "กำลังฟัง…": "正在听…", "กำลังคิด…": "思考中…", "สั่งได้เลยครับ": "请吩咐", "มีอะไรรอทำ": "有什么待办", "พิมพ์หรือแตะไมค์": "输入或点麦克风",
   "ย้อนกลับ": "撤销", "ย้อนกลับแล้ว": "已撤销", "ดูและส่ง": "查看并发送", "สรุปพร้อมส่งครับ": "汇总已准备好",
   "ประวัติ": "记录", "รับทราบ": "收到", "ยังไม่มีใครรับทราบ": "还没有人确认", "ดูข้อความ": "查看内容",
-  "ภาษา": "语言", "แปลเฉพาะเมนู": "仅翻译菜单", "แปลเมนูและเนื้อหางาน": "翻译菜单和任务内容",
+  "ภาษา": "语言", "แตะแล้วเปลี่ยนทันที": "点一下立即生效", "แปลเฉพาะเมนู": "仅翻译菜单", "แปลเมนูและเนื้อหางาน": "翻译菜单和任务内容",
   "ไม่มีงานที่ต้องรีบ 🌿": "没有紧急任务 🌿", "ทำงานที่เหลือตามจังหวะของคุณได้เลย": "按自己的节奏完成剩下的",
   "วันนี้ยังโล่ง 🌿": "今天暂时没事 🌿", "เรียบร้อยครบแล้ว 🌿": "全部完成 🌿", "ยังไม่มีงานที่เสร็จ": "还没有完成的任务",
   "ปัดการ์ดไปทางขวา หรือแตะวงกลม เมื่อทำงานเสร็จ": "完成后向右滑卡片或点圆圈",
@@ -2582,7 +2583,7 @@ function openSettings() {
         <div><div class="bhead">${esc(ME.name)} ${isAdmin() ? '<span class="tag ex">ผู้ดูแล</span>' : ""}</div><p class="note">${esc(showId(ME.email))}</p></div></div>
       <div class="row"><button class="btn sec" id="pwBtn">เปลี่ยนรหัสผ่าน</button><button class="btn sec" id="outBtn">ออกจากระบบ</button></div>
     </div>` : `<div><label class="lab" for="sName">ชื่อของคุณ (ขึ้นในสรุปที่ส่ง)</label><input type="text" id="sName" value="${esc(P.name)}" placeholder="เช่น คิว (FOM)"></div>`}
-    <div><span class="lab">ภาษา / Language / 语言</span>
+    <div><span class="lab">ภาษา / Language / 语言 <small class="lab-hint">แตะแล้วเปลี่ยนทันที</small></span>
       <div class="lang-row" id="sLang">${[["th", "ไทย"], ["en", "English"], ["zh", "中文"]].map(([k, n]) => `<button type="button" class="chip" data-lang="${k}" aria-pressed="${(P.lang || "th") === k}">${n}</button>`).join("")}</div></div>
     <div><div id="sModeWrap"><span class="lab" id="sModeLab">แปล</span>
       <div class="lang-row" id="sMode">${[["ui", "แปลเฉพาะเมนู"], ["all", "แปลเมนูและเนื้อหางาน"]].map(([k, n]) => `<button type="button" class="chip" data-mode="${k}" aria-pressed="${(P.trMode || "all") === k}">${n}</button>`).join("")}</div></div>
@@ -2602,10 +2603,17 @@ function openSettings() {
   };
   const langNote = () => { $("#sModeWrap").hidden = lang === "th"; $("#sModeNote").textContent = lang === "th" ? TH_NOTE : NOTE[mode][lang]; };
   langNote();
-  $("#sLang").addEventListener("click", e => { const b = e.target.closest("[data-lang]"); if (!b) return; lang = b.dataset.lang; $("#sLang").querySelectorAll("[data-lang]").forEach(x => x.setAttribute("aria-pressed", String(x.dataset.lang === lang))); langNote(); });
-  $("#sMode").addEventListener("click", e => { const b = e.target.closest("[data-mode]"); if (!b) return; mode = b.dataset.mode; $("#sMode").querySelectorAll("[data-mode]").forEach(x => x.setAttribute("aria-pressed", String(x.dataset.mode === mode))); langNote(); });
+  // Language and translation mode apply as soon as they are tapped: no Save needed.
+  const applyLang = () => {
+    if (lang === (P.lang || "th") && (lang === "th" || mode === (P.trMode || "all"))) return;
+    if ($("#sName")) P.name = $("#sName").value.trim();
+    P.lang = lang; P.trMode = mode; savePrefs();
+    toast({ en: "Language changed", zh: "已切换语言" }[lang] || "เปลี่ยนภาษาแล้ว");
+    setTimeout(() => location.reload(), 350);
+  };
+  $("#sLang").addEventListener("click", e => { const b = e.target.closest("[data-lang]"); if (!b) return; lang = b.dataset.lang; $("#sLang").querySelectorAll("[data-lang]").forEach(x => x.setAttribute("aria-pressed", String(x.dataset.lang === lang))); langNote(); applyLang(); });
+  $("#sMode").addEventListener("click", e => { const b = e.target.closest("[data-mode]"); if (!b) return; mode = b.dataset.mode; $("#sMode").querySelectorAll("[data-mode]").forEach(x => x.setAttribute("aria-pressed", String(x.dataset.mode === mode))); langNote(); applyLang(); });
   $("#saveSet").onclick = () => {
-    if (lang !== (P.lang || "th") || (lang !== "th" && mode !== (P.trMode || "all"))) { P.lang = lang; P.trMode = mode; savePrefs(); location.reload(); return; }
     if ($("#sName")) P.name = $("#sName").value.trim();
     if ($("#sLineDone")) P.lineOnDone = $("#sLineDone").checked;
     if ($("#sPin")) P.pin = $("#sPin").value.trim();
