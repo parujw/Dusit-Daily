@@ -309,6 +309,8 @@ details.more > div{display:flex;flex-direction:column;gap:12px}
 .kb-del{flex:none;width:32px;height:32px;border-radius:50%;border:0;background:transparent;color:var(--muted);display:grid;place-items:center}
 .kb-del svg{width:16px;height:16px}
 a.btn.off{opacity:.5;pointer-events:none}
+textarea.brief-edit{width:100%;min-height:320px;resize:vertical;margin:0;background:var(--card);color:var(--ink);border:1px solid var(--line);border-radius:18px;padding:16px;font-family:var(--f-body);font-size:16px;line-height:1.55}
+.ai-row{display:flex;justify-content:space-between;align-items:center;gap:10px}
 .lab-hint{font-weight:400;color:var(--muted);margin-left:4px}
 .lang-row .chip[aria-pressed="true"]{background:var(--night);border-color:var(--night);color:#fff}
 
@@ -873,7 +875,7 @@ const UI_EN = {
   "เข้าสู่ระบบ": "Sign in", "ชื่อผู้ใช้หรืออีเมล": "Username or email", "รหัสผ่าน": "Password", "ลืมรหัสผ่าน": "Forgot password",
   "เข้าสู่ระบบเพื่อดูงานที่ต้องทำต่อของทีม": "Sign in to see the team's tasks",
   "พร้อม": "Ready", "กำลังฟัง…": "Listening…", "กำลังคิด…": "Thinking…", "สั่งได้เลยครับ": "Go ahead", "มีอะไรรอทำ": "What's to do", "พิมพ์หรือแตะไมค์": "Type or tap the mic",
-  "สอน Dusit Help": "Teach Dusit Help", "ภาษาที่ส่ง": "Send in", "แปลข้อความภาษาต่างประเทศเป็นไทย": "Translate foreign-language text into Thai", "เรื่องที่ทีมถามบ่อย": "Things the team often asks", "จำไว้": "Remember", "สิ่งที่ Dusit Help รู้": "What Dusit Help knows", "จำแล้วครับ": "Got it", "ลบแล้ว": "Removed", "จำไว้ว่า …": "Remember …", "ยังไม่มีเรื่องที่สอนไว้ ลองเพิ่มเวลาเช็คเอาท์ เบอร์ภายใน หรือขั้นตอนที่ทีมถามบ่อย": "Nothing taught yet. Try check-out times, extension numbers or steps the team often asks about.", "เช่น เช็คเอาท์ 12:00 · Late check-out ถึง 14:00 ฟรีสำหรับ VIP": "e.g. Check-out 12:00 · late check-out to 14:00 free for VIP",
+  "สอน Dusit Help": "Teach Dusit Help", "ภาษาที่ส่ง": "Send in", "รูปแบบ": "Style", "สรุปมาตรฐาน": "Standard", "✨ AI เรียบเรียง": "✨ AI write-up", "เขียนใหม่": "Rewrite", "AI เรียบเรียงจากงานวันนี้และสัปดาห์หน้า แก้ข้อความได้ก่อนส่ง": "Written by AI from today and next week. You can edit before sending.", "แปลข้อความภาษาต่างประเทศเป็นไทย": "Translate foreign-language text into Thai", "เรื่องที่ทีมถามบ่อย": "Things the team often asks", "จำไว้": "Remember", "สิ่งที่ Dusit Help รู้": "What Dusit Help knows", "จำแล้วครับ": "Got it", "ลบแล้ว": "Removed", "จำไว้ว่า …": "Remember …", "ยังไม่มีเรื่องที่สอนไว้ ลองเพิ่มเวลาเช็คเอาท์ เบอร์ภายใน หรือขั้นตอนที่ทีมถามบ่อย": "Nothing taught yet. Try check-out times, extension numbers or steps the team often asks about.", "เช่น เช็คเอาท์ 12:00 · Late check-out ถึง 14:00 ฟรีสำหรับ VIP": "e.g. Check-out 12:00 · late check-out to 14:00 free for VIP",
   "ย้อนกลับ": "Undo", "ย้อนกลับแล้ว": "Undone", "ดูและส่ง": "Review & send", "สรุปพร้อมส่งครับ": "Summary ready",
   "ประวัติ": "History", "รับทราบ": "Got it", "ยังไม่มีใครรับทราบ": "No one has acknowledged yet", "ดูข้อความ": "Show text",
   "ภาษา": "Language", "แตะแล้วเปลี่ยนทันที": "applies right away", "แปลเฉพาะเมนู": "Menus only", "แปลเมนูและเนื้อหางาน": "Menus and task text",
@@ -918,7 +920,7 @@ const UI_ZH = {
   "เข้าสู่ระบบ": "登录", "ชื่อผู้ใช้หรืออีเมล": "用户名或邮箱", "รหัสผ่าน": "密码", "ลืมรหัสผ่าน": "忘记密码",
   "เข้าสู่ระบบเพื่อดูงานที่ต้องทำต่อของทีม": "登录查看团队待办",
   "พร้อม": "就绪", "กำลังฟัง…": "正在听…", "กำลังคิด…": "思考中…", "สั่งได้เลยครับ": "请吩咐", "มีอะไรรอทำ": "有什么待办", "พิมพ์หรือแตะไมค์": "输入或点麦克风",
-  "สอน Dusit Help": "教 Dusit Help", "ภาษาที่ส่ง": "发送语言", "แปลข้อความภาษาต่างประเทศเป็นไทย": "将外语内容翻译成泰语", "เรื่องที่ทีมถามบ่อย": "团队常问的事", "จำไว้": "记住", "สิ่งที่ Dusit Help รู้": "Dusit Help 知道的", "จำแล้วครับ": "记住了", "ลบแล้ว": "已删除", "จำไว้ว่า …": "记住 …", "ยังไม่มีเรื่องที่สอนไว้ ลองเพิ่มเวลาเช็คเอาท์ เบอร์ภายใน หรือขั้นตอนที่ทีมถามบ่อย": "还没有教过内容。可以添加退房时间、内线电话或团队常问的流程。", "เช่น เช็คเอาท์ 12:00 · Late check-out ถึง 14:00 ฟรีสำหรับ VIP": "例如 退房 12:00 · VIP 可免费延迟到 14:00",
+  "สอน Dusit Help": "教 Dusit Help", "ภาษาที่ส่ง": "发送语言", "รูปแบบ": "样式", "สรุปมาตรฐาน": "标准", "✨ AI เรียบเรียง": "✨ AI 撰写", "เขียนใหม่": "重写", "AI เรียบเรียงจากงานวันนี้และสัปดาห์หน้า แก้ข้อความได้ก่อนส่ง": "AI 根据今天和下周任务撰写，发送前可修改", "แปลข้อความภาษาต่างประเทศเป็นไทย": "将外语内容翻译成泰语", "เรื่องที่ทีมถามบ่อย": "团队常问的事", "จำไว้": "记住", "สิ่งที่ Dusit Help รู้": "Dusit Help 知道的", "จำแล้วครับ": "记住了", "ลบแล้ว": "已删除", "จำไว้ว่า …": "记住 …", "ยังไม่มีเรื่องที่สอนไว้ ลองเพิ่มเวลาเช็คเอาท์ เบอร์ภายใน หรือขั้นตอนที่ทีมถามบ่อย": "还没有教过内容。可以添加退房时间、内线电话或团队常问的流程。", "เช่น เช็คเอาท์ 12:00 · Late check-out ถึง 14:00 ฟรีสำหรับ VIP": "例如 退房 12:00 · VIP 可免费延迟到 14:00",
   "ย้อนกลับ": "撤销", "ย้อนกลับแล้ว": "已撤销", "ดูและส่ง": "查看并发送", "สรุปพร้อมส่งครับ": "汇总已准备好",
   "ประวัติ": "记录", "รับทราบ": "收到", "ยังไม่มีใครรับทราบ": "还没有人确认", "ดูข้อความ": "查看内容",
   "ภาษา": "语言", "แตะแล้วเปลี่ยนทันที": "点一下立即生效", "แปลเฉพาะเมนู": "仅翻译菜单", "แปลเมนูและเนื้อหางาน": "翻译菜单和任务内容",
@@ -2485,8 +2487,11 @@ function briefSheet(items, title, opts = {}) {
     ${opts.unchecked ? `<button class="link" type="button" id="backCheck" style="align-self:flex-start">← กลับไปเช็ก</button>` : ""}
     ${ME ? `<div><span class="lab">ส่งถึง</span><div class="pick" id="bTo"></div></div>` : ""}
     ${ME ? "" : `<div><label class="lab" for="sender">ชื่อผู้ส่ง</label><input type="text" id="sender" placeholder="เช่น คิว (FOM)" value="${esc(P.name)}"></div>`}
+    ${SERVER.ai ? `<div><span class="lab">รูปแบบ</span><div class="lang-row" id="bStyle"><button type="button" class="chip" data-style="std" aria-pressed="true">สรุปมาตรฐาน</button><button type="button" class="chip" data-style="ai" aria-pressed="false">✨ AI เรียบเรียง</button></div></div>` : ""}
     ${canTr() ? `<div><span class="lab">ภาษาที่ส่ง</span><div class="lang-row" id="bLang">${[["th", "ไทย"], ["en", "English"], ["zh", "中文"]].map(([k, n]) => `<button type="button" class="chip" data-lang="${k}" aria-pressed="${k === "th"}">${n}</button>`).join("")}</div></div>` : ""}
     <pre class="brief" id="briefTxt"></pre>
+    <textarea class="brief brief-edit" id="briefEdit" rows="16" hidden aria-label="ข้อความที่จะส่ง แก้ได้"></textarea>
+    <div class="ai-row" id="aiRow" hidden><span class="note">AI เรียบเรียงจากงานวันนี้และสัปดาห์หน้า แก้ข้อความได้ก่อนส่ง</span><button class="link" type="button" id="aiRedo">เขียนใหม่</button></div>
     <div class="row" id="sendRow">
       ${SERVER.linePush ? `<button class="btn line" id="push">ส่งเข้ากลุ่มทีม</button>` : `<a class="btn line" id="ln" href="#" target="_blank" rel="noopener">เปิดใน LINE</a>`}
       <button class="btn sec" id="cp">คัดลอก</button>
@@ -2519,19 +2524,70 @@ function briefSheet(items, title, opts = {}) {
     }
     trWait = ""; upd();
   };
+  // AI write-up: today's tasks, what came in and was finished today, and the next 7 days.
+  let style = "std", aiText = "", aiKey = "", aiWait = "";
+  const aiData = () => {
+    const thL = (d, o) => parseYmd(d).toLocaleDateString("th-TH", o);
+    const end = ymd(new Date(parseYmd(SEL).getTime() + 7 * 864e5));
+    const created = i => i.createdAt && ymd(new Date(i.createdAt)) === SEL;
+    const row = i => ({ room: i.room, guest: i.guest, cat: CAT_SHORT[i.cat] || i.cat, pri: PRI[i.pri] || i.pri, summary: i.summary, action: i.action,
+      date: itemDate(i), dayLabel: thL(itemDate(i), { weekday: "short", day: "numeric", month: "short" }), due: i.due || "", assignee: i.assignee || "", doneBy: i.doneBy || "",
+      carryDays: itemDate(i) < SEL ? Math.round((parseYmd(SEL) - parseYmd(itemDate(i))) / 864e5) : 0, addedToday: !!created(i) });
+    const live = ITEMS.filter(i => !i.ex);
+    return {
+      day: thL(SEL, { weekday: "long", day: "numeric", month: "long", year: "numeric" }), from: myName() || "-",
+      open: items.filter(i => !i.done).map(row),
+      done: live.filter(i => i.done && i.doneAt && ymd(new Date(i.doneAt)) === SEL).sort((a, b) => (a.doneAt || 0) - (b.doneAt || 0)).map(row),
+      upcoming: live.filter(i => !i.done && itemDate(i) > SEL && itemDate(i) <= end).sort((a, b) => itemDate(a).localeCompare(itemDate(b)) || (a.due || "99").localeCompare(b.due || "99")).map(row),
+      noIssue: opts.noIssue || [], unchecked: opts.unchecked || [],
+    };
+  };
+  const setStyle = v => { style = v; $("#bStyle")?.querySelectorAll("[data-style]").forEach(x => x.setAttribute("aria-pressed", String(x.dataset.style === v))); };
+  const genAI = async (data, key) => {
+    if (aiWait === key) return; aiWait = key;
+    try {
+      const r = await api("handover", data);
+      if (aiWait !== key) return;
+      aiText = String(r.text || "").trim(); aiKey = key; $("#briefEdit").value = aiText;
+    } catch (e) {
+      if (aiWait !== key) return;
+      $("#sendErr").textContent = e.message || "AI เขียนไม่สำเร็จ ใช้สรุปมาตรฐานแทนได้"; $("#sendErr").hidden = false;
+      setStyle("std");
+    }
+    aiWait = ""; upd();
+  };
+  // Thai text to send: the standard summary, or the AI write-up (with the chosen recipient added).
+  const thaiText = () => {
+    if (style !== "ai") return buildBrief(items, title, opts);
+    // Written once; after that only "เขียนใหม่" rewrites it, so edits are never lost to a live update.
+    if (!aiKey) { const data = aiData(); genAI(data, JSON.stringify(data)); return null; }
+    if (!ME || /^ถึง[:：]/m.test(aiText)) return aiText;
+    const lines = aiText.split("\n"); lines.splice(1, 0, `ถึง: ${opts.toName || "ทุกคน"}`); return lines.join("\n");
+  };
   const upd = () => {
     if ($("#sender")) { P.name = $("#sender").value.trim(); savePrefs(); }
-    const th = buildBrief(items, title, opts);
+    const th = thaiText();
     let t = th;
-    if (sendLang !== "th") {
-      const src = buildBrief(items, title, { ...opts, loc: LOCS[sendLang] }), key = sendLang + "\u0001" + src;
+    if (th !== null && sendLang !== "th") {
+      // AI text is written in Thai with Buddhist years; give other languages the Gregorian year.
+      const ce = src0 => src0.replace(/((?:มกราคม|กุมภาพันธ์|มีนาคม|เมษายน|พฤษภาคม|มิถุนายน|กรกฎาคม|สิงหาคม|กันยายน|ตุลาคม|พฤศจิกายน|ธันวาคม|ม\.ค\.|ก\.พ\.|มี\.ค\.|เม\.ย\.|พ\.ค\.|มิ\.ย\.|ก\.ค\.|ส\.ค\.|ก\.ย\.|ต\.ค\.|พ\.ย\.|ธ\.ค\.)\s*)(25\d\d)\b/g, (m, a, y) => a + (Number(y) - 543));
+      const src = style === "ai" ? ce(th) : buildBrief(items, title, { ...opts, loc: LOCS[sendLang] }), key = sendLang + "\u0001" + src;
       if (trKey === key) t = trOut; else { t = null; translateBrief(src, sendLang, key); }
     }
-    $("#briefTxt").textContent = t ?? "กำลังแปล…";
+    const editing = style === "ai" && sendLang === "th" && th !== null;
+    $("#briefEdit").hidden = !editing; $("#briefTxt").hidden = editing;
+    $("#aiRow").hidden = style !== "ai" || th === null;
+    $("#briefTxt").textContent = t ?? (th === null ? "✨ AI กำลังเรียบเรียง…" : "กำลังแปล…");
     sendable(t !== null);
     const ln = $("#ln"); if (ln && t !== null) ln.href = "https://line.me/R/share?text=" + encodeURIComponent(t);
-    return t ?? th;
+    return t ?? th ?? "";
   };
+  $("#bStyle")?.addEventListener("click", e => {
+    const b = e.target.closest("[data-style]"); if (!b) return;
+    $("#sendErr").hidden = true; setStyle(b.dataset.style); upd();
+  });
+  $("#briefEdit").addEventListener("input", () => { aiText = $("#briefEdit").value; upd(); });
+  $("#aiRedo").onclick = () => { aiKey = ""; aiText = ""; $("#sendErr").hidden = true; upd(); };
   $("#bLang")?.addEventListener("click", e => {
     const b = e.target.closest("[data-lang]"); if (!b) return;
     sendLang = b.dataset.lang; $("#sendErr").hidden = true;
