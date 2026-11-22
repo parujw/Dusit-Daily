@@ -1577,12 +1577,13 @@ const daysOld = it => Math.round((parseYmd(TODAY()) - parseYmd(itemDate(it))) / 
 
 // Tasks shown for a day. Today also carries every open task from earlier days.
 function dayItems(day) {
-  const t = TODAY();
-  // Unfinished work rolls forward: today and later days also list every open task from earlier days.
-  return ITEMS.filter(i => itemDate(i) === day || (day >= t && !i.done && itemDate(i) < day));
+  // Unfinished work rolls forward only into the real today (after midnight), never into future days,
+  // so tomorrow's page shows only tomorrow's tasks and nothing is listed twice.
+  const carry = day === TODAY();
+  return ITEMS.filter(i => itemDate(i) === day || (carry && !i.done && itemDate(i) < day));
 }
 function dayMark(day) {
-  const list = day >= TODAY() ? dayItems(day) : ITEMS.filter(i => itemDate(i) === day);
+  const list = dayItems(day);
   if (!list.length) return "";
   const open = list.filter(i => !i.done);
   if (!open.length) return "done";
@@ -1739,7 +1740,10 @@ function render() {
   renderBriefs();
   if (view === "year") renderYearSoon();
 }
-setInterval(() => { if (!document.hidden) { if (TODAY() !== render.lastToday && SEL === render.lastToday) SEL = TODAY(); render.lastToday = TODAY(); render(); } }, 60000);
+// After midnight, a page left on "today" moves to the new day, and yesterday's open tasks roll in.
+const dayTick = () => { if (document.hidden) return; if (TODAY() !== render.lastToday && SEL === render.lastToday) { SEL = TODAY(); store.watchDay?.(SEL); } render.lastToday = TODAY(); render(); };
+setInterval(dayTick, 60000);
+document.addEventListener("visibilitychange", () => { if (!document.hidden && TODAY() !== render.lastToday) dayTick(); });
 render.lastToday = TODAY();
 listeners.add(render);
 
