@@ -547,6 +547,7 @@ pre.brief{white-space:pre-wrap;word-break:break-word;margin:0;background:var(--c
 .bubble.bot b.hl{color:#fff;font-family:var(--f-hud);font-size:16px}
 .bubble.me{align-self:flex-end;color:#fff6e2;background:rgba(220,192,141,.14);border:1px solid rgba(220,192,141,.45);border-radius:16px 4px 16px 16px}
 .brief-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:6px;margin-top:4px}
+.brief-grid.two{grid-template-columns:repeat(2,minmax(0,1fr))}
 .brief-grid div{border:1px solid var(--hud-line);border-radius:10px;padding:8px;text-align:center;background:rgba(0,0,0,.2)}
 .brief-grid b{display:block;font-family:var(--f-hud);font-size:22px;color:#fff}
 .brief-grid span{font-size:11.5px;color:var(--hud-dim)}
@@ -1815,7 +1816,7 @@ reply: สั้นที่สุด ประโยคเดียว ไม�
 let CHAT = [];
 let hintCat = null;
 let jvBusy = false;
-const SUGGEST = ["มีอะไรด่วน", "สรุปส่งไลน์"];
+const SUGGEST = ["มีอะไรรอทำ", "สรุปส่งไลน์"];
 
 function renderMicHint() {
   const m = $("#micBtn"); if (m) m.hidden = !voice.available();
@@ -1832,13 +1833,13 @@ function speak(text) {
 }
 // Opening briefing, computed from the board.
 function hudBriefing() {
-  const items = dayItems(TODAY()), g = groupTasks(items, TODAY());
-  const open = items.filter(i => !i.done).length, mine = myUid() ? items.filter(i => !i.done && i.assigneeUid === myUid()).length : 0;
+  const items = dayItems(TODAY());
+  const open = items.filter(i => !i.done).length;
+  const done = ITEMS.filter(i => i.done && (itemDate(i) === TODAY() || sameDay(i.doneAt, TODAY()))).length;
   return `<div class="bubble bot"><span class="who">DUSIT HELP · วันนี้</span>
-    <div class="brief-grid">
-      <div><b class="num">${g[0].list.length}</b><span>ทำก่อน</span></div>
-      <div><b class="num">${g[1].list.length}</b><span>ยกมา</span></div>
-      <div><b class="num">${myUid() ? mine : open}</b><span>${myUid() ? "ถึงคุณ" : "รอทำ"}</span></div>
+    <div class="brief-grid two">
+      <div><b class="num">${open}</b><span>รอทำ</span></div>
+      <div><b class="num">${done}</b><span>เสร็จแล้ว</span></div>
     </div>
     <div style="color:var(--hud-dim);font-size:14px">สั่งได้เลยครับ</div></div>`;
 }
@@ -1902,9 +1903,7 @@ function drawChat() {
   });
   el.querySelectorAll("[data-brief]").forEach(b => b.onclick = () => {
     const [i, j] = b.dataset.brief.split(":").map(Number); const br = CHAT[i].actions[j].brief;
-    const list = ITEMS.filter(x => br.ids.includes(x.id));
-    if (!list.length) return toast("งานในสรุปนี้ถูกลบไปแล้ว");
-    briefSheet(list, br.title);
+    openHandoverCheck();
   });
   // Type out the newest reply.
   el.querySelectorAll(".say.caret").forEach(node => {
@@ -2015,7 +2014,7 @@ async function applyActions(acts) {
         const ids = String(a.id || "").split(",").map(s => s.trim()).filter(Boolean);
         const list = ids.length ? ITEMS.filter(i => ids.includes(i.id)) : dayItems(SEL).filter(i => !i.done);
         if (!list.length) { out.push({ kind: "miss", label: "ไม่มีเรื่องค้างให้ส่ง" }); continue; }
-        out.push({ kind: "brief", label: `สรุป ${list.length} งาน พร้อมส่งไลน์`, brief: { ids: list.map(i => i.id), title: ids.length ? "อัปเดตระหว่างวัน" : "สรุปประจำวัน" } });
+        out.push({ kind: "brief", label: `สรุป ${list.length} เรื่อง · เช็กแล้วส่ง`, brief: { ids: list.map(i => i.id), title: ids.length ? "อัปเดตระหว่างวัน" : "สรุปประจำวัน" } });
       } else if (!it) {
         out.push({ kind: "miss", label: `ไม่พบเรื่อง${a?.room ? "ห้อง " + a.room : ""}บนบอร์ด` });
       } else if (type === "close" || type === "reopen") {
@@ -2068,7 +2067,7 @@ function localJarvis(text) {
   if (/อะไร|บ้าง|กี่|สรุป|\?/.test(text)) {
     const urgentOnly = /ด่วน/.test(text);
     const list = (urgentOnly ? open.filter(i => i.pri === "urgent") : open).sort((a, b) => ORDER[a.pri] - ORDER[b.pri]).slice(0, 10);
-    return { reply: list.length ? `${urgentOnly ? "ด่วน" : "รอทำ"} ${list.length} เรื่อง\n` + list.slice(0, 6).map(i => `• ${i.room}${i.due ? " · " + i.due : ""} ${(i.action || i.summary).slice(0, 22)}${(i.action || i.summary).length > 22 ? "…" : ""}`).join("\n") : "ไม่มีงานค้างครับ", actions: [] };
+    return { reply: list.length ? `${urgentOnly ? "เริ่มก่อน" : "รอทำ"} ${list.length} เรื่อง\n` + list.slice(0, 6).map(i => `• ${i.room}${i.due ? " · " + i.due : ""} ${(i.action || i.summary).slice(0, 22)}${(i.action || i.summary).length > 22 ? "…" : ""}`).join("\n") : "ไม่มีงานค้างครับ", actions: [] };
   }
   const adds = heuristic(text.replace(/^[^:]{1,30}:\s*/, ""), hintCat).map(x => ({ type: "add", ...x }));
   return { reply: `จดแล้ว ${adds.length} เรื่องครับ`, actions: adds };
