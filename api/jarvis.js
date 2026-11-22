@@ -92,12 +92,14 @@ export async function POST(request) {
     summary: clip(i.summary, 300), action: clip(i.action, 300), date: clip(i.date, 10), due: clip(i.due, 5), done: !!i.done,
   }));
   const hintCat = CATS.includes(body?.hintCat) ? body.hintCat : "";
+  const replyLang = { en: "English", zh: "简体中文" }[body?.lang] || "";
   const last = msgs[msgs.length - 1];
   last.content =
     `บอร์ดตอนนี้ (JSON):\n${JSON.stringify(board)}\n\n` +
     `ทีม: ${(Array.isArray(body?.team) ? body.team.slice(0, 80).map((n) => clip(n, 40)) : []).join(", ") || "-"}\n` +
     `เวลา: ${clip(body?.now, 40)} · วันนี้: ${clip(body?.today, 10)} · วันที่ผู้ใช้เปิดดู: ${clip(body?.selected, 10)} · ผู้ใช้: ${clip(body?.name, 40) || "-"}` +
     (hintCat ? ` · หมวดที่ผู้ใช้เลือกไว้: ${hintCat}` : "") +
+    (replyLang ? `\nreply เขียนเป็นภาษา ${replyLang} แต่ summary และ action ของงานเขียนเป็นภาษาไทยเสมอ` : "") +
     `\n\nข้อความผู้ใช้:\n${last.content}`;
 
   try {

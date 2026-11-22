@@ -299,6 +299,10 @@ details.more > div{display:flex;flex-direction:column;gap:12px}
 .hc-has{display:inline-flex;align-items:center;gap:4px;font-size:13px;font-weight:600;color:var(--green)}
 .hc-has svg{width:15px;height:15px}
 
+.tr{text-decoration:underline dotted color-mix(in srgb,var(--muted) 50%,transparent);text-underline-offset:3px}
+.lang-row{display:flex;gap:8px;flex-wrap:wrap}
+.lang-row .chip[aria-pressed="true"]{background:var(--night);border-color:var(--night);color:#fff}
+
 /* status strip */
 .status{display:flex;align-items:center;gap:14px;flex-wrap:wrap;padding:16px 18px;border-radius:24px;color:#fff;
   background:radial-gradient(120% 120% at 100% 0%,rgba(220,192,141,.2),transparent 55%),linear-gradient(160deg,var(--night-2),var(--night));box-shadow:0 10px 30px rgba(14,21,36,.22)}
@@ -757,7 +761,7 @@ const ymd = d => `${d.getFullYear()}-${pad2(d.getMonth() + 1)}-${pad2(d.getDate(
 const TODAY = () => ymd(new Date());
 const parseYmd = s => { const [y, m, d] = s.split("-").map(Number); return new Date(y, m - 1, d); };
 const addDays = (s, n) => { const d = parseYmd(s); d.setDate(d.getDate() + n); return ymd(d); };
-const thDate = (s, o) => parseYmd(s).toLocaleDateString("th-TH", o);
+const thDate = (s, o) => parseYmd(s).toLocaleDateString(LOC(), o);
 const isYmd = s => /^\d{4}-\d{2}-\d{2}$/.test(s || "");
 // The day a task belongs to: its due date, or the day it was reported.
 const itemDate = i => isYmd(i.dueDate) ? i.dueDate : ymd(new Date(i.createdAt || Date.now()));
@@ -814,7 +818,7 @@ function demoHistory() {
 const $ = s => document.querySelector(s);
 const esc = s => String(s ?? "").replace(/[&<>"']/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
 const uid = () => Date.now().toString(36) + Math.random().toString(36).slice(2, 7);
-const fmt = t => new Date(t).toLocaleString("th-TH", { day: "numeric", month: "short", hour: "2-digit", minute: "2-digit" });
+const fmt = t => new Date(t).toLocaleString(LOC(), { day: "numeric", month: "short", hour: "2-digit", minute: "2-digit" });
 function toast(t, undo) {
   const el = $("#toast"); el.textContent = t; el.hidden = false;
   if (undo) { const b = document.createElement("button"); b.className = "toast-undo"; b.textContent = "ย้อนกลับ"; b.onclick = () => { el.hidden = true; undo(); }; el.append(b); }
@@ -826,6 +830,183 @@ const PKEY = "jarvis-prefs-v2";
 let P = { name: "", pin: "" };
 try { Object.assign(P, JSON.parse(localStorage.getItem(PKEY) || "{}")); } catch (e) {}
 const savePrefs = () => { try { localStorage.setItem(PKEY, JSON.stringify(P)); } catch (e) {} };
+// ---------------- language (display only: never changes saved data) ----------------
+// P.lang: th | en | zh. P.trMode: "ui" (menus only) or "all" (menus + task text).
+const UI_EN = {
+  "วันนี้": "Today", "จดไว้": "Note", "สรุปไลน์": "LINE summary", "รอทำ": "To do", "เสร็จแล้ว": "Done", "กลับไปวันนี้": "Back to today",
+  "ตัวอย่าง": "Sample", "รายการตอนนี้เป็นข้อมูลสมมติ": "These are sample tasks", "ล้างตัวอย่าง": "Clear samples",
+  "เริ่มที่นี่ก่อน": "Start here", "ด่วนหรือถึงเวลาแล้ว ทำทีละงานก็พอ": "Urgent or due. One at a time",
+  "ยกมาจากวันก่อน": "From earlier days", "เรียงจากเก่าสุด": "Oldest first", "มีเวลานัด": "Scheduled", "เรียงจากเวลาที่ใกล้ที่สุด": "Soonest first",
+  "ติดตามต่อ": "Follow up", "ไม่มีเวลานัด ทำเมื่อว่าง": "No set time. Do when free", "แจ้งให้ทราบ": "For info", "อ่านแล้วติ๊กได้เลย": "Read, then tick it",
+  "👉 งานถัดไป": "👉 Next task", "วันนี้เรื่องเยอะหน่อย": "Busy day today", "ดู": "Show", "ซ่อน": "Hide", "แสดง": "Show",
+  "ไม่ต้องรีบทำทุกอย่างพร้อมกัน เริ่มจากงานบนสุดทีละงาน ถ้าเกินมือ แตะงานแล้วเลือก “ส่งถึง” เพื่อนช่วยได้ครับ": "No need to do everything at once. Start with the top task, one at a time. If it is too much, open a task and send it to a teammate.",
+  "พรุ่งนี้": "Tomorrow", "เมื่อวาน": "Yesterday", "ถึง ฉัน": "To me", "VIP": "VIP", "เสร็จแล้ว ✓": "Done ✓",
+  "แจ้งเตือน": "Notifications", "เมนู": "Menu", "Management": "Management", "สรุปที่ส่งไลน์": "Sent summaries", "ประวัติสรุปที่ส่งไลน์": "History of LINE summaries",
+  "ภาพรวมงานค้างทั้งปี และบัญชีพนักงาน": "Year overview and staff accounts", "ภาพรวมงานค้างทั้งปี": "Year overview",
+  "เปลี่ยนรหัสผ่าน": "Change password", "ออกจากระบบ": "Sign out", "ผู้ดูแล": "Admin", "พนักงาน": "Staff", "บันทึก": "Save",
+  "จดเรื่องไว้ให้ทีม": "Note it for the team", "จดสั้น ๆ ก็พอ ระบบช่วยจัดหมวดให้": "Keep it short. The app sorts the category for you",
+  "ห้อง": "Room", "เกิดอะไรขึ้น": "What happened", "ส่งถึง": "Send to", "ทุกคน": "Everyone", "รีบแค่ไหน": "How urgent",
+  "ด่วน": "Urgent", "ติดตาม": "Follow up", "แจ้งทราบ": "For info", "หมวด": "Category", "เลือกให้จากข้อความ": "Picked from your text",
+  "Housekeeping": "Housekeeping", "Complaint": "Complaint", "ซ่อมบำรุง": "Maintenance", "Billing": "Billing", "ของหาย": "Lost & found", "อื่น ๆ": "Other",
+  "VIP & Arrival": "VIP & Arrival", "ห้องพัก / Housekeeping": "Rooms / Housekeeping", "Billing / Cashier": "Billing / Cashier", "Lost & Found": "Lost & Found",
+  "รายละเอียดเพิ่ม · แขก · ต้องทำต่อ · วันที่ · เวลา": "More · guest · follow-up · date · time", "แขก (ย่อ)": "Guest (short)",
+  "ต้องทำอะไรต่อ (ถ้าแยกจากด้านบน)": "What to do next (if different)", "วันที่": "Date", "ภายในเวลา": "Due time",
+  "เช็กก่อนส่ง": "Check before sending", "ไล่ดูทีละหมวดกันลืม ใช้เวลาไม่ถึงนาที": "Go through each category so nothing is missed. Under a minute.",
+  "แขก VIP หรือแขกมาถึงที่ต้องเตรียม": "VIP or arriving guests to prepare for", "ห้องที่ต้องให้ HK ทำ หรือ late check-out": "Rooms for HK, or late check-out",
+  "แขกไม่พอใจที่ยังไม่จบ": "Unhappy guests not yet resolved", "ห้องเสีย หรือแจ้งช่างแล้วยังไม่เสร็จ": "Rooms out of order, or repairs not done",
+  "มัดจำ บิล หรือเงินที่ค้าง": "Deposits, bills or money outstanding", "ของหาย หรือของฝากแขก": "Lost items or items held for guests",
+  "เรื่องอื่นที่คนถัดไปควรรู้": "Anything else the next person should know", "ไม่มี": "None", "มี · จด": "Yes · note", "+ เพิ่ม": "+ Add",
+  "สรุปส่งไลน์": "LINE summary", "← กลับไปเช็ก": "← Back to check", "เปิดใน LINE": "Open in LINE", "คัดลอก": "Copy", "ส่งเข้ากลุ่มทีม": "Send to team group",
+  "ดูสรุปที่ส่งแล้ว": "See sent summaries", "“เปิดใน LINE” จะเปิดหน้าเลือกแชท ถ้าไม่เปิด ให้คัดลอกแล้ววางในกลุ่มเอง": "“Open in LINE” opens the chat picker. If it does not open, copy and paste into the group.",
+  "สถานการณ์": "What happened", "สิ่งที่ต้องทำ": "What to do", "บันทึกการแก้ไข": "Save changes", "ทำเสร็จแล้ว": "Mark done", "เปิดงานอีกครั้ง": "Reopen",
+  "ลบเรื่องนี้": "Delete", "ยืนยันลบ": "Confirm delete", "แตะ “ยืนยันลบ” อีกครั้งเพื่อลบถาวร": "Tap “Confirm delete” again to delete for good",
+  "เข้าสู่ระบบ": "Sign in", "ชื่อผู้ใช้หรืออีเมล": "Username or email", "รหัสผ่าน": "Password", "ลืมรหัสผ่าน": "Forgot password",
+  "เข้าสู่ระบบเพื่อดูงานที่ต้องทำต่อของทีม": "Sign in to see the team's tasks",
+  "พร้อม": "Ready", "กำลังฟัง…": "Listening…", "กำลังคิด…": "Thinking…", "สั่งได้เลยครับ": "Go ahead", "มีอะไรรอทำ": "What's to do", "พิมพ์หรือแตะไมค์": "Type or tap the mic",
+  "ย้อนกลับ": "Undo", "ย้อนกลับแล้ว": "Undone", "ดูและส่ง": "Review & send", "สรุปพร้อมส่งครับ": "Summary ready",
+  "ประวัติ": "History", "รับทราบ": "Got it", "ยังไม่มีใครรับทราบ": "No one has acknowledged yet", "ดูข้อความ": "Show text",
+  "ภาษา": "Language", "แปลเฉพาะเมนู": "Menus only", "แปลเมนูและเนื้อหางาน": "Menus and task text",
+  "ไม่มีงานที่ต้องรีบ 🌿": "Nothing urgent 🌿", "ทำงานที่เหลือตามจังหวะของคุณได้เลย": "Work through the rest at your own pace",
+  "วันนี้ยังโล่ง 🌿": "Quiet day so far 🌿", "เรียบร้อยครบแล้ว 🌿": "All done 🌿", "ยังไม่มีงานที่เสร็จ": "Nothing done yet",
+  "ปัดการ์ดไปทางขวา หรือแตะวงกลม เมื่อทำงานเสร็จ": "Swipe a card right, or tap the circle, when it's done",
+  "ยังไม่มีแจ้งเตือน": "No notifications yet", "เปิดการแจ้งเตือนบนเครื่องนี้": "Turn on notifications on this device",
+  "แจ้งในกลุ่ม LINE เมื่องานเสร็จ": "Post to the LINE group when tasks are done", "กลับไปหน้าเข้าสู่ระบบ": "Back to sign in",
+  "เช่น 1208": "e.g. 1208", "เช่น ผ้าม่านขาด ต้องเปลี่ยนก่อนแขกเข้า": "e.g. torn curtain, replace before the guest arrives",
+  "เช่น แจ้ง HK เปลี่ยนก่อน 14:00": "e.g. ask HK to replace it by 14:00", "เช่น admin": "e.g. admin", };
+const UI_ZH = {
+  "วันนี้": "今天", "จดไว้": "记录", "สรุปไลน์": "LINE汇总", "รอทำ": "待办", "เสร็จแล้ว": "已完成", "กลับไปวันนี้": "回到今天",
+  "ตัวอย่าง": "示例", "รายการตอนนี้เป็นข้อมูลสมมติ": "以下为示例任务", "ล้างตัวอย่าง": "清除示例",
+  "เริ่มที่นี่ก่อน": "先做这些", "ด่วนหรือถึงเวลาแล้ว ทำทีละงานก็พอ": "紧急或已到时间，一件一件来",
+  "ยกมาจากวันก่อน": "前几天遗留", "เรียงจากเก่าสุด": "从最早开始", "มีเวลานัด": "有约定时间", "เรียงจากเวลาที่ใกล้ที่สุด": "按时间先后",
+  "ติดตามต่อ": "继续跟进", "ไม่มีเวลานัด ทำเมื่อว่าง": "无固定时间，有空再做", "แจ้งให้ทราบ": "通知", "อ่านแล้วติ๊กได้เลย": "看完即可勾选",
+  "👉 งานถัดไป": "👉 下一项", "วันนี้เรื่องเยอะหน่อย": "今天事情有点多", "ดู": "查看", "ซ่อน": "隐藏", "แสดง": "显示",
+  "ไม่ต้องรีบทำทุกอย่างพร้อมกัน เริ่มจากงานบนสุดทีละงาน ถ้าเกินมือ แตะงานแล้วเลือก “ส่งถึง” เพื่อนช่วยได้ครับ": "不用一次全做完。从最上面一项开始，一件一件来。忙不过来时，打开任务选择“发送给”同事帮忙。",
+  "พรุ่งนี้": "明天", "เมื่อวาน": "昨天", "ถึง ฉัน": "给我", "VIP": "VIP", "เสร็จแล้ว ✓": "已完成 ✓",
+  "แจ้งเตือน": "通知", "เมนู": "菜单", "Management": "管理", "สรุปที่ส่งไลน์": "已发汇总", "ประวัติสรุปที่ส่งไลน์": "LINE汇总记录",
+  "ภาพรวมงานค้างทั้งปี และบัญชีพนักงาน": "全年概览和员工账号", "ภาพรวมงานค้างทั้งปี": "全年概览",
+  "เปลี่ยนรหัสผ่าน": "修改密码", "ออกจากระบบ": "退出登录", "ผู้ดูแล": "管理员", "พนักงาน": "员工", "บันทึก": "保存",
+  "จดเรื่องไว้ให้ทีม": "给团队记一笔", "จดสั้น ๆ ก็พอ ระบบช่วยจัดหมวดให้": "简单写即可，系统会自动分类",
+  "ห้อง": "房间", "เกิดอะไรขึ้น": "发生了什么", "ส่งถึง": "发送给", "ทุกคน": "所有人", "รีบแค่ไหน": "紧急程度",
+  "ด่วน": "紧急", "ติดตาม": "跟进", "แจ้งทราบ": "知会", "หมวด": "类别", "เลือกให้จากข้อความ": "根据内容自动选择",
+  "Housekeeping": "客房清洁", "Complaint": "投诉", "ซ่อมบำรุง": "维修", "Billing": "账务", "ของหาย": "失物", "อื่น ๆ": "其他",
+  "VIP & Arrival": "VIP与到店", "ห้องพัก / Housekeeping": "客房/清洁", "Billing / Cashier": "账务/收银", "Lost & Found": "失物招领",
+  "รายละเอียดเพิ่ม · แขก · ต้องทำต่อ · วันที่ · เวลา": "更多 · 客人 · 后续 · 日期 · 时间", "แขก (ย่อ)": "客人（简称）",
+  "ต้องทำอะไรต่อ (ถ้าแยกจากด้านบน)": "后续要做什么（如不同）", "วันที่": "日期", "ภายในเวลา": "截止时间",
+  "เช็กก่อนส่ง": "发送前检查", "ไล่ดูทีละหมวดกันลืม ใช้เวลาไม่ถึงนาที": "逐项检查以免遗漏，不到一分钟",
+  "แขก VIP หรือแขกมาถึงที่ต้องเตรียม": "需准备的VIP或到店客人", "ห้องที่ต้องให้ HK ทำ หรือ late check-out": "需HK处理的房间或延迟退房",
+  "แขกไม่พอใจที่ยังไม่จบ": "未解决的客人不满", "ห้องเสีย หรือแจ้งช่างแล้วยังไม่เสร็จ": "故障房或维修未完成",
+  "มัดจำ บิล หรือเงินที่ค้าง": "押金、账单或未结款项", "ของหาย หรือของฝากแขก": "失物或客人寄存物品",
+  "เรื่องอื่นที่คนถัดไปควรรู้": "下一位需要知道的其他事", "ไม่มี": "没有", "มี · จด": "有 · 记录", "+ เพิ่ม": "+ 添加",
+  "สรุปส่งไลน์": "LINE汇总", "← กลับไปเช็ก": "← 返回检查", "เปิดใน LINE": "在LINE打开", "คัดลอก": "复制", "ส่งเข้ากลุ่มทีม": "发送到团队群",
+  "ดูสรุปที่ส่งแล้ว": "查看已发汇总", "“เปิดใน LINE” จะเปิดหน้าเลือกแชท ถ้าไม่เปิด ให้คัดลอกแล้ววางในกลุ่มเอง": "“在LINE打开”会打开聊天选择页，如未打开请复制后粘贴到群里。",
+  "สถานการณ์": "情况", "สิ่งที่ต้องทำ": "要做的事", "บันทึกการแก้ไข": "保存修改", "ทำเสร็จแล้ว": "标记完成", "เปิดงานอีกครั้ง": "重新打开",
+  "ลบเรื่องนี้": "删除", "ยืนยันลบ": "确认删除", "แตะ “ยืนยันลบ” อีกครั้งเพื่อลบถาวร": "再点一次“确认删除”永久删除",
+  "เข้าสู่ระบบ": "登录", "ชื่อผู้ใช้หรืออีเมล": "用户名或邮箱", "รหัสผ่าน": "密码", "ลืมรหัสผ่าน": "忘记密码",
+  "เข้าสู่ระบบเพื่อดูงานที่ต้องทำต่อของทีม": "登录查看团队待办",
+  "พร้อม": "就绪", "กำลังฟัง…": "正在听…", "กำลังคิด…": "思考中…", "สั่งได้เลยครับ": "请吩咐", "มีอะไรรอทำ": "有什么待办", "พิมพ์หรือแตะไมค์": "输入或点麦克风",
+  "ย้อนกลับ": "撤销", "ย้อนกลับแล้ว": "已撤销", "ดูและส่ง": "查看并发送", "สรุปพร้อมส่งครับ": "汇总已准备好",
+  "ประวัติ": "记录", "รับทราบ": "收到", "ยังไม่มีใครรับทราบ": "还没有人确认", "ดูข้อความ": "查看内容",
+  "ภาษา": "语言", "แปลเฉพาะเมนู": "仅翻译菜单", "แปลเมนูและเนื้อหางาน": "翻译菜单和任务内容",
+  "ไม่มีงานที่ต้องรีบ 🌿": "没有紧急任务 🌿", "ทำงานที่เหลือตามจังหวะของคุณได้เลย": "按自己的节奏完成剩下的",
+  "วันนี้ยังโล่ง 🌿": "今天暂时没事 🌿", "เรียบร้อยครบแล้ว 🌿": "全部完成 🌿", "ยังไม่มีงานที่เสร็จ": "还没有完成的任务",
+  "ปัดการ์ดไปทางขวา หรือแตะวงกลม เมื่อทำงานเสร็จ": "完成后向右滑卡片或点圆圈",
+  "ยังไม่มีแจ้งเตือน": "暂无通知", "เปิดการแจ้งเตือนบนเครื่องนี้": "在本设备开启通知",
+  "แจ้งในกลุ่ม LINE เมื่องานเสร็จ": "任务完成时发到LINE群", "กลับไปหน้าเข้าสู่ระบบ": "返回登录",
+  "เช่น 1208": "例如 1208", "เช่น ผ้าม่านขาด ต้องเปลี่ยนก่อนแขกเข้า": "例如 窗帘破了，客人入住前更换",
+  "เช่น แจ้ง HK เปลี่ยนก่อน 14:00": "例如 通知HK在14:00前更换", "เช่น admin": "例如 admin",
+};
+const DUR = { en: { "ชม.": "h", "นาที": "min", "วัน": "d" }, zh: { "ชม.": "小时", "นาที": "分钟", "วัน": "天" } };
+const durTr = t => t.replace(/ชม\.|นาที|วัน/g, w => DUR[P.lang][w]);
+// Text with numbers or names: [pattern, { en, zh }] where each target is a function of the match.
+const UI_RX = [
+  [/^ทำไปแล้ว (\d+) จาก (\d+) · อีก (\d+) เรื่อง$/, { en: m => `Done ${m[1]} of ${m[2]} · ${m[3]} left`, zh: m => `已完成 ${m[1]}/${m[2]} · 还剩 ${m[3]}` }],
+  [/^วันนี้มี (\d+) เรื่อง เริ่มจากเรื่องแรกได้เลย$/, { en: m => `${m[1]} tasks today. Start with the first one`, zh: m => `今天有 ${m[1]} 项，从第一项开始` }],
+  [/^เสร็จครบ (\d+) เรื่อง 🌿$/, { en: m => `All ${m[1]} done 🌿`, zh: m => `${m[1]} 项全部完成 🌿` }],
+  [/^อีก (.+)$/, { en: m => `in ${durTr(m[1])}`, zh: m => `还有 ${durTr(m[1])}` }],
+  [/^เกินมา (.+)$/, { en: m => `${durTr(m[1])} over`, zh: m => `已超 ${durTr(m[1])}` }],
+  [/^เก่าสุด (\d+) วัน$/, { en: m => `oldest ${m[1]} days`, zh: m => `最久 ${m[1]} 天` }],
+  [/^คุณ (.+)$/, { en: m => m[1], zh: m => m[1] }],
+  [/^ถึงเวลาแล้ว$/, { en: () => "due now", zh: () => "已到时间" }],
+  [/^วันแล้ว$/, { en: () => "days", zh: () => "天" }],
+  [/^เช็กแล้ว (\d+)\/(\d+)$/, { en: m => `Checked ${m[1]}/${m[2]}`, zh: m => `已检查 ${m[1]}/${m[2]}` }],
+  [/^ไปสรุป · ยังไม่เช็ก (\d+) หมวด$/, { en: m => `Go to summary · ${m[1]} not checked`, zh: m => `去汇总 · ${m[1]} 项未检查` }],
+  [/^เช็กครบ · ไปสรุป$/, { en: () => "All checked · go to summary", zh: () => "已全部检查 · 去汇总" }],
+  [/^จดแล้ว (\d+)$/, { en: m => `${m[1]} noted`, zh: m => `已记录 ${m[1]}` }],
+  [/^ถึง (.+)$/, { en: m => `To ${m[1]}`, zh: m => `给 ${m[1]}` }],
+  [/^จาก (.+)$/, { en: m => `from ${m[1]}`, zh: m => `来自 ${m[1]}` }],
+  [/^ปิดโดย (.+)$/, { en: m => `Closed by ${m[1]}`, zh: m => `由 ${m[1]} 完成` }],
+  [/^จดไว้แล้ว ✓ ห้อง (\S+)(.*)$/, { en: m => `Noted ✓ room ${m[1]}${m[2].replace("ส่งถึง", "sent to")}`, zh: m => `已记录 ✓ 房间 ${m[1]}${m[2].replace("ส่งถึง", "发送给")}` }],
+  [/^✓ (\S+) เสร็จแล้ว · .+$/, { en: m => `✓ ${m[1]} done · thank you`, zh: m => `✓ ${m[1]} 已完成 · 谢谢` }],
+  [/^ส่งถึง (.+)$/, { en: m => `Send to ${m[1]}`, zh: m => `发送给 ${m[1]}` }],
+];
+const UI_DICT = { en: UI_EN, zh: UI_ZH };
+function trUI(text) {
+  const k = text.trim(); if (!k || !/[฀-๿]|Management/.test(k)) return text;
+  const d = UI_DICT[P.lang]?.[k];
+  if (d) return text.replace(k, d);
+  for (const [rx, m] of UI_RX) { const r = k.match(rx); if (r && m[P.lang]) return text.replace(k, m[P.lang](r)); }
+  return text;
+}
+const LOC = () => ({ en: "en-GB", zh: "zh-CN" })[P.lang] || "th-TH";
+const yrShow = y => P.lang === "en" || P.lang === "zh" ? y : y + 543;
+
+// Task text translation: cached on this device; the saved task is never changed.
+const TR_KEY = "dd-tr-v1";
+let TR = {}; try { TR = JSON.parse(localStorage.getItem(TR_KEY) || "{}"); } catch (e) {}
+const trSave = () => { try { const k = Object.keys(TR); if (k.length > 3000) k.slice(0, k.length - 3000).forEach(x => delete TR[x]); localStorage.setItem(TR_KEY, JSON.stringify(TR)); } catch (e) {} };
+function needsTr(t) {
+  if (!t || t.length < 2) return false;
+  const th = /[฀-๿]/.test(t), zh = /[一-鿿]/.test(t), lat = /[A-Za-z]{3,}/.test(t);
+  if (P.lang === "en") return th || zh;
+  if (P.lang === "zh") return th || (lat && !zh);
+  return !th && (zh || lat);
+}
+let trQueue = new Set(), trTimer = null, trBusy = false;
+async function trFlush() {
+  if (trBusy || !trQueue.size) return;
+  const texts = [...trQueue].slice(0, 30); texts.forEach(t => trQueue.delete(t));
+  trBusy = true;
+  try {
+    let out = null;
+    if (claudeSample) {
+      const r = await claudeSample.json(`Translate each short hotel Front Office note into ${{ th: "Thai", en: "English", zh: "Simplified Chinese" }[P.lang]}. Keep room numbers, times, names and terms like VIP, HK, F&B. Reply only with a JSON array of strings, one per input, same order.\n\n${JSON.stringify(texts)}`, { modelTier: "quick" });
+      out = Array.isArray(r) ? r : r?.translations;
+    } else if (SERVER.ai) out = (await api("translate", { texts, lang: P.lang })).translations;
+    if (Array.isArray(out) && out.length === texts.length) { texts.forEach((t, i) => { TR[P.lang + "\u0001" + t] = String(out[i]); }); trSave(); applyI18n(); }
+  } catch (e) { console.warn("translate", e); }
+  trBusy = false;
+  if (trQueue.size) trFlush();
+}
+let i18nBusy = false;
+function applyI18n(root = document.body) {
+  if (i18nBusy || !P.lang || (P.lang === "th" && P.trMode !== "all")) return;
+  i18nBusy = true;
+  try {
+    if (P.lang !== "th") {
+      const w = document.createTreeWalker(root, NodeFilter.SHOW_TEXT, { acceptNode: n => n.parentElement?.closest("[data-c],script,style,textarea,pre,.brief,#v-login .login-brand h1") ? NodeFilter.FILTER_REJECT : NodeFilter.FILTER_ACCEPT });
+      const nodes = []; while (w.nextNode()) nodes.push(w.currentNode);
+      for (const n of nodes) { const v = trUI(n.nodeValue); if (v !== n.nodeValue) n.nodeValue = v; }
+      root.querySelectorAll?.("[placeholder],[aria-label],[data-tip]").forEach(el => {
+        for (const a of ["placeholder", "aria-label"]) { const v = el.getAttribute(a); if (v) { const t = trUI(v); if (t !== v) el.setAttribute(a, t); } }
+      });
+    }
+    if (P.trMode === "all") {
+      root.querySelectorAll?.("[data-c]").forEach(el => {
+        if (el.classList.contains("caret")) return;
+        const src = el.dataset.src || el.textContent.trim();
+        if (!needsTr(src)) return;
+        const hit = TR[P.lang + "\u0001" + src];
+        if (hit) { if (el.textContent !== hit) { el.dataset.src = src; el.title = src; el.textContent = hit; el.classList.add("tr"); } }
+        else trQueue.add(src);
+      });
+      if (trQueue.size) { clearTimeout(trTimer); trTimer = setTimeout(trFlush, 400); }
+    }
+  } finally { i18nBusy = false; }
+}
+new MutationObserver(() => { if (!i18nBusy) requestAnimationFrame(() => applyI18n()); })
+  .observe(document.body, { childList: true, subtree: true, characterData: true });
+
+
 
 // ---------------- data store: local or Firestore ----------------
 let ITEMS = [], BRIEFS = [];
@@ -1204,7 +1385,7 @@ const voice = {
     if (!SR) return;
     this.want = true;
     const rec = this.rec = new SR();
-    rec.lang = "th-TH"; rec.continuous = true; rec.interimResults = true;
+    rec.lang = LOC(); rec.continuous = true; rec.interimResults = true;
     rec.onresult = ev => {
       let interim = "";
       for (let i = ev.resultIndex; i < ev.results.length; i++) {
@@ -1240,7 +1421,7 @@ function afterClose(id) {
   setTimeout(() => {
     const it = ITEMS.find(i => i.id === id);
     if (!it || !it.done || it.ex) return;
-    const at = new Date(it.doneAt || Date.now()).toLocaleTimeString("th-TH", { hour: "2-digit", minute: "2-digit" });
+    const at = new Date(it.doneAt || Date.now()).toLocaleTimeString(LOC(), { hour: "2-digit", minute: "2-digit" });
     api("line-push", { text: `✅ เรียบร้อยแล้ว · ห้อง ${it.room}\n${it.action || it.summary}\nแจ้งโดย ${it.by || "-"} · ปิดโดย ${it.doneBy || "-"} · ${at}` }).catch(() => {});
   }, 6000);
 }
@@ -1292,7 +1473,7 @@ function openInbox() {
       </button>` : `
       <button class="noti ${at > seen ? "new" : ""}" data-open="${esc(it.id)}">
         <span class="noti-ic ${kind === "assigned" ? "assign" : ""}">${kind === "assigned" ? IC.plus : IC.check}</span>
-        <span class="noti-t"><b>${kind === "assigned" ? `งานใหม่ถึงคุณ · ห้อง ${esc(it.room)}` : `${esc(it.room)} เรียบร้อยแล้ว`}</b><span>${esc(it.action || it.summary)}</span>
+        <span class="noti-t"><b>${kind === "assigned" ? `งานใหม่ถึงคุณ · ห้อง ${esc(it.room)}` : `${esc(it.room)} เรียบร้อยแล้ว`}</b><span data-c>${esc(it.action || it.summary)}</span>
           <small>${kind === "assigned" ? `จาก ${esc(it.by || "-")}` : `ปิดโดย ${esc(it.doneBy || "-")}`} · ${esc(fmt(at))}</small></span>
       </button>`).join("")}</div>`
     : `<div class="empty"><b>ยังไม่มีแจ้งเตือน</b>งานที่เพื่อนส่งถึงคุณ และงานที่คุณแจ้งซึ่งทำเสร็จแล้ว จะขึ้นที่นี่ทันที</div>`}`);
@@ -1366,15 +1547,15 @@ function taskHtml(it, tone) {
   const old = !it.done && itemDate(it) < TODAY() ? daysOld(it) : 0;
   const timeCls = m === null ? "" : m < 0 ? "late" : m <= 60 ? "soon" : "";
   const time = it.done
-    ? `<div class="t-time"><small>${it.doneBy ? "ปิดโดย " + esc(it.doneBy) : "เสร็จแล้ว"}</small>${it.doneAt ? `<small>${esc(new Date(it.doneAt).toLocaleString("th-TH", sameDay(it.doneAt, TODAY()) ? { hour: "2-digit", minute: "2-digit" } : { day: "numeric", month: "short", hour: "2-digit", minute: "2-digit" }))}</small>` : ""}</div>`
+    ? `<div class="t-time"><small>${it.doneBy ? "ปิดโดย " + esc(it.doneBy) : "เสร็จแล้ว"}</small>${it.doneAt ? `<small>${esc(new Date(it.doneAt).toLocaleString(LOC(), sameDay(it.doneAt, TODAY()) ? { hour: "2-digit", minute: "2-digit" } : { day: "numeric", month: "short", hour: "2-digit", minute: "2-digit" }))}</small>` : ""}</div>`
     : old ? `<div class="t-time late"><b class="num">${old}</b><small>วันแล้ว</small></div>`
     : it.due ? `<div class="t-time ${timeCls}"><b class="num">${esc(it.due)}</b><small>${relTime(m)}</small></div>` : "";
   return `<div class="swipe" data-swipe="${esc(it.id)}"><div class="swipe-bg" aria-hidden="true">${IC.check}${it.done ? "เปิดอีกครั้ง" : "เสร็จแล้ว"}</div><div class="task ${it.done ? "done" : tone}">
     <button class="check" data-check="${esc(it.id)}" aria-label="${it.done ? "เปิดงานนี้อีกครั้ง" : "ทำเสร็จแล้ว"}: ${esc(it.room)}" aria-pressed="${!!it.done}">${IC.check}</button>
     <button class="tb" data-id="${esc(it.id)}">
       <span class="t-who"><span class="t-room num">${esc(it.room || "—")}</span>${guest ? `<span>${esc(guest)}</span>` : ""}${vip ? '<span class="t-vip">VIP</span>' : ""}${it.assignee ? `<span class="t-to ${it.assigneeUid === myUid() ? "me" : ""}">ถึง ${esc(it.assigneeUid === myUid() ? "ฉัน" : it.assignee)}</span>` : ""}${old ? `<span class="t-age">จาก ${esc(thDate(itemDate(it), { day: "numeric", month: "short" }))}</span>` : ""}<span class="t-cat" style="--acc:${(CAT_LOOK[it.cat] || CAT_LOOK.other).acc}">${IC[(CAT_LOOK[it.cat] || CAT_LOOK.other).ic]}${esc(CAT_NAME[it.cat] || "")}</span></span>
-      <span class="t-do">${esc(head)}</span>
-      ${why ? `<span class="t-why">${esc(why)}</span>` : ""}
+      <span class="t-do" data-c>${esc(head)}</span>
+      ${why ? `<span class="t-why" data-c>${esc(why)}</span>` : ""}
       ${time}
     </button>
   </div></div>`;
@@ -1409,7 +1590,7 @@ function taskHtml(it, tone) {
   document.addEventListener("click", e => { if (justDragged && e.target.closest(".swipe")) { e.stopPropagation(); e.preventDefault(); } }, true);
 })();
 
-const WD = ["อา", "จ", "อ", "พ", "พฤ", "ศ", "ส"];
+const WD = Array.from({ length: 7 }, (_, i) => P.lang === "en" || P.lang === "zh" ? new Date(2024, 0, 7 + i).toLocaleDateString(LOC(), { weekday: "short" }) : ["อา", "จ", "อ", "พ", "พฤ", "ศ", "ส"][i]);
 function renderWeek() {
   const sel = parseYmd(SEL);
   const start = addDays(SEL, -sel.getDay());
@@ -1515,7 +1696,7 @@ function openMonthPicker() {
     const y = cur.getFullYear(), m = cur.getMonth();
     const first = new Date(y, m, 1).getDay(), days = new Date(y, m + 1, 0).getDate();
     const t = TODAY();
-    $("#mpYear").innerHTML = Array.from({ length: 6 }, (_, k) => thisYear - 4 + k).map(v => `<option value="${v}" ${v === y ? "selected" : ""}>${v + 543}</option>`).join("");
+    $("#mpYear").innerHTML = Array.from({ length: 6 }, (_, k) => thisYear - 4 + k).map(v => `<option value="${v}" ${v === y ? "selected" : ""}>${yrShow(v)}</option>`).join("");
     $("#mpMonth").value = m;
     $("#mpGrid").innerHTML = WD.map(w => `<span class="wh">${w}</span>`).join("") +
       Array.from({ length: first }, () => "<span></span>").join("") +
@@ -1528,7 +1709,7 @@ function openMonthPicker() {
   openSheet(`<h3>เลือกวัน</h3>
     <div class="mp-head">
       <button class="wk-nav" id="mpPrev" aria-label="เดือนก่อน"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="m15 6-6 6 6 6"/></svg></button>
-      <select id="mpMonth" aria-label="เดือน">${Array.from({ length: 12 }, (_, k) => `<option value="${k}">${new Date(2000, k, 1).toLocaleDateString("th-TH", { month: "long" })}</option>`).join("")}</select>
+      <select id="mpMonth" aria-label="เดือน">${Array.from({ length: 12 }, (_, k) => `<option value="${k}">${new Date(2000, k, 1).toLocaleDateString(LOC(), { month: "long" })}</option>`).join("")}</select>
       <select id="mpYear" aria-label="ปี พ.ศ."></select>
       <button class="wk-nav" id="mpNext" aria-label="เดือนถัดไป"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 6 6 6-6 6"/></svg></button>
     </div>
@@ -1548,7 +1729,7 @@ function renderBriefs() {
   if (!BRIEFS.length) { el.innerHTML = `<div class="empty">ยังไม่มีสรุปที่ส่ง<br>สรุปที่ส่งหรือคัดลอกเข้าไลน์จะเก็บไว้ที่นี่</div>`; return; }
   el.innerHTML = BRIEFS.map(b => {
     const acks = b.acks || [];
-    const ackHtml = acks.length ? acks.map(a => `<span class="ack">✓ ${esc(a.name)} · ${new Date(a.at).toLocaleTimeString("th-TH", { hour: "2-digit", minute: "2-digit" })}</span>`).join("") : `<span class="ack wait">ยังไม่มีใครรับทราบ</span>`;
+    const ackHtml = acks.length ? acks.map(a => `<span class="ack">✓ ${esc(a.name)} · ${new Date(a.at).toLocaleTimeString(LOC(), { hour: "2-digit", minute: "2-digit" })}</span>`).join("") : `<span class="ack wait">ยังไม่มีใครรับทราบ</span>`;
     return `<article class="bcard">
       <div class="bmeta"><span>${esc(fmt(b.at))} · ${esc(b.by || "-")}</span><span>${b.n} เรื่อง${b.urgent ? ` · ด่วน ${b.urgent}` : ""}${b.via ? " · " + esc(b.via) : ""}</span></div>
       <div class="bhead">${esc(b.title || "สรุป")}${b.toName ? " · ถึง " + esc(b.toName) : ""}${isYmd(b.day) ? " · " + esc(thDate(b.day, { day: "numeric", month: "short", year: "numeric" })) : ""}</div>
@@ -1595,7 +1776,7 @@ function toggleDone(id, wrap) {
 let YEAR = new Date().getFullYear();
 let yearTimer = null;
 function renderYearSoon() { clearTimeout(yearTimer); yearTimer = setTimeout(renderYear, 300); }
-const MONTHS = Array.from({ length: 12 }, (_, k) => new Date(2000, k, 1).toLocaleDateString("th-TH", { month: "short" }));
+const MONTHS = Array.from({ length: 12 }, (_, k) => new Date(2000, k, 1).toLocaleDateString(LOC(), { month: "short" }));
 const tip = (() => {
   const el = document.createElement("div"); el.className = "viz-tip"; el.hidden = true; document.body.append(el);
   return {
@@ -1615,13 +1796,13 @@ function bindTips(root) {
 async function renderYear() {
   if (view !== "year" || mgmtTab !== "year") return;
   const y = YEAR, body = $("#yearBody");
-  $("#yrLabel").textContent = y + 543;
+  $("#yrLabel").textContent = yrShow(y);
   $("#yrNext").disabled = y >= new Date().getFullYear() + 1;
   let list;
   try { list = await store.yearItems(y); } catch (e) { body.innerHTML = `<p class="err">โหลดข้อมูลปีนี้ไม่ได้: ${esc(e.code || e.message)}</p>`; return; }
   if (y !== YEAR) return;
   if (!list.length) {
-    body.innerHTML = `<div class="vcard year-empty"><b>ยังไม่มีงานในปี ${y + 543}</b><p class="note">ตัวเลขและกราฟจะเริ่มแสดงเมื่อทีมบันทึกงานแรกของปีนี้</p></div>`;
+    body.innerHTML = `<div class="vcard year-empty"><b>ยังไม่มีงานในปี ${yrShow(y)}</b><p class="note">ตัวเลขและกราฟจะเริ่มแสดงเมื่อทีมบันทึกงานแรกของปีนี้</p></div>`;
     return;
   }
   const t = TODAY();
@@ -1642,8 +1823,8 @@ async function renderYear() {
 
   // KPI tiles
   let html = `<div class="kpis">
-    <div class="kpi"><div class="k">งานทั้งปี</div><div class="v num">${list.length.toLocaleString("th-TH")}</div><div class="s">ทุกแผนก</div></div>
-    <div class="kpi"><div class="k">ปิดแล้ว</div><div class="v num">${list.length ? Math.round(done.length / list.length * 100) : 0}%</div><div class="s">${done.length.toLocaleString("th-TH")} งาน</div></div>
+    <div class="kpi"><div class="k">งานทั้งปี</div><div class="v num">${list.length.toLocaleString(LOC())}</div><div class="s">ทุกแผนก</div></div>
+    <div class="kpi"><div class="k">ปิดแล้ว</div><div class="v num">${list.length ? Math.round(done.length / list.length * 100) : 0}%</div><div class="s">${done.length.toLocaleString(LOC())} งาน</div></div>
     <div class="kpi hot"><div class="k">ยังค้าง</div><div class="v num">${open.length}</div><div class="s">${late.length ? `เลยกำหนด ${late.length} · นานสุด ${oldest} วัน` : "ไม่มีงานเลยกำหนด"}</div></div>
     <div class="kpi"><div class="k">เวลาปิดเฉลี่ย</div><div class="v num">${avg >= 24 ? (avg / 24).toFixed(1) : avg.toFixed(1)}</div><div class="s">${avg >= 24 ? "วัน" : "ชั่วโมง"} ต่องาน</div></div>
   </div>`;
@@ -1662,7 +1843,7 @@ async function renderYear() {
     if (m.done) { const h = y0 - yd - (m.open ? 2 : 0); svg += m.open ? `<rect x="${x}" y="${yd + (m.open ? 2 : 0)}" width="${bw}" height="${Math.max(0, h)}" fill="var(--c-done)"/>` : `<path d="M${x},${y0} V${yd + r} q0,-${r} ${r},-${r} H${x + bw - r} q${r},0 ${r},${r} V${y0} Z" fill="var(--c-done)"/>`; }
     if (m.open) svg += `<path d="M${x},${yd} V${Math.min(yo + r, yd)} q0,-${r} ${r},-${r} H${x + bw - r} q${r},0 ${r},${r} V${yd} Z" fill="var(--c-open)"/>`;
     svg += `<text x="${L + cw * k + cw / 2}" y="${H - 6}" text-anchor="middle">${MONTHS[k]}</text>`;
-    svg += `<rect class="hit" x="${L + cw * k}" y="${Tp}" width="${cw}" height="${H - Tp - B}" tabindex="0" data-month="${k}" data-tip="<b>${MONTHS[k]} ${y + 543}</b><br>ปิดแล้ว ${m.done} · ยังค้าง ${m.open}"><title>${MONTHS[k]}: ปิดแล้ว ${m.done}, ยังค้าง ${m.open}</title></rect>`;
+    svg += `<rect class="hit" x="${L + cw * k}" y="${Tp}" width="${cw}" height="${H - Tp - B}" tabindex="0" data-month="${k}" data-tip="<b>${MONTHS[k]} ${yrShow(y)}</b><br>ปิดแล้ว ${m.done} · ยังค้าง ${m.open}"><title>${MONTHS[k]}: ปิดแล้ว ${m.done}, ยังค้าง ${m.open}</title></rect>`;
   });
   html += `<div class="vcard"><h2>งานรายเดือน</h2><p class="sub">แตะเดือนเพื่อดูในปฏิทิน</p>
     <div class="legend"><span><i style="background:var(--c-done)"></i>ปิดแล้ว</span><span><i style="background:var(--c-open)"></i>ยังค้าง</span></div>
@@ -1675,7 +1856,7 @@ async function renderYear() {
     <div class="legend"><span><i style="border:1px solid var(--line)"></i>ไม่มีงาน</span><span><i style="background:var(--line)"></i>ปิดครบ</span><span><i class="l1" style="background:color-mix(in srgb,var(--c-open) 35%,var(--card))"></i>ค้าง 1</span><span><i style="background:color-mix(in srgb,var(--c-open) 65%,var(--card))"></i>2</span><span><i style="background:var(--c-open)"></i>3+</span></div>
     <div class="months">${Array.from({ length: 12 }, (_, m) => {
       const first = new Date(y, m, 1).getDay(), days = new Date(y, m + 1, 0).getDate();
-      return `<div class="mcal"><h3>${new Date(y, m, 1).toLocaleDateString("th-TH", { month: "long" })}</h3><div class="mini-grid">${
+      return `<div class="mcal"><h3>${new Date(y, m, 1).toLocaleDateString(LOC(), { month: "long" })}</h3><div class="mini-grid">${
         Array.from({ length: first }, () => '<span class="hc pad"></span>').join("") +
         Array.from({ length: days }, (_, k) => {
           const day = `${y}-${pad2(m + 1)}-${pad2(k + 1)}`, p = perDay[day];
@@ -1688,7 +1869,7 @@ async function renderYear() {
   // Open by department
   const byCat = CATS.map(c => ({ c, n: open.filter(i => i.cat === c.id).length })).filter(x => x.n).sort((a, b) => b.n - a.n);
   const cmax = Math.max(1, ...byCat.map(x => x.n));
-  html += `<div class="vcard"><h2>งานค้างตามแผนก</h2><p class="sub">เฉพาะงานที่ยังไม่ปิดในปี ${y + 543}</p>
+  html += `<div class="vcard"><h2>งานค้างตามแผนก</h2><p class="sub">เฉพาะงานที่ยังไม่ปิดในปี ${yrShow(y)}</p>
     ${byCat.length ? byCat.map(x => `<div class="hbar" data-tip="${esc(x.c.name)}: ค้าง ${x.n}"><span class="lbl">${esc(x.c.name)}</span><span class="track"><span class="fill" style="display:block;width:${x.n / cmax * 100}%"></span></span><span class="val num">${x.n}</span></div>`).join("") : `<p class="note">ไม่มีงานค้าง</p>`}</div>`;
 
   // Outstanding list, oldest first, by month
@@ -1829,7 +2010,7 @@ function setHud(state, text) {
 }
 function speak(text) {
   if (!P.tts || !("speechSynthesis" in window)) return;
-  try { speechSynthesis.cancel(); const u = new SpeechSynthesisUtterance(text.replace(/[•\n]+/g, " ")); u.lang = "th-TH"; u.rate = 1.05; speechSynthesis.speak(u); } catch (e) {}
+  try { speechSynthesis.cancel(); const u = new SpeechSynthesisUtterance(text.replace(/[•\n]+/g, " ")); u.lang = LOC(); u.rate = 1.05; speechSynthesis.speak(u); } catch (e) {}
 }
 // Opening briefing, computed from the board.
 function hudBriefing() {
@@ -1891,8 +2072,8 @@ const ACT_IC = { add: "plus", close: "check", update: "pen", delete: "trash", br
 function drawChat() {
   const el = $("#chat"); if (!el) return;
   el.innerHTML = hudBriefing() + CHAT.map((m, i) => m.role === "user"
-    ? `<div class="bubble me">${esc(m.content)}</div>`
-    : `<div class="bubble bot"><span class="who">DUSIT HELP</span>${m.pending ? '<div class="scan" aria-label="Dusit Help กำลังคิด"><span>กำลังคิด…</span><i></i></div>' : `<div class="say ${m.fresh ? "caret" : ""}" data-i="${i}">${m.fresh ? "" : esc(m.content).replace(/\n/g, "<br>")}</div>`}
+    ? `<div class="bubble me" data-c>${esc(m.content)}</div>`
+    : `<div class="bubble bot"><span class="who">DUSIT HELP</span>${m.pending ? '<div class="scan" aria-label="Dusit Help กำลังคิด"><span>กำลังคิด…</span><i></i></div>' : `<div class="say ${m.fresh ? "caret" : ""}" data-i="${i}" data-c>${m.fresh ? "" : esc(m.content).replace(/\n/g, "<br>")}</div>`}
       ${(m.actions || []).map((a, j) => `<div class="act ${a.kind}"><span class="act-ic" aria-hidden="true">${IC[ACT_IC[a.kind]] || IC.dots}</span><span class="act-t">${esc(a.label)}</span>${
         a.brief ? `<button class="mini gold" data-brief="${i}:${j}">ดูและส่ง</button>`
         : a.undone ? `<span class="note">ย้อนกลับแล้ว</span>`
@@ -1937,8 +2118,8 @@ function jarvisPayload() {
     board: [...new Map([...ITEMS.filter(i => !i.done), ...dayItems(SEL)].map(i => [i.id, i])).values()].slice(0, 200)
       .map(i => ({ id: i.id, room: i.room, guest: i.guest, cat: i.cat, pri: i.pri, summary: i.summary, action: i.action, date: itemDate(i), due: i.due, done: !!i.done })),
     today: TODAY(), selected: SEL, team: STAFF().map(m => m.name),
-    now: new Date().toLocaleString("th-TH", { weekday: "short", day: "numeric", month: "short", hour: "2-digit", minute: "2-digit" }),
-    name: myName(), hintCat,
+    now: new Date().toLocaleString(LOC(), { weekday: "short", day: "numeric", month: "short", hour: "2-digit", minute: "2-digit" }),
+    name: myName(), hintCat, lang: P.lang || "th",
   };
 }
 function jarvisPromptText(p) {
@@ -1953,7 +2134,8 @@ ${JSON.stringify(p.board)}
 บทสนทนา (ข้อความล่าสุดอยู่ท้ายสุด):
 ${p.messages.map(m => (m.role === "user" ? "ผู้ใช้: " : "Dusit Help: ") + m.content).join("\n")}
 
-ตอบเป็น JSON object เท่านั้น: {"reply": string, "actions": [{"type": "add|update|close|reopen|delete|brief", "id": string, "room": string, "guest": string, "cat": string, "pri": string, "summary": string, "action": string, "date": string, "due": string, "assignee": string}]}`;
+${p.lang && p.lang !== "th" ? `reply เขียนเป็นภาษา ${p.lang === "en" ? "English" : "简体中文"} แต่ summary และ action ของงานเขียนเป็นภาษาไทยเสมอ
+` : ""}ตอบเป็น JSON object เท่านั้น: {"reply": string, "actions": [{"type": "add|update|close|reopen|delete|brief", "id": string, "room": string, "guest": string, "cat": string, "pri": string, "summary": string, "action": string, "date": string, "due": string, "assignee": string}]}`;
 }
 
 async function submitJarvis(text) {
@@ -2371,12 +2553,23 @@ function openSettings() {
         <div><div class="bhead">${esc(ME.name)} ${isAdmin() ? '<span class="tag ex">ผู้ดูแล</span>' : ""}</div><p class="note">${esc(showId(ME.email))}</p></div></div>
       <div class="row"><button class="btn sec" id="pwBtn">เปลี่ยนรหัสผ่าน</button><button class="btn sec" id="outBtn">ออกจากระบบ</button></div>
     </div>` : `<div><label class="lab" for="sName">ชื่อของคุณ (ขึ้นในสรุปที่ส่ง)</label><input type="text" id="sName" value="${esc(P.name)}" placeholder="เช่น คิว (FOM)"></div>`}
+    <div><span class="lab">ภาษา / Language / 语言</span>
+      <div class="lang-row" id="sLang">${[["th", "ไทย"], ["en", "English"], ["zh", "中文"]].map(([k, n]) => `<button type="button" class="chip" data-lang="${k}" aria-pressed="${(P.lang || "th") === k}">${n}</button>`).join("")}</div></div>
+    <div><span class="lab" id="sModeLab">แปล</span>
+      <div class="lang-row" id="sMode">${[["ui", "แปลเฉพาะเมนู"], ["all", "แปลเมนูและเนื้อหางาน"]].map(([k, n]) => `<button type="button" class="chip" data-mode="${k}" aria-pressed="${(P.trMode || "ui") === k}">${n}</button>`).join("")}</div>
+      <p class="note" style="margin-top:6px" id="sModeNote"></p></div>
     ${SERVER.linePush ? `<label class="switch"><input type="checkbox" id="sLineDone" ${P.lineOnDone === false ? "" : "checked"}><span>แจ้งในกลุ่ม LINE เมื่องานเสร็จ</span></label>` : ""}
     ${ME && canNotify ? `<button class="btn sec" id="notiBtn">เปิดการแจ้งเตือนบนเครื่องนี้</button>` : ""}
     ${AUTH === "none" && (SERVER.pin || SERVER.ai) ? `<div><label class="lab" for="sPin">PIN ทีม (ใช้ AI และส่ง LINE)</label><input type="password" id="sPin" value="${esc(P.pin)}" autocomplete="off"></div>` : ""}
     <p class="note">${AUTH === "demo" ? "โหมดทดลอง: บัญชีและงานเก็บในเบราว์เซอร์นี้" : store.mode === "cloud" ? "ซิงก์กับทีม" : "เก็บในเครื่องนี้เท่านั้น"} · AI: ${claudeSample ? "Claude (ในแอป Claude)" : SERVER.ai ? "Claude" : "โหมดพื้นฐาน"} · LINE: ${SERVER.linePush ? "ส่งอัตโนมัติ" : "แชร์/คัดลอก"}</p>
     <button class="btn pri" id="saveSet">บันทึก</button>`);
+  let lang = P.lang || "th", mode = P.trMode || "ui";
+  const langNote = () => { $("#sModeNote").textContent = mode === "all" ? (lang === "th" ? "งานที่เพื่อนจดเป็นภาษาอื่นจะแสดงเป็นไทย ข้อมูลจริงไม่เปลี่ยน แตะค้างที่ข้อความเพื่อดูต้นฉบับ" : "Task text is shown translated on this device only. Saved tasks stay as written.") : (lang === "th" ? "" : "Only buttons and labels are translated. Task text stays as written."); };
+  langNote();
+  $("#sLang").addEventListener("click", e => { const b = e.target.closest("[data-lang]"); if (!b) return; lang = b.dataset.lang; $("#sLang").querySelectorAll("[data-lang]").forEach(x => x.setAttribute("aria-pressed", String(x.dataset.lang === lang))); langNote(); });
+  $("#sMode").addEventListener("click", e => { const b = e.target.closest("[data-mode]"); if (!b) return; mode = b.dataset.mode; $("#sMode").querySelectorAll("[data-mode]").forEach(x => x.setAttribute("aria-pressed", String(x.dataset.mode === mode))); langNote(); });
   $("#saveSet").onclick = () => {
+    if (lang !== (P.lang || "th") || mode !== (P.trMode || "ui")) { P.lang = lang; P.trMode = mode; savePrefs(); location.reload(); return; }
     if ($("#sName")) P.name = $("#sName").value.trim();
     if ($("#sLineDone")) P.lineOnDone = $("#sLineDone").checked;
     if ($("#sPin")) P.pin = $("#sPin").value.trim();
