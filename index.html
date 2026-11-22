@@ -6,7 +6,7 @@
 <title>Dusit Daily</title>
 <meta name="claude:viewport-fit-sides" content="cover">
 <meta name="theme-color" content="#0e1524">
-<meta name="description" content="งานที่ต้องทำต่อของ Front Office ประจำวัน: คุยกับ Jarvis ติ๊กงานเสร็จ สรุปส่งไลน์">
+<meta name="description" content="งานที่ต้องทำต่อของ Front Office ประจำวัน: คุยกับ Dusit Help ติ๊กงานเสร็จ สรุปส่งไลน์">
 <meta name="apple-mobile-web-app-title" content="Dusit Daily">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
@@ -353,7 +353,7 @@ pre.brief{white-space:pre-wrap;word-break:break-word;margin:0;background:var(--c
 .toast{display:flex;align-items:center;gap:14px;white-space:nowrap}
 .toast-undo{color:var(--gold-hi);font-weight:700;font-size:14px}
 
-/* Jarvis chat */
+/* Dusit Help chat */
 .sheet.chat{height:90%}
 .sheet.chat .sheet-in{min-height:100%}
 .jv-head{display:flex;gap:12px;align-items:center}
@@ -1160,7 +1160,7 @@ function render() {
       <div class="tasks">${g.list.map(it => taskHtml(it, g.key === "carry" ? "now" : g.key)).join("")}</div></section>`;
   }
   const past = SEL < TODAY();
-  if (!open.length) html += `<div class="empty"><b>${past ? "ไม่มีงานค้างของวันนั้น" : "ไม่มีงานค้าง"}</b>${items.length ? "งานของวันนี้ปิดครบแล้ว" : SEL > TODAY() ? "ยังไม่มีงานที่นัดไว้วันนี้ บอก Jarvis เพื่อเพิ่มงานล่วงหน้าได้" : "แตะปุ่มทองแล้วบอก Jarvis ว่ามีอะไรต้องส่งต่อ"}</div>`;
+  if (!open.length) html += `<div class="empty"><b>${past ? "ไม่มีงานค้างของวันนั้น" : "ไม่มีงานค้าง"}</b>${items.length ? "งานของวันนี้ปิดครบแล้ว" : SEL > TODAY() ? "ยังไม่มีงานที่นัดไว้วันนี้ บอก Dusit Help เพื่อเพิ่มงานล่วงหน้าได้" : "แตะปุ่มทองแล้วบอก Dusit Help ว่ามีอะไรต้องส่งต่อ"}</div>`;
   if (doneDay.length) html += `<details class="donebox"><summary>เสร็จแล้ว <span class="cnt num">${doneDay.length}</span></summary>
     <div class="tasks">${doneDay.sort((a, b) => (b.doneAt || 0) - (a.doneAt || 0)).map(it => taskHtml(it, "")).join("")}</div></details>`;
   $("#sections").innerHTML = html;
@@ -1397,6 +1397,7 @@ const IC = {
   alert: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 5h16v11H9l-5 4z"/><path d="M12 8v3M12 13.5v.5"/></svg>',
   wrench: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/></svg>',
   card: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="6" width="18" height="12" rx="2"/><path d="M3 10h18M7 15h4"/></svg>',
+  chat: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12a8 8 0 0 1-11.6 7.1L4 20.5l1.4-4.9A8 8 0 1 1 21 12z"/><path d="M8.5 11h.01M12 11h.01M15.5 11h.01"/></svg>',
   send: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg>',
   check: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="m5 12.5 4.5 4.5L19 7.5"/></svg>',
   home: '<path d="M4 10.5 12 4l8 6.5V20h-5v-5h-6v5H4z"/>',
@@ -1408,7 +1409,7 @@ const IC = {
 const RADIAL = [
   { x: 12, y: 210, ic: "card", t: "Billing", cat: "billing" },
   { x: 28, y: 108, ic: "star", t: "VIP มาถึง", cat: "vip" },
-  { x: 50, y: 6, ic: "mic", t: "คุยกับ Jarvis", cat: null, main: true },
+  { x: 50, y: 6, ic: "chat", t: "Dusit Help", cat: null, main: true },
   { x: 72, y: 108, ic: "alert", t: "Complaint", cat: "complaint" },
   { x: 88, y: 210, ic: "wrench", t: "แจ้งซ่อม", cat: "maint" },
 ];
@@ -1423,7 +1424,7 @@ function toggleRadial(force) {
   $("#fab").setAttribute("aria-label", radialOpen ? "ปิดเมนูด่วน" : "เปิดเมนูด่วน");
   if (radialOpen) {
     $("#radial").innerHTML = RADIAL.map((r, i) => `<button class="rb ${r.main ? "main" : ""}" style="left:${r.x}%;top:${r.y}px;animation-delay:${i * 35}ms" data-i="${i}"><span class="c">${IC[r.ic]}</span>${r.t}</button>`).join("");
-    $("#radial").querySelectorAll(".rb").forEach(b => b.onclick = () => { const r = RADIAL[+b.dataset.i]; toggleRadial(false); openJarvis(r.cat, true); });
+    $("#radial").querySelectorAll(".rb").forEach(b => b.onclick = () => { const r = RADIAL[+b.dataset.i]; toggleRadial(false); openJarvis(r.cat, false); });
   }
 }
 $("#fab").onclick = () => {
@@ -1438,9 +1439,9 @@ document.addEventListener("keydown", e => { if (e.key === "Escape") closeAll(); 
 function closeAll() { if (radialOpen) toggleRadial(false); $("#sheet").hidden = true; $("#scrim").hidden = true; if (voice.live || voice.want) voice.stop(); }
 function openSheet(html, mode) { $("#toast").hidden = true; $("#sheet").className = "sheet" + (mode ? " " + mode : ""); $("#sheetIn").innerHTML = `<div class="sheet-top"><div class="grab"></div><button class="sheet-x" id="sheetX" aria-label="ปิด">${'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round">' + IC.x + '</svg>'}</button></div>` + html; $("#sheetX").onclick = closeAll; $("#sheet").hidden = false; $("#scrim").hidden = false; $("#sheet").scrollTop = 0; }
 
-// ---------------- Jarvis: talk to the board ----------------
+// ---------------- Dusit Help: talk to the board ----------------
 // Keep JARVIS_RULES in step with SYSTEM in api/jarvis.js.
-const JARVIS_RULES = `คุณคือ Jarvis ผู้ช่วยแผนก Front Office โรงแรม 5 ดาวในกรุงเทพฯ ผู้ใช้คุยกับคุณด้วยเสียงหรือพิมพ์ ภาษาไทยปนอังกฤษ ข้อความถอดเสียงอาจผิดบ้าง
+const JARVIS_RULES = `คุณคือ Dusit Help ผู้ช่วยแผนก Front Office โรงแรม 5 ดาวในกรุงเทพฯ ผู้ใช้คุยกับคุณด้วยเสียงหรือพิมพ์ ภาษาไทยปนอังกฤษ ข้อความถอดเสียงอาจผิดบ้าง
 คุณดูแลบอร์ดส่งเวร (JSON ด้านล่าง) และทำงานผ่าน actions:
 - add: เพิ่มเรื่องใหม่ กรอก room guest cat pri summary action due (id เว้น "")
 - update: แก้เรื่องที่มีอยู่ ใส่ id และเฉพาะฟิลด์ที่เปลี่ยน ฟิลด์อื่นเว้น ""
@@ -1472,14 +1473,14 @@ function openJarvis(cat, autoStart) {
   hintCat = cat;
   const chips = cat ? [`${CAT_NAME[cat]}: `] : SUGGEST;
   openSheet(`
-    <div class="jv-head"><span class="orb sm" aria-hidden="true">${IC.mic}</span><div><h3>Jarvis</h3><p class="note" id="micHint"></p></div></div>
+    <div class="jv-head"><span class="orb sm" aria-hidden="true">${IC.mic}</span><div><h3>Dusit Help</h3><p class="note" id="micHint"></p></div></div>
     <div class="chat" id="chat" aria-live="polite"></div>
     <div class="dock">
       <div class="suggest">${chips.map(s => `<button class="chip" data-s="${esc(s)}">${esc(s.replace(/: $/, " …"))}</button>`).join("")}</div>
       <div class="partial" id="partial"></div>
       <div class="composer">
         <button class="mic-btn" id="micBtn" aria-label="พูด">${IC.mic}</button>
-        <textarea id="note" rows="1" placeholder="พูดหรือพิมพ์ เช่น 915 แอร์เสร็จแล้ว" aria-label="ข้อความถึง Jarvis"></textarea>
+        <textarea id="note" rows="1" placeholder="พูดหรือพิมพ์ เช่น 915 แอร์เสร็จแล้ว" aria-label="ข้อความถึง Dusit Help"></textarea>
         <button class="send-btn" id="sendBtn" aria-label="ส่ง">${IC.send}</button>
       </div>
     </div>`, "chat");
@@ -1508,7 +1509,7 @@ function drawChat() {
   } else {
     el.innerHTML = CHAT.map((m, i) => m.role === "user"
       ? `<div class="bubble me">${esc(m.content)}</div>`
-      : `<div class="bubble bot">${m.pending ? '<span class="dots" aria-label="Jarvis กำลังคิด"><i></i><i></i><i></i></span>' : esc(m.content).replace(/\n/g, "<br>")}
+      : `<div class="bubble bot">${m.pending ? '<span class="dots" aria-label="Dusit Help กำลังคิด"><i></i><i></i><i></i></span>' : esc(m.content).replace(/\n/g, "<br>")}
         ${(m.actions || []).map((a, j) => `<div class="act ${a.kind}"><span class="act-ic" aria-hidden="true">${ACT_ICON[a.kind] || "•"}</span><span class="act-t">${esc(a.label)}</span>${
           a.brief ? `<button class="mini gold" data-brief="${i}:${j}">ดูและส่ง</button>`
           : a.undone ? `<span class="note">ย้อนกลับแล้ว</span>`
@@ -1557,7 +1558,7 @@ ${JSON.stringify(p.board)}
 เวลา: ${p.now} · วันนี้: ${p.today} · วันที่ผู้ใช้เปิดดู: ${p.selected} · ผู้ใช้: ${p.name || "-"}${p.hintCat ? " · หมวดที่ผู้ใช้เลือกไว้: " + p.hintCat : ""}
 
 บทสนทนา (ข้อความล่าสุดอยู่ท้ายสุด):
-${p.messages.map(m => (m.role === "user" ? "ผู้ใช้: " : "Jarvis: ") + m.content).join("\n")}
+${p.messages.map(m => (m.role === "user" ? "ผู้ใช้: " : "Dusit Help: ") + m.content).join("\n")}
 
 ตอบเป็น JSON object เท่านั้น: {"reply": string, "actions": [{"type": "add|update|close|reopen|delete|brief", "id": string, "room": string, "guest": string, "cat": string, "pri": string, "summary": string, "action": string, "date": string, "due": string}]}`;
 }

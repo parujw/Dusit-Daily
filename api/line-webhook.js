@@ -26,7 +26,7 @@ export async function POST(request) {
     if (!groupId) continue;
 
     if (ev.type === "join") {
-      await reply(token, ev.replyToken, "สวัสดีครับ Jarvis พร้อมส่งบรีฟเข้ากลุ่มนี้ พิมพ์ \"jarvis id\" เพื่อตั้งเป็นกลุ่มส่งเวร");
+      await reply(token, ev.replyToken, "สวัสดีครับ Dusit Daily พร้อมส่งสรุปเข้ากลุ่มนี้ พิมพ์ \"jarvis id\" เพื่อตั้งเป็นกลุ่มส่งเวร");
       continue;
     }
     if (ev.type !== "message" || ev.message?.type !== "text") continue;

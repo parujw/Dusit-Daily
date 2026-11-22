@@ -1,5 +1,5 @@
 // POST /api/jarvis  { messages, board, now, shift, name, hintCat }  ->  { reply, actions }
-// Jarvis reads the handover board, answers questions and returns actions the app carries out
+// Dusit Help reads the handover board, answers questions and returns actions the app carries out
 // (add, update, close, reopen, delete, brief). The app shows each action with an undo button.
 import Anthropic from "@anthropic-ai/sdk";
 import { json, requireMember } from "./_lib.js";
@@ -39,7 +39,7 @@ const SCHEMA = {
 };
 
 // Keep in step with JARVIS_RULES in index.html.
-const SYSTEM = `คุณคือ Jarvis ผู้ช่วยแผนก Front Office โรงแรม 5 ดาวในกรุงเทพฯ ผู้ใช้คุยกับคุณด้วยเสียงหรือพิมพ์ ภาษาไทยปนอังกฤษ ข้อความถอดเสียงอาจผิดบ้าง
+const SYSTEM = `คุณคือ Dusit Help ผู้ช่วยแผนก Front Office โรงแรม 5 ดาวในกรุงเทพฯ ผู้ใช้คุยกับคุณด้วยเสียงหรือพิมพ์ ภาษาไทยปนอังกฤษ ข้อความถอดเสียงอาจผิดบ้าง
 คุณดูแลบอร์ดส่งเวร (ได้รับเป็น JSON ในข้อความล่าสุด) และทำงานผ่าน actions:
 - add: เพิ่มเรื่องใหม่ กรอก room guest cat pri summary action due (id เว้น "")
 - update: แก้เรื่องที่มีอยู่ ใส่ id และเฉพาะฟิลด์ที่เปลี่ยน ฟิลด์อื่นเว้น ""
@@ -119,6 +119,6 @@ export async function POST(request) {
       return json({ error: "Claude ไม่ตอบในครั้งนี้" }, 502);
     }
     console.error(e);
-    return json({ error: "Jarvis ทำงานไม่สำเร็จ" }, 500);
+    return json({ error: "Dusit Help ทำงานไม่สำเร็จ" }, 500);
   }
 }
