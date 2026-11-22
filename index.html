@@ -878,6 +878,9 @@ const UI_EN = {
   "แตะ aA ที่แถบที่อยู่ → แปลเป็นภาษาที่ต้องการ": "Tap aA in the address bar → Translate to your language",
   "แตะ ⋮ → แปล → เลือกภาษา": "Tap ⋮ → Translate → choose a language",
   "ตั้งภาษาในแอปเป็น “ไทย” ก่อน แล้วให้มือถือแปลทั้งหน้า จะได้ไม่แปลซ้ำซ้อน ถ้าเปิดจากไอคอนบนหน้าจอโฮมแล้วไม่มีปุ่มแปล ให้เปิดผ่าน Safari หรือ Chrome แทน": "Set the app language to Thai first, then let the phone translate the whole page. If you opened the app from the home-screen icon and see no Translate option, open it in Safari or Chrome instead.",
+  "ตอนนี้เปิดจากไอคอนบนหน้าจอโฮม จึงไม่มีปุ่มแปล": "Opened from the home-screen icon, so there is no Translate button",
+  "คัดลอกลิงก์ไปเปิดใน Safari หรือ Chrome แล้วเข้าสู่ระบบอีกครั้ง": "Copy the link, open it in Safari or Chrome and sign in again",
+  "คัดลอกลิงก์แอป": "Copy app link", "คัดลอกลิงก์แล้ว เปิด Safari แล้ววางได้เลย": "Link copied. Open Safari and paste it",
   "ซิงก์กับทีม": "Synced with team", "เก็บในเครื่องนี้เท่านั้น": "This device only", "โหมดทดลอง": "Demo",
   "เปิดใช้": "On", "โหมดพื้นฐาน": "Basic mode", "ส่งอัตโนมัติ": "Auto send", "แชร์/คัดลอก": "Share/copy",
   "เช่น 1208": "e.g. 1208", "เช่น ผ้าม่านขาด ต้องเปลี่ยนก่อนแขกเข้า": "e.g. torn curtain, replace before the guest arrives",
@@ -925,6 +928,9 @@ const UI_ZH = {
   "แตะ aA ที่แถบที่อยู่ → แปลเป็นภาษาที่ต้องการ": "点地址栏的 aA → 翻译成所需语言",
   "แตะ ⋮ → แปล → เลือกภาษา": "点 ⋮ → 翻译 → 选择语言",
   "ตั้งภาษาในแอปเป็น “ไทย” ก่อน แล้วให้มือถือแปลทั้งหน้า จะได้ไม่แปลซ้ำซ้อน ถ้าเปิดจากไอคอนบนหน้าจอโฮมแล้วไม่มีปุ่มแปล ให้เปิดผ่าน Safari หรือ Chrome แทน": "先把应用语言设为“ไทย”，再用手机翻译整页，避免重复翻译。如果从主屏幕图标打开没有翻译按钮，请改用 Safari 或 Chrome 打开。",
+  "ตอนนี้เปิดจากไอคอนบนหน้าจอโฮม จึงไม่มีปุ่มแปล": "从主屏幕图标打开，因此没有翻译按钮",
+  "คัดลอกลิงก์ไปเปิดใน Safari หรือ Chrome แล้วเข้าสู่ระบบอีกครั้ง": "复制链接到 Safari 或 Chrome 打开，并重新登录",
+  "คัดลอกลิงก์แอป": "复制应用链接", "คัดลอกลิงก์แล้ว เปิด Safari แล้ววางได้เลย": "链接已复制，打开 Safari 粘贴即可",
   "ซิงก์กับทีม": "已与团队同步", "เก็บในเครื่องนี้เท่านั้น": "仅本设备", "โหมดทดลอง": "演示",
   "เปิดใช้": "已开启", "โหมดพื้นฐาน": "基础模式", "ส่งอัตโนมัติ": "自动发送", "แชร์/คัดลอก": "分享/复制",
   "เช่น 1208": "例如 1208", "เช่น ผ้าม่านขาด ต้องเปลี่ยนก่อนแขกเข้า": "例如 窗帘破了，客人入住前更换",
@@ -2554,6 +2560,7 @@ function openItem(id) {
 }
 
 // ---------------- settings ----------------
+const isStandalone = () => { try { return navigator.standalone === true || matchMedia("(display-mode: standalone)").matches; } catch (e) { return false; } };
 function openSettings() {
   const canNotify = "Notification" in window && Notification.permission === "default";
   openSheet(`<h3>เมนู</h3>
@@ -2575,12 +2582,18 @@ function openSettings() {
       <p class="note"><b>iPhone · Safari:</b> แตะ aA ที่แถบที่อยู่ → แปลเป็นภาษาที่ต้องการ</p>
       <p class="note"><b>Android · Chrome:</b> แตะ ⋮ → แปล → เลือกภาษา</p>
       <p class="note">ตั้งภาษาในแอปเป็น “ไทย” ก่อน แล้วให้มือถือแปลทั้งหน้า จะได้ไม่แปลซ้ำซ้อน ถ้าเปิดจากไอคอนบนหน้าจอโฮมแล้วไม่มีปุ่มแปล ให้เปิดผ่าน Safari หรือ Chrome แทน</p>
+      ${isStandalone() ? `<p class="note"><b>ตอนนี้เปิดจากไอคอนบนหน้าจอโฮม จึงไม่มีปุ่มแปล</b> คัดลอกลิงก์ไปเปิดใน Safari หรือ Chrome แล้วเข้าสู่ระบบอีกครั้ง</p>
+      <div class="row"><button type="button" class="btn sec" id="copyLink">คัดลอกลิงก์แอป</button></div>` : ""}
     </div></details>
     ${SERVER.linePush ? `<label class="switch"><input type="checkbox" id="sLineDone" ${P.lineOnDone === false ? "" : "checked"}><span>แจ้งในกลุ่ม LINE เมื่องานเสร็จ</span></label>` : ""}
     ${ME && canNotify ? `<button class="btn sec" id="notiBtn">เปิดการแจ้งเตือนบนเครื่องนี้</button>` : ""}
     ${AUTH === "none" && (SERVER.pin || SERVER.ai) ? `<div><label class="lab" for="sPin">PIN ทีม (ใช้ AI และส่ง LINE)</label><input type="password" id="sPin" value="${esc(P.pin)}" autocomplete="off"></div>` : ""}
     <p class="note"><span>${AUTH === "demo" ? "โหมดทดลอง" : store.mode === "cloud" ? "ซิงก์กับทีม" : "เก็บในเครื่องนี้เท่านั้น"}</span> · AI: <span>${claudeSample || SERVER.ai ? "เปิดใช้" : "โหมดพื้นฐาน"}</span> · <span>แปลเนื้อหา</span>: <span>${claudeSample || SERVER.translate ? "เปิดใช้" : "ยังไม่ได้ตั้ง"}</span> · LINE: <span>${SERVER.linePush ? "ส่งอัตโนมัติ" : "แชร์/คัดลอก"}</span></p>
     <button class="btn pri" id="saveSet">บันทึก</button>`);
+  if ($("#copyLink")) $("#copyLink").onclick = () => {
+    const url = location.origin + "/";
+    try { navigator.clipboard.writeText(url).then(() => toast("คัดลอกลิงก์แล้ว เปิด Safari แล้ววางได้เลย"), () => toast(url)); } catch (e) { toast(url); }
+  };
   let lang = P.lang || "th", mode = P.trMode || "ui";
   const NOTE = {
     ui: { th: "", en: "Only buttons and labels are translated. Task text stays as written.", zh: "只翻译按钮和标签，任务内容保持原文。" },
