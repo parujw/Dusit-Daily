@@ -285,6 +285,18 @@ details.more > div{display:flex;flex-direction:column;gap:12px}
 .next-hint{margin:18px 0 -14px;font-size:13.5px;font-weight:600;color:var(--green)}
 
 /* handover check */
+.hc-today{border:1px solid var(--line);border-radius:16px;background:var(--card);padding:4px 12px}
+.hc-today summary{cursor:pointer;list-style:none;display:flex;flex-direction:column;padding:10px 2px}
+.hc-today summary::-webkit-details-marker{display:none}
+.hc-today summary b{font-family:var(--f-display);font-size:15px}
+.hc-today summary small{color:var(--muted);font-size:13px}
+.hc-tlist{display:flex;flex-direction:column;gap:8px;padding-bottom:8px}
+.hc-t{display:flex;align-items:center;gap:10px}
+.hc-t > div{flex:1;min-width:0;display:flex;flex-direction:column;overflow-wrap:anywhere}
+.hc-t small{color:var(--muted);font-size:12px}
+.hc-st{flex:none;font-size:12px;font-weight:600;padding:3px 8px;border-radius:999px;background:var(--line);color:var(--ink)}
+.hc-st.done{background:var(--green-soft);color:var(--green)}
+.hc-st.open{background:color-mix(in srgb,var(--gold) 18%,var(--card));color:var(--gold-ink)}
 .hc-top{display:flex;align-items:center;gap:10px}
 .hc-top span{font-size:13.5px;color:var(--muted);white-space:nowrap}
 .hc-list{display:flex;flex-direction:column;gap:8px}
@@ -875,7 +887,7 @@ const UI_EN = {
   "เข้าสู่ระบบ": "Sign in", "ชื่อผู้ใช้หรืออีเมล": "Username or email", "รหัสผ่าน": "Password", "ลืมรหัสผ่าน": "Forgot password",
   "เข้าสู่ระบบเพื่อดูงานที่ต้องทำต่อของทีม": "Sign in to see the team's tasks",
   "พร้อม": "Ready", "กำลังฟัง…": "Listening…", "กำลังคิด…": "Thinking…", "สั่งได้เลยครับ": "Go ahead", "มีอะไรรอทำ": "What's to do", "พิมพ์หรือแตะไมค์": "Type or tap the mic",
-  "สอน Dusit Help": "Teach Dusit Help", "ภาษาที่ส่ง": "Send in", "คำลงท้ายในสรุปที่ส่ง": "Polite ending in summaries (Thai)", "ไม่ใส่": "None", "รูปแบบ": "Style", "สรุปมาตรฐาน": "Standard", "✨ AI เรียบเรียง": "✨ AI write-up", "เขียนใหม่": "Rewrite", "AI เรียบเรียงจากงานวันนี้และสัปดาห์หน้า เป็นภาษาที่เลือก แก้ข้อความได้ก่อนส่ง": "Written by AI in the chosen language from today and next week. You can edit before sending.", "แปลข้อความภาษาต่างประเทศเป็นไทย": "Translate foreign-language text into Thai", "เรื่องที่ทีมถามบ่อย": "Things the team often asks", "จำไว้": "Remember", "สิ่งที่ Dusit Help รู้": "What Dusit Help knows", "จำแล้วครับ": "Got it", "ลบแล้ว": "Removed", "จำไว้ว่า …": "Remember …", "ยังไม่มีเรื่องที่สอนไว้ ลองเพิ่มเวลาเช็คเอาท์ เบอร์ภายใน หรือขั้นตอนที่ทีมถามบ่อย": "Nothing taught yet. Try check-out times, extension numbers or steps the team often asks about.", "เช่น เช็คเอาท์ 12:00 · Late check-out ถึง 14:00 ฟรีสำหรับ VIP": "e.g. Check-out 12:00 · late check-out to 14:00 free for VIP",
+  "สอน Dusit Help": "Teach Dusit Help", "ภาษาที่ส่ง": "Send in", "ดูงานที่บันทึกวันนี้ แล้วไล่ดูทีละหมวดกันลืม ใช้เวลาไม่ถึงนาที": "Review today's entries, then each category so nothing is missed. Under a minute.", "ทุกเรื่องในนี้จะอยู่ในสรุปที่ส่ง ทั้งที่รอทำ เสร็จแล้ว และนัดวันอื่น": "Everything here goes into the summary: to do, done and booked for other days.", "วันนี้ยังไม่มีงานที่บันทึก": "Nothing recorded today yet", "คุณบันทึก": "You recorded", "คำลงท้ายในสรุปที่ส่ง": "Polite ending in summaries (Thai)", "ไม่ใส่": "None", "รูปแบบ": "Style", "สรุปมาตรฐาน": "Standard", "✨ AI เรียบเรียง": "✨ AI write-up", "เขียนใหม่": "Rewrite", "AI เรียบเรียงจากงานวันนี้และสัปดาห์หน้า เป็นภาษาที่เลือก แก้ข้อความได้ก่อนส่ง": "Written by AI in the chosen language from today and next week. You can edit before sending.", "แปลข้อความภาษาต่างประเทศเป็นไทย": "Translate foreign-language text into Thai", "เรื่องที่ทีมถามบ่อย": "Things the team often asks", "จำไว้": "Remember", "สิ่งที่ Dusit Help รู้": "What Dusit Help knows", "จำแล้วครับ": "Got it", "ลบแล้ว": "Removed", "จำไว้ว่า …": "Remember …", "ยังไม่มีเรื่องที่สอนไว้ ลองเพิ่มเวลาเช็คเอาท์ เบอร์ภายใน หรือขั้นตอนที่ทีมถามบ่อย": "Nothing taught yet. Try check-out times, extension numbers or steps the team often asks about.", "เช่น เช็คเอาท์ 12:00 · Late check-out ถึง 14:00 ฟรีสำหรับ VIP": "e.g. Check-out 12:00 · late check-out to 14:00 free for VIP",
   "ย้อนกลับ": "Undo", "ย้อนกลับแล้ว": "Undone", "ดูและส่ง": "Review & send", "สรุปพร้อมส่งครับ": "Summary ready",
   "ประวัติ": "History", "รับทราบ": "Got it", "ยังไม่มีใครรับทราบ": "No one has acknowledged yet", "ดูข้อความ": "Show text",
   "ภาษา": "Language", "แตะแล้วเปลี่ยนทันที": "applies right away", "แปลเฉพาะเมนู": "Menus only", "แปลเมนูและเนื้อหางาน": "Menus and task text",
@@ -920,7 +932,7 @@ const UI_ZH = {
   "เข้าสู่ระบบ": "登录", "ชื่อผู้ใช้หรืออีเมล": "用户名或邮箱", "รหัสผ่าน": "密码", "ลืมรหัสผ่าน": "忘记密码",
   "เข้าสู่ระบบเพื่อดูงานที่ต้องทำต่อของทีม": "登录查看团队待办",
   "พร้อม": "就绪", "กำลังฟัง…": "正在听…", "กำลังคิด…": "思考中…", "สั่งได้เลยครับ": "请吩咐", "มีอะไรรอทำ": "有什么待办", "พิมพ์หรือแตะไมค์": "输入或点麦克风",
-  "สอน Dusit Help": "教 Dusit Help", "ภาษาที่ส่ง": "发送语言", "คำลงท้ายในสรุปที่ส่ง": "汇总结尾敬语（泰语）", "ไม่ใส่": "不加", "รูปแบบ": "样式", "สรุปมาตรฐาน": "标准", "✨ AI เรียบเรียง": "✨ AI 撰写", "เขียนใหม่": "重写", "AI เรียบเรียงจากงานวันนี้และสัปดาห์หน้า เป็นภาษาที่เลือก แก้ข้อความได้ก่อนส่ง": "AI 以所选语言根据今天和下周任务撰写，发送前可修改", "แปลข้อความภาษาต่างประเทศเป็นไทย": "将外语内容翻译成泰语", "เรื่องที่ทีมถามบ่อย": "团队常问的事", "จำไว้": "记住", "สิ่งที่ Dusit Help รู้": "Dusit Help 知道的", "จำแล้วครับ": "记住了", "ลบแล้ว": "已删除", "จำไว้ว่า …": "记住 …", "ยังไม่มีเรื่องที่สอนไว้ ลองเพิ่มเวลาเช็คเอาท์ เบอร์ภายใน หรือขั้นตอนที่ทีมถามบ่อย": "还没有教过内容。可以添加退房时间、内线电话或团队常问的流程。", "เช่น เช็คเอาท์ 12:00 · Late check-out ถึง 14:00 ฟรีสำหรับ VIP": "例如 退房 12:00 · VIP 可免费延迟到 14:00",
+  "สอน Dusit Help": "教 Dusit Help", "ภาษาที่ส่ง": "发送语言", "ดูงานที่บันทึกวันนี้ แล้วไล่ดูทีละหมวดกันลืม ใช้เวลาไม่ถึงนาที": "先查看今天的记录，再逐项检查以免遗漏，不到一分钟", "ทุกเรื่องในนี้จะอยู่ในสรุปที่ส่ง ทั้งที่รอทำ เสร็จแล้ว และนัดวันอื่น": "这里的每一项都会写进汇总：待办、已完成和其他日期的预约", "วันนี้ยังไม่มีงานที่บันทึก": "今天还没有记录", "คุณบันทึก": "你记录的", "คำลงท้ายในสรุปที่ส่ง": "汇总结尾敬语（泰语）", "ไม่ใส่": "不加", "รูปแบบ": "样式", "สรุปมาตรฐาน": "标准", "✨ AI เรียบเรียง": "✨ AI 撰写", "เขียนใหม่": "重写", "AI เรียบเรียงจากงานวันนี้และสัปดาห์หน้า เป็นภาษาที่เลือก แก้ข้อความได้ก่อนส่ง": "AI 以所选语言根据今天和下周任务撰写，发送前可修改", "แปลข้อความภาษาต่างประเทศเป็นไทย": "将外语内容翻译成泰语", "เรื่องที่ทีมถามบ่อย": "团队常问的事", "จำไว้": "记住", "สิ่งที่ Dusit Help รู้": "Dusit Help 知道的", "จำแล้วครับ": "记住了", "ลบแล้ว": "已删除", "จำไว้ว่า …": "记住 …", "ยังไม่มีเรื่องที่สอนไว้ ลองเพิ่มเวลาเช็คเอาท์ เบอร์ภายใน หรือขั้นตอนที่ทีมถามบ่อย": "还没有教过内容。可以添加退房时间、内线电话或团队常问的流程。", "เช่น เช็คเอาท์ 12:00 · Late check-out ถึง 14:00 ฟรีสำหรับ VIP": "例如 退房 12:00 · VIP 可免费延迟到 14:00",
   "ย้อนกลับ": "撤销", "ย้อนกลับแล้ว": "已撤销", "ดูและส่ง": "查看并发送", "สรุปพร้อมส่งครับ": "汇总已准备好",
   "ประวัติ": "记录", "รับทราบ": "收到", "ยังไม่มีใครรับทราบ": "还没有人确认", "ดูข้อความ": "查看内容",
   "ภาษา": "语言", "แตะแล้วเปลี่ยนทันที": "点一下立即生效", "แปลเฉพาะเมนู": "仅翻译菜单", "แปลเมนูและเนื้อหางาน": "翻译菜单和任务内容",
@@ -939,6 +951,11 @@ const DUR = { en: { "ชม.": "h", "นาที": "min", "วัน": "d" }, z
 const durTr = t => t.replace(/ชม\.|นาที|วัน/g, w => DUR[P.lang][w]);
 // Text with numbers or names: [pattern, { en, zh }] where each target is a function of the match.
 const UI_RX = [
+  [/^บันทึกวันนี้ (\d+) เรื่อง$/, { en: m => `Recorded today: ${m[1]}`, zh: m => `今天记录 ${m[1]} 项` }],
+  [/^เสร็จแล้ววันนี้ (\d+) · รอทำ (\d+)$/, { en: m => `Done today ${m[1]} · To do ${m[2]}`, zh: m => `今天完成 ${m[1]} · 待办 ${m[2]}` }],
+  [/^เสร็จแล้ว (\d+)$/, { en: m => `Done ${m[1]}`, zh: m => `已完成 ${m[1]}` }],
+  [/^นัด (.+)$/, { en: m => `Due ${m[1]}`, zh: m => `预约 ${m[1]}` }],
+  [/^โดย (.+)$/, { en: m => `by ${m[1]}`, zh: m => `由 ${m[1]}` }],
   [/^(\d+) เรื่อง$/, { en: m => `${m[1]} items`, zh: m => `${m[1]} 条` }],
   [/^จำไว้แล้ว: (.+)$/, { en: m => `Remembered: ${m[1]}`, zh: m => `已记住：${m[1]}` }],
   [/^ทำไปแล้ว (\d+) จาก (\d+) · อีก (\d+) เรื่อง$/, { en: m => `Done ${m[1]} of ${m[2]} · ${m[3]} left`, zh: m => `已完成 ${m[1]}/${m[2]} · 还剩 ${m[3]}` }],
@@ -2492,7 +2509,8 @@ function buildBrief(items, title, opts = {}) {
   const pt = ENDING();
   const groups = groupTasks(items);
   const n = items.length, urgentN = groups[0].list.length, carryN = groups[1].list.length;
-  const fin = ITEMS.filter(i => i.done && !i.ex && i.doneAt && ymd(new Date(i.doneAt)) === SEL).sort((a, b) => (a.doneAt || 0) - (b.doneAt || 0));
+  const rec = dayRecord(SEL), fin = rec.done;
+  const elsewhere = rec.elsewhere.filter(i => !items.includes(i));
 
   // Header: "สรุปงาน FO ประจำวันอาทิตย์ที่ 22 พ.ย. 2569"
   const wd = fd(SEL, { weekday: "long" }), dm = fd(SEL, { day: "numeric", month: "short", year: "numeric" });
@@ -2523,17 +2541,26 @@ function buildBrief(items, title, opts = {}) {
     }
   }
 
-  // Finished today, in one short line.
+  // Recorded today but booked for another day, so they are not forgotten.
+  if (elsewhere.length) {
+    t += `\n🗓️ บันทึกวันนี้ นัดวันอื่น\n`;
+    for (const it of elsewhere) {
+      const room = it.room && it.room !== "—" ? `ห้อง ${it.room}${it.guest ? " " + clean(it.guest) : ""} ` : "";
+      t += `${++no}. ${room}${cut(clean(it.action || it.summary), 140)} (นัด ${fd(itemDate(it), { day: "numeric", month: "short" })}${it.due ? " " + it.due + " น." : ""})${it.assignee ? `\n   ${it.assignee} ดูแล` : ""}\n`;
+    }
+  }
+  // Everything finished today, one line each.
   if (fin.length) {
-    const done = fin.slice(0, 5).map(i => `${i.room && i.room !== "—" ? "ห้อง " + i.room + " " : ""}${cut(clean(i.action || i.summary), 40)}${i.doneBy ? ` (${i.doneBy})` : ""}`);
-    t += `\n✅ เสร็จแล้ววันนี้: ${done.join(", ")}${fin.length > 5 ? ` และอีก ${fin.length - 5} เรื่อง` : ""}\n`;
+    t += `\n✅ เสร็จแล้ววันนี้ (${fin.length})\n`;
+    for (const i of fin.slice(0, 20)) t += `• ${i.room && i.room !== "—" ? "ห้อง " + i.room + " " : ""}${cut(clean(i.action || i.summary), 60)}${i.doneBy ? ` (${i.doneBy})` : ""}\n`;
+    if (fin.length > 20) t += `• และอีก ${fin.length - 20} เรื่อง\n`;
   }
   // Tomorrow, so the next person can plan.
   const tmr = ymd(new Date(parseYmd(SEL).getTime() + 864e5));
-  const next = ITEMS.filter(i => !i.done && !i.ex && itemDate(i) === tmr);
+  const next = ITEMS.filter(i => !i.done && !i.ex && itemDate(i) === tmr && !elsewhere.includes(i));
   const first = next.filter(i => i.due).sort((a, b) => a.due.localeCompare(b.due))[0];
   let tail = "";
-  if (next.length) tail += `พรุ่งนี้มีงานนัดไว้ ${next.length} เรื่อง${first ? ` เริ่มเรื่องแรก ${first.due} น.` : ""}\n`;
+  if (next.length) tail += `พรุ่งนี้มีงานนัดไว้${elsewhere.length ? "อีก" : ""} ${next.length} เรื่อง${first ? ` เริ่มเรื่องแรก ${first.due} น.` : ""}\n`;
   if (opts.noIssue && opts.noIssue.length) tail += `วันนี้ไม่มีประเด็นเรื่อง: ${opts.noIssue.join(", ")}\n`;
   if (tail) t += `\n${tail}`;
   t += `${tail ? "" : "\n"}ขอบคุณทุกคน${pt}`;
@@ -2599,7 +2626,7 @@ function briefSheet(items, title, opts = {}) {
       lang, ending: ENDING(), day: thL(SEL, { weekday: "long", day: "numeric", month: "short", year: "numeric" }), from: myName() || "-",
       open: items.filter(i => !i.done).map(row),
       done: live.filter(i => i.done && i.doneAt && ymd(new Date(i.doneAt)) === SEL).sort((a, b) => (a.doneAt || 0) - (b.doneAt || 0)).map(row),
-      upcoming: live.filter(i => !i.done && itemDate(i) > SEL && itemDate(i) <= end).sort((a, b) => itemDate(a).localeCompare(itemDate(b)) || (a.due || "99").localeCompare(b.due || "99")).map(row),
+      upcoming: live.filter(i => !i.done && itemDate(i) > SEL && (itemDate(i) <= end || created(i))).sort((a, b) => itemDate(a).localeCompare(itemDate(b)) || (a.due || "99").localeCompare(b.due || "99")).map(row),
       noIssue: opts.noIssue || [], unchecked: opts.unchecked || [],
     };
   };
@@ -2703,25 +2730,42 @@ const HC_Q = {
   billing: "มัดจำ บิล หรือเงินที่ค้าง", lost: "ของหาย หรือของฝากแขก", other: "เรื่องอื่นที่คนถัดไปควรรู้",
 };
 let HC = { day: "", ans: {} };
+// Everything that happened on a day, so nothing recorded or finished today is left out of the handover.
+function dayRecord(day = SEL) {
+  const live = ITEMS.filter(i => !i.ex);
+  const added = live.filter(i => i.createdAt && ymd(new Date(i.createdAt)) === day).sort((a, b) => (a.createdAt || 0) - (b.createdAt || 0));
+  const done = live.filter(i => i.done && i.doneAt && ymd(new Date(i.doneAt)) === day).sort((a, b) => (a.doneAt || 0) - (b.doneAt || 0));
+  const open = dayItems(day).filter(i => !i.done && !i.ex);
+  // Recorded today but booked for another day (not on today's list).
+  const elsewhere = added.filter(i => !i.done && itemDate(i) !== day && !open.includes(i)).sort((a, b) => itemDate(a).localeCompare(itemDate(b)));
+  return { added, done, open, elsewhere, all: [...new Set([...open, ...done, ...added])] };
+}
 function openHandoverCheck() {
   if (HC.day !== SEL) HC = { day: SEL, ans: {} };
-  openSheet(`<h3>เช็กก่อนส่ง</h3><p class="note">ไล่ดูทีละหมวดกันลืม ใช้เวลาไม่ถึงนาที</p>
+  openSheet(`<h3>เช็กก่อนส่ง</h3><p class="note">ดูงานที่บันทึกวันนี้ แล้วไล่ดูทีละหมวดกันลืม ใช้เวลาไม่ถึงนาที</p>
+    <details class="hc-today" id="hcToday" open></details>
     <div class="hc-top"><div class="pg-bar"><i id="hcFill"></i></div><span id="hcTxt"></span></div>
     <div class="hc-list" id="hcList"></div>
     <div class="form-foot"><button class="btn pri" id="hcNext"></button></div>`);
   const draw = () => {
-    const open = dayItems(SEL).filter(i => !i.done);
-    const rows = CATS.map(c => { const n = open.filter(i => i.cat === c.id).length; return { c, n, a: n ? "has" : HC.ans[c.id] }; });
+    const rec = dayRecord(SEL);
+    const st = i => i.done ? `<span class="hc-st done">เสร็จแล้ว</span>` : itemDate(i) !== SEL && itemDate(i) > SEL ? `<span class="hc-st">นัด ${esc(thDate(itemDate(i), { day: "numeric", month: "short" }))}</span>` : `<span class="hc-st open">รอทำ</span>`;
+    const wasOpen = $("#hcToday").open;
+    $("#hcToday").innerHTML = `<summary><b>บันทึกวันนี้ ${rec.added.length} เรื่อง</b><small>เสร็จแล้ววันนี้ ${rec.done.length} · รอทำ ${rec.open.length}</small></summary>
+      <div class="hc-tlist">${rec.added.length ? rec.added.map(i => `<div class="hc-t">${catIcon(i.cat)}<div><span data-c>${esc(i.room && i.room !== "—" ? i.room + " · " : "")}${esc(i.action || i.summary)}</span><small>${i.byUid && i.byUid !== myUid() && i.by ? "โดย " + esc(i.by) : "คุณบันทึก"}</small></div>${st(i)}</div>`).join("") : `<p class="note">วันนี้ยังไม่มีงานที่บันทึก</p>`}</div>
+      <p class="note">ทุกเรื่องในนี้จะอยู่ในสรุปที่ส่ง ทั้งที่รอทำ เสร็จแล้ว และนัดวันอื่น</p>`;
+    $("#hcToday").open = wasOpen;
+    const rows = CATS.map(c => { const n = rec.all.filter(i => i.cat === c.id).length; const left = rec.all.filter(i => i.cat === c.id && !i.done).length; return { c, n, left, a: n ? "has" : HC.ans[c.id] }; });
     const ok = rows.filter(r => r.a).length;
     $("#hcFill").style.width = Math.round(ok / rows.length * 100) + "%";
     $("#hcTxt").textContent = `เช็กแล้ว ${ok}/${rows.length}`;
     $("#hcList").innerHTML = rows.map(r => `<div class="hc-row ${r.a ? "ok" : ""}">${catIcon(r.c.id)}
       <div class="hc-q"><b>${esc(CAT_SHORT[r.c.id])}</b><small>${esc(HC_Q[r.c.id])}</small></div>
-      <div class="hc-a">${r.n ? `<span class="hc-has">${IC.check}จดแล้ว ${r.n}</span><button type="button" class="mini" data-add="${r.c.id}">+ เพิ่ม</button>`
+      <div class="hc-a">${r.n ? `<span class="hc-has">${IC.check}${r.left ? `จดแล้ว ${r.n}` : `เสร็จแล้ว ${r.n}`}</span><button type="button" class="mini" data-add="${r.c.id}">+ เพิ่ม</button>`
         : `<button type="button" class="mini ${r.a === "none" ? "on" : ""}" data-none="${r.c.id}">ไม่มี</button><button type="button" class="mini" data-add="${r.c.id}">มี · จด</button>`}</div></div>`).join("");
     const left = rows.length - ok;
     $("#hcNext").innerHTML = left ? `ไปสรุป · ยังไม่เช็ก ${left} หมวด` : `${IC.check}เช็กครบ · ไปสรุป`;
-    $("#hcNext").onclick = () => briefSheet(dayItems(SEL).filter(i => !i.done), "สรุปประจำวัน", { unchecked: rows.filter(r => !r.a).map(r => CAT_SHORT[r.c.id]), noIssue: rows.filter(r => !r.n).map(r => CAT_SHORT[r.c.id]) });
+    $("#hcNext").onclick = () => briefSheet(dayItems(SEL).filter(i => !i.done && !i.ex), "สรุปประจำวัน", { unchecked: rows.filter(r => !r.a).map(r => CAT_SHORT[r.c.id]), noIssue: rows.filter(r => !r.n).map(r => CAT_SHORT[r.c.id]) });
   };
   $("#hcList").addEventListener("click", e => {
     const no = e.target.closest("[data-none]"), add = e.target.closest("[data-add]");
