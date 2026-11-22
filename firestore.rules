@@ -19,7 +19,7 @@ service cloud.firestore {
       match /items/{itemId} {
         allow read, delete: if isMember(teamId);
         allow create, update: if isMember(teamId)
-          && request.resource.data.keys().hasOnly(['room','guest','cat','pri','summary','action','due','done','doneBy','doneByUid','doneAt','createdAt','by','byUid'])
+          && request.resource.data.keys().hasOnly(['room','guest','cat','pri','summary','action','due','done','doneBy','doneByUid','doneAt','createdAt','by','byUid','dueDate'])
           && request.resource.data.summary is string && request.resource.data.summary.size() <= 600;
       }
       match /briefs/{briefId} {

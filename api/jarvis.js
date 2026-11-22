@@ -26,9 +26,10 @@ const SCHEMA = {
           pri: { type: "string", enum: [...PRIS, ""] },
           summary: { type: "string" },
           action: { type: "string" },
+          date: { type: "string" },
           due: { type: "string" },
         },
-        required: ["type", "id", "room", "guest", "cat", "pri", "summary", "action", "due"],
+        required: ["type", "id", "room", "guest", "cat", "pri", "summary", "action", "date", "due"],
         additionalProperties: false,
       },
     },
@@ -54,6 +55,7 @@ const SYSTEM = `คุณคือ Jarvis ผู้ช่วยแผนก Fron
 - cat: vip (VIP, arrival, special request) | room (ห้อง, housekeeping, late check-out, upgrade) | complaint | maint (ซ่อมบำรุง) | billing (บิล มัดจำ ชำระเงิน) | lost (Lost & Found) | other
 - pri: urgent (ต้องทำทันทีหรือแขกไม่พอใจอยู่) | follow (ต้องติดตาม) | info (แจ้งทราบ)
 - due: HH:MM แบบ 24 ชม. เช่น "บ่ายสาม" = "15:00" ไม่มีให้ "" ห้องไม่ทราบใช้ "—"
+- date: วันที่ของงาน YYYY-MM-DD ตีความ "พรุ่งนี้" "วันศุกร์" "25 นี้" จากวันนี้ ถ้าไม่ได้บอกวันให้ "" (ใช้วันที่ผู้ใช้เปิดดู) ตอน update ใส่เฉพาะเมื่อเลื่อนวัน
 - summary 1 ประโยคสั้น action ขึ้นต้นด้วยคำกริยา
 - guest ย่อตาม PDPA เช่น "คุณ T. (VIP)" ห้ามชื่อเต็ม เบอร์โทร อีเมล เลขพาสปอร์ต เลขบัตร
 - ห้ามแต่งข้อมูลที่ผู้ใช้ไม่ได้พูด
@@ -84,13 +86,13 @@ export async function POST(request) {
 
   const board = (Array.isArray(body?.board) ? body.board.slice(0, 200) : []).map((i) => ({
     id: clip(i.id, 40), room: clip(i.room, 10), guest: clip(i.guest, 40), cat: clip(i.cat, 12), pri: clip(i.pri, 8),
-    summary: clip(i.summary, 300), action: clip(i.action, 300), due: clip(i.due, 5), done: !!i.done,
+    summary: clip(i.summary, 300), action: clip(i.action, 300), date: clip(i.date, 10), due: clip(i.due, 5), done: !!i.done,
   }));
   const hintCat = CATS.includes(body?.hintCat) ? body.hintCat : "";
   const last = msgs[msgs.length - 1];
   last.content =
     `บอร์ดตอนนี้ (JSON):\n${JSON.stringify(board)}\n\n` +
-    `เวลา: ${clip(body?.now, 40)} · กะ: ${clip(body?.shift, 60)} · ผู้ใช้: ${clip(body?.name, 40) || "-"}` +
+    `เวลา: ${clip(body?.now, 40)} · วันนี้: ${clip(body?.today, 10)} · วันที่ผู้ใช้เปิดดู: ${clip(body?.selected, 10)} · กะ: ${clip(body?.shift, 60)} · ผู้ใช้: ${clip(body?.name, 40) || "-"}` +
     (hintCat ? ` · หมวดที่ผู้ใช้เลือกไว้: ${hintCat}` : "") +
     `\n\nข้อความผู้ใช้:\n${last.content}`;
 
