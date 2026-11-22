@@ -30,7 +30,9 @@ async function viaGoogle(texts, lang, gkey) {
   const j = await r.json().catch(() => ({}));
   if (!r.ok) {
     console.error("Google translate failed", r.status, j?.error?.message);
-    throw new TranslateError(r.status === 403 ? "Google Translate key ใช้ไม่ได้ (ตรวจว่าเปิด Cloud Translation API แล้ว)" : r.status === 429 ? "ใช้ครบโควตาแปลของวันนี้แล้ว" : "แปลไม่สำเร็จ", 502);
+    const msg = String(j?.error?.message || "") + " " + JSON.stringify(j?.error?.errors || "");
+    const overQuota = r.status === 429 || /quota|limit ?exceeded|rate ?limit|RESOURCE_EXHAUSTED/i.test(msg);
+    throw new TranslateError(overQuota ? "ใช้ครบเพดานแปลของวันนี้แล้ว พรุ่งนี้แปลต่อได้ (ข้อความที่แปลไว้แล้วยังใช้ได้)" : r.status === 403 ? "Google Translate key ใช้ไม่ได้ (ตรวจว่าเปิด Cloud Translation API แล้ว)" : "แปลไม่สำเร็จ", overQuota ? 429 : 502);
   }
   return (j?.data?.translations || []).map((t) => String(t.translatedText || ""));
 }
