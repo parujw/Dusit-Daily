@@ -93,6 +93,7 @@ LINE Notify ปิดบริการแล้ว จึงใช้ Messaging
 ### 5. แปลภาษา (ไม่บังคับ)
 - **ฟรีทันที:** ให้พนักงานใช้ตัวแปลของมือถือ (Safari: aA → แปล, Chrome: ⋮ → แปล) โดยตั้งภาษาในแอปเป็นไทย
 - **แปลเนื้อหางานอัตโนมัติ:** สร้าง API key ของ Google Cloud Translation (console.cloud.google.com → APIs & Services → เปิด Cloud Translation API → Credentials → Create API key → จำกัด key ให้ใช้ได้กับ Cloud Translation API เท่านั้น) แล้วใส่ใน Vercel เป็น `GOOGLE_TRANSLATE_API_KEY` และ Redeploy ฟรีเดือนละ 500,000 ตัวอักษร ถ้าไม่มี key นี้จะใช้ Claude แทน (ถ้ามี `ANTHROPIC_API_KEY`)
+- **ใช้คำแปลร่วมกันทั้งทีม:** ข้อความที่แปลแล้วเก็บไว้ที่ Firestore `teams/{TEAM_ID}/translations` (เซิร์ฟเวอร์เขียนผ่าน `FIREBASE_SERVICE_ACCOUNT` เท่านั้น มือถืออ่านเขียนตรงไม่ได้ ไม่ต้องแก้ Rules) เครื่องอื่นที่เปิดข้อความเดียวกันจะได้ผลจากที่เก็บไว้ ไม่ต้องแปลซ้ำ จึงใช้โควตาแค่ครั้งเดียวต่อข้อความต่อภาษา
 - การแปลแสดงบนจออย่างเดียว ไม่แก้ข้อมูลงานที่บันทึกไว้
 
 ## ความปลอดภัยและ PDPA
