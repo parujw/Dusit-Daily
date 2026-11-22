@@ -1256,7 +1256,8 @@ function myNotifs() {
   const me = myUid(); if (!me) return [];
   const done = ITEMS.filter(i => i.done && i.byUid === me && i.doneByUid && i.doneByUid !== me).map(it => ({ it, kind: "done", at: it.doneAt || 0 }));
   const sent = ITEMS.filter(i => !i.done && i.assigneeUid === me && i.byUid !== me).map(it => ({ it, kind: "assigned", at: it.assignedAt || it.createdAt || 0 }));
-  return [...done, ...sent].sort((a, b) => b.at - a.at);
+  const briefs = BRIEFS.filter(b => b.toUid === me && b.byUid !== me).map(b => ({ b, kind: "brief", at: b.at || 0 }));
+  return [...done, ...sent, ...briefs].sort((a, b) => b.at - a.at);
 }
 function checkNotifs() {
   const bell = $("#bellBtn"); bell.hidden = !ME;
@@ -1266,21 +1267,25 @@ function checkNotifs() {
   const badge = $("#bellBadge"); badge.hidden = !unseen; badge.textContent = unseen > 9 ? "9+" : unseen;
   bell.setAttribute("aria-label", unseen ? `แจ้งเตือน ${unseen} รายการใหม่` : "แจ้งเตือน");
   for (const n of list) {
-    const key = n.kind + n.it.id;
+    const key = n.kind + (n.it || n.b).id;
     if (n.at <= bootAt || toasted.has(key)) continue;
     toasted.add(key);
-    const msg = n.kind === "done"
-      ? `${n.it.room} ที่คุณแจ้ง เรียบร้อยแล้ว · โดย ${n.it.doneBy || "ทีม"}`
+    const msg = n.kind === "done" ? `${n.it.room} ที่คุณแจ้ง เรียบร้อยแล้ว · โดย ${n.it.doneBy || "ทีม"}`
+      : n.kind === "brief" ? `สรุปงานถึงคุณ · จาก ${n.b.by || "ทีม"} · ${n.b.n} เรื่อง`
       : `งานใหม่ถึงคุณ · ห้อง ${n.it.room} · จาก ${n.it.by || "ทีม"}`;
-    toast((n.kind === "done" ? "✅ " : "📌 ") + msg);
+    toast((n.kind === "done" ? "✅ " : n.kind === "brief" ? "📋 " : "📌 ") + msg);
     try { if (document.hidden && Notification.permission === "granted") new Notification("Dusit Daily", { body: msg, icon: "icon-192.png" }); } catch (e) {}
   }
 }
 listeners.add(checkNotifs);
 function openInbox() {
   const list = myNotifs(), seen = seenAt();
-  openSheet(`<h3>แจ้งเตือน</h3><p class="note">งานที่ส่งถึงคุณ และงานที่คุณแจ้งซึ่งเพื่อนทำเรียบร้อยแล้ว</p>
-    ${list.length ? `<div class="tasks">${list.slice(0, 60).map(({ it, kind, at }) => `
+  openSheet(`<h3>แจ้งเตือน</h3><p class="note">งานและสรุปที่ส่งถึงคุณ และงานที่คุณแจ้งซึ่งเพื่อนทำเรียบร้อยแล้ว</p>
+    ${list.length ? `<div class="tasks">${list.slice(0, 60).map(({ it, b, kind, at }) => kind === "brief" ? `
+      <button class="noti ${at > seen ? "new" : ""}" data-brief-open="1">
+        <span class="noti-ic assign">${IC.receipt}</span>
+        <span class="noti-t"><b>สรุปงานถึงคุณ · ${b.n} เรื่อง</b><span>${esc(b.title || "สรุป")}</span><small>จาก ${esc(b.by || "-")} · ${esc(fmt(at))}</small></span>
+      </button>` : `
       <button class="noti ${at > seen ? "new" : ""}" data-open="${esc(it.id)}">
         <span class="noti-ic ${kind === "assigned" ? "assign" : ""}">${kind === "assigned" ? IC.plus : IC.check}</span>
         <span class="noti-t"><b>${kind === "assigned" ? `งานใหม่ถึงคุณ · ห้อง ${esc(it.room)}` : `${esc(it.room)} เรียบร้อยแล้ว`}</b><span>${esc(it.action || it.summary)}</span>
@@ -1290,6 +1295,7 @@ function openInbox() {
   try { localStorage.setItem(seenKey(), String(Date.now())); } catch (e) {}
   checkNotifs();
   $("#sheetIn").querySelectorAll("[data-open]").forEach(b => b.onclick = () => openItem(b.dataset.open));
+  $("#sheetIn").querySelectorAll("[data-brief-open]").forEach(b => b.onclick = () => { closeAll(); show("briefs"); });
 }
 
 // ---------------- render ----------------
@@ -1544,7 +1550,7 @@ function renderBriefs() {
     const ackHtml = acks.length ? acks.map(a => `<span class="ack">✓ ${esc(a.name)} · ${new Date(a.at).toLocaleTimeString("th-TH", { hour: "2-digit", minute: "2-digit" })}</span>`).join("") : `<span class="ack wait">ยังไม่มีใครรับทราบ</span>`;
     return `<article class="bcard">
       <div class="bmeta"><span>${esc(fmt(b.at))} · ${esc(b.by || "-")}</span><span>${b.n} เรื่อง${b.urgent ? ` · ด่วน ${b.urgent}` : ""}${b.via ? " · " + esc(b.via) : ""}</span></div>
-      <div class="bhead">${esc(b.title || "สรุป")}${isYmd(b.day) ? " · " + esc(thDate(b.day, { day: "numeric", month: "short", year: "numeric" })) : ""}</div>
+      <div class="bhead">${esc(b.title || "สรุป")}${b.toName ? " · ถึง " + esc(b.toName) : ""}${isYmd(b.day) ? " · " + esc(thDate(b.day, { day: "numeric", month: "short", year: "numeric" })) : ""}</div>
       <div class="acks">${ackHtml}</div>
       <details class="more"><summary>ดูข้อความ</summary><pre class="brief" style="margin-top:8px">${esc(b.text)}</pre></details>
       <div class="row"><button class="btn sec" data-copy="${esc(b.id)}">คัดลอก</button><button class="btn dark" data-ack="${esc(b.id)}">รับทราบ</button></div>
@@ -2102,6 +2108,7 @@ function buildBrief(items, title, opts = {}) {
   const nowN = groups[0].list.length, carryN = groups[1].list.length;
   const ICON = { now: "📌", carry: "⏳", timed: "🕒", follow: "🔁", info: "💬" };
   let t = `📋 สรุปงาน FO · ${thDate(SEL, { weekday: "short", day: "numeric", month: "short", year: "numeric" })} · ${title}\n`;
+  if (ME && opts.toUid !== undefined) t += `ถึง: ${opts.toName || "ทุกคน"}\n`;
   if (!items.length) t += `ไม่มีเรื่องค้าง ✓\n`;
   else t += nowN || carryN ? `📌 ${[nowN ? `ทำก่อน ${nowN}` : "", carryN ? `ยกมาจากวันก่อน ${carryN}` : ""].filter(Boolean).join(" · ")} · ทั้งหมด ${items.length} งาน\n` : `ไม่มีเรื่องรีบ · ทั้งหมด ${items.length} เรื่อง\n`;
   for (const g of groups) {
@@ -2119,8 +2126,10 @@ function buildBrief(items, title, opts = {}) {
 }
 function briefSheet(items, title, opts = {}) {
   let briefId = null;
+  if (opts.toUid === undefined) { opts.toUid = ""; opts.toName = ""; }
   openSheet(`<h3>สรุปส่งไลน์</h3>
     ${opts.unchecked ? `<button class="link" type="button" id="backCheck" style="align-self:flex-start">← กลับไปเช็ก</button>` : ""}
+    ${ME ? `<div><span class="lab">ส่งถึง</span><div class="pick" id="bTo"></div></div>` : ""}
     ${ME ? "" : `<div><label class="lab" for="sender">ชื่อผู้ส่ง</label><input type="text" id="sender" placeholder="เช่น คิว (FOM)" value="${esc(P.name)}"></div>`}
     <pre class="brief" id="briefTxt"></pre>
     <div class="row" id="sendRow">
@@ -2140,10 +2149,24 @@ function briefSheet(items, title, opts = {}) {
     return t;
   };
   $("#sender")?.addEventListener("input", upd);
+  const drawTo = () => {
+    const el = $("#bTo"); if (!el) return;
+    el.innerHTML = `<button type="button" class="chip" data-to="" aria-pressed="${!opts.toUid}">ทุกคน</button>` +
+      STAFF().filter(m => m.uid !== myUid()).map(m => `<button type="button" class="chip" data-to="${esc(m.uid)}" aria-pressed="${m.uid === opts.toUid}">${esc(m.name)}</button>`).join("");
+  };
+  drawTo();
+  if (!TEAM.length && ME) loadTeam().then(drawTo);
+  $("#bTo")?.addEventListener("click", e => {
+    const b = e.target.closest("[data-to]"); if (!b) return;
+    const m = TEAM.find(x => x.uid === b.dataset.to);
+    opts.toUid = m ? m.uid : ""; opts.toName = m ? m.name : "";
+    if (briefId) store.patchBrief(briefId, { toUid: opts.toUid, toName: opts.toName }).catch(() => {});
+    drawTo(); upd();
+  });
   upd();
   const log = async (text, via) => {
     if (briefId) { store.patchBrief(briefId, { text, via }).catch(() => {}); return briefId; }
-    briefId = await store.addBrief({ at: Date.now(), text, title, n: items.length, urgent: items.filter(i => i.pri === "urgent").length, by: myName(), byUid: myUid(), day: SEL, via, acks: [], checked: opts.unchecked ? CATS.length - opts.unchecked.length : null }).catch(() => null);
+    briefId = await store.addBrief({ at: Date.now(), text, title, n: items.length, urgent: items.filter(i => i.pri === "urgent").length, by: myName(), byUid: myUid(), day: SEL, via, acks: [], checked: opts.unchecked ? CATS.length - opts.unchecked.length : null, toUid: opts.toUid || "", toName: opts.toName || "" }).catch(() => null);
     return briefId;
   };
   $("#cp").onclick = () => { const t = upd(); copy(t); log(t, "คัดลอก"); };
