@@ -279,6 +279,21 @@ details.more > div{display:flex;flex-direction:column;gap:12px}
 .calm b{display:block;font-family:var(--f-display);margin-bottom:2px}
 .next-hint{margin:18px 0 -14px;font-size:13.5px;font-weight:600;color:var(--green)}
 
+/* handover check */
+.hc-top{display:flex;align-items:center;gap:10px}
+.hc-top span{font-size:13.5px;color:var(--muted);white-space:nowrap}
+.hc-list{display:flex;flex-direction:column;gap:8px}
+.hc-row{display:flex;align-items:center;gap:10px;padding:10px 12px;border-radius:16px;background:var(--card);border:1px solid var(--line);flex-wrap:wrap}
+.hc-row.ok{border-color:color-mix(in srgb,var(--green) 45%,var(--line));background:color-mix(in srgb,var(--green-soft) 45%,var(--card))}
+.hc-q{flex:1;min-width:150px;display:flex;flex-direction:column}
+.hc-q b{font-family:var(--f-display);font-size:15px}
+.hc-q small{color:var(--muted);font-size:13px;line-height:1.35}
+.hc-a{display:flex;gap:6px;align-items:center;margin-left:auto}
+.hc-a .mini{min-height:34px;padding:5px 12px}
+.hc-a .mini.on{background:var(--green);border-color:var(--green);color:#fff}
+.hc-has{display:inline-flex;align-items:center;gap:4px;font-size:13px;font-weight:600;color:var(--green)}
+.hc-has svg{width:15px;height:15px}
+
 /* status strip */
 .status{display:flex;align-items:center;gap:14px;flex-wrap:wrap;padding:16px 18px;border-radius:24px;color:#fff;
   background:radial-gradient(120% 120% at 100% 0%,rgba(220,192,141,.2),transparent 55%),linear-gradient(160deg,var(--night-2),var(--night));box-shadow:0 10px 30px rgba(14,21,36,.22)}
@@ -683,7 +698,7 @@ details.more summary{cursor:pointer;color:var(--gold-ink);font-size:13.5px;font-
 
   <!-- BRIEFS -->
   <section id="v-briefs" hidden>
-    <header class="top"><div><div class="eyebrow">ใครรับเวรแล้วบ้าง</div><h1>สรุปที่ส่งไลน์</h1></div></header>
+    <header class="top"><div><div class="eyebrow">ประวัติ</div><h1>สรุปที่ส่งไลน์</h1></div></header>
     <div class="hist" id="hist"></div>
   </section>
 
@@ -1523,16 +1538,16 @@ function openMonthPicker() {
 
 function renderBriefs() {
   const el = $("#hist");
-  if (!BRIEFS.length) { el.innerHTML = `<div class="empty">ยังไม่มีสรุปที่ส่ง<br>สรุปที่ส่งหรือคัดลอกเข้าไลน์จะเก็บไว้ที่นี่ พร้อมรายชื่อคนที่รับเวรแล้ว</div>`; return; }
+  if (!BRIEFS.length) { el.innerHTML = `<div class="empty">ยังไม่มีสรุปที่ส่ง<br>สรุปที่ส่งหรือคัดลอกเข้าไลน์จะเก็บไว้ที่นี่</div>`; return; }
   el.innerHTML = BRIEFS.map(b => {
     const acks = b.acks || [];
-    const ackHtml = acks.length ? acks.map(a => `<span class="ack">✓ ${esc(a.name)} · ${new Date(a.at).toLocaleTimeString("th-TH", { hour: "2-digit", minute: "2-digit" })}</span>`).join("") : `<span class="ack wait">ยังไม่มีคนรับเวร</span>`;
+    const ackHtml = acks.length ? acks.map(a => `<span class="ack">✓ ${esc(a.name)} · ${new Date(a.at).toLocaleTimeString("th-TH", { hour: "2-digit", minute: "2-digit" })}</span>`).join("") : `<span class="ack wait">ยังไม่มีใครรับทราบ</span>`;
     return `<article class="bcard">
       <div class="bmeta"><span>${esc(fmt(b.at))} · ${esc(b.by || "-")}</span><span>${b.n} เรื่อง${b.urgent ? ` · ด่วน ${b.urgent}` : ""}${b.via ? " · " + esc(b.via) : ""}</span></div>
       <div class="bhead">${esc(b.title || "สรุป")}${isYmd(b.day) ? " · " + esc(thDate(b.day, { day: "numeric", month: "short", year: "numeric" })) : ""}</div>
       <div class="acks">${ackHtml}</div>
       <details class="more"><summary>ดูข้อความ</summary><pre class="brief" style="margin-top:8px">${esc(b.text)}</pre></details>
-      <div class="row"><button class="btn sec" data-copy="${esc(b.id)}">คัดลอก</button><button class="btn dark" data-ack="${esc(b.id)}">ฉันรับเวรแล้ว</button></div>
+      <div class="row"><button class="btn sec" data-copy="${esc(b.id)}">คัดลอก</button><button class="btn dark" data-ack="${esc(b.id)}">รับทราบ</button></div>
     </article>`;
   }).join("");
 }
@@ -1545,8 +1560,8 @@ document.addEventListener("click", e => {
   const ak = e.target.closest("[data-ack]"); if (ak) {
     if (!myName()) { toast("ใส่ชื่อของคุณในตั้งค่าก่อน"); return openSettings(); }
     const b = BRIEFS.find(x => x.id === ak.dataset.ack);
-    if (b && (b.acks || []).some(a => a.name === myName())) return toast("คุณรับเวรนี้แล้ว");
-    store.ackBrief(ak.dataset.ack, { name: myName(), uid: myUid(), at: Date.now(), via: "app" }).then(() => toast("บันทึกว่ารับเวรแล้ว"));
+    if (b && (b.acks || []).some(a => a.name === myName())) return toast("คุณรับทราบแล้ว");
+    store.ackBrief(ak.dataset.ack, { name: myName(), uid: myUid(), at: Date.now(), via: "app" }).then(() => toast("รับทราบแล้ว"));
   }
 });
 
@@ -2082,12 +2097,13 @@ function heuristic(text, cat) {
 }
 
 // ---------------- brief ----------------
-function buildBrief(items, title) {
+function buildBrief(items, title, opts = {}) {
   const groups = groupTasks(items);
   const nowN = groups[0].list.length, carryN = groups[1].list.length;
   const ICON = { now: "📌", carry: "⏳", timed: "🕒", follow: "🔁", info: "💬" };
   let t = `📋 สรุปงาน FO · ${thDate(SEL, { weekday: "short", day: "numeric", month: "short", year: "numeric" })} · ${title}\n`;
-  t += nowN || carryN ? `📌 ${[nowN ? `ทำก่อน ${nowN}` : "", carryN ? `ยกมาจากวันก่อน ${carryN}` : ""].filter(Boolean).join(" · ")} · ทั้งหมด ${items.length} งาน\n` : `ไม่มีเรื่องรีบ · ทั้งหมด ${items.length} เรื่อง\n`;
+  if (!items.length) t += `ไม่มีเรื่องค้าง ✓\n`;
+  else t += nowN || carryN ? `📌 ${[nowN ? `ทำก่อน ${nowN}` : "", carryN ? `ยกมาจากวันก่อน ${carryN}` : ""].filter(Boolean).join(" · ")} · ทั้งหมด ${items.length} งาน\n` : `ไม่มีเรื่องรีบ · ทั้งหมด ${items.length} เรื่อง\n`;
   for (const g of groups) {
     if (!g.list.length) continue;
     t += `\n${ICON[g.key]} ${g.title} (${g.list.length})\n`;
@@ -2097,12 +2113,14 @@ function buildBrief(items, title) {
       if (it.action && it.summary) t += `   (${it.summary})\n`;
     }
   }
-  t += `\nผู้ส่ง: ${myName() || "-"}\nรับเวรแล้วตอบ "รับ" ในกลุ่มนี้ด้วยครับ`;
+  if (opts.unchecked) t += opts.unchecked.length ? `\nยังไม่ได้เช็ก: ${opts.unchecked.join(", ")}` : `\n✅ เช็กครบทุกหมวดแล้ว`;
+  t += `\nผู้ส่ง: ${myName() || "-"}`;
   return t;
 }
-function briefSheet(items, title) {
+function briefSheet(items, title, opts = {}) {
   let briefId = null;
   openSheet(`<h3>สรุปส่งไลน์</h3>
+    ${opts.unchecked ? `<button class="link" type="button" id="backCheck" style="align-self:flex-start">← กลับไปเช็ก</button>` : ""}
     ${ME ? "" : `<div><label class="lab" for="sender">ชื่อผู้ส่ง</label><input type="text" id="sender" placeholder="เช่น คิว (FOM)" value="${esc(P.name)}"></div>`}
     <pre class="brief" id="briefTxt"></pre>
     <div class="row" id="sendRow">
@@ -2110,12 +2128,13 @@ function briefSheet(items, title) {
       <button class="btn sec" id="cp">คัดลอก</button>
     </div>
     <p class="err" id="sendErr" hidden></p>
-    <button class="link" type="button" id="toHistory">ดูสรุปที่ส่งแล้ว และใครรับเวร</button>
+    <button class="link" type="button" id="toHistory">ดูสรุปที่ส่งแล้ว</button>
     <p class="note">${SERVER.linePush ? "ส่งผ่านบัญชี LINE OA ของทีม เพื่อนตอบ “รับ” ในกลุ่มแล้วชื่อจะขึ้นในหน้าสรุปที่ส่ง" : "“เปิดใน LINE” จะเปิดหน้าเลือกแชท ถ้าไม่เปิด ให้คัดลอกแล้ววางในกลุ่มเอง"}</p>`);
   $("#toHistory").onclick = () => { closeAll(); show("briefs"); };
+  if ($("#backCheck")) $("#backCheck").onclick = () => openHandoverCheck();
   const upd = () => {
     if ($("#sender")) { P.name = $("#sender").value.trim(); savePrefs(); }
-    const t = buildBrief(items, title);
+    const t = buildBrief(items, title, opts);
     $("#briefTxt").textContent = t;
     const ln = $("#ln"); if (ln) ln.href = "https://line.me/R/share?text=" + encodeURIComponent(t);
     return t;
@@ -2124,7 +2143,7 @@ function briefSheet(items, title) {
   upd();
   const log = async (text, via) => {
     if (briefId) { store.patchBrief(briefId, { text, via }).catch(() => {}); return briefId; }
-    briefId = await store.addBrief({ at: Date.now(), text, title, n: items.length, urgent: items.filter(i => i.pri === "urgent").length, by: myName(), byUid: myUid(), day: SEL, via, acks: [] }).catch(() => null);
+    briefId = await store.addBrief({ at: Date.now(), text, title, n: items.length, urgent: items.filter(i => i.pri === "urgent").length, by: myName(), byUid: myUid(), day: SEL, via, acks: [], checked: opts.unchecked ? CATS.length - opts.unchecked.length : null }).catch(() => null);
     return briefId;
   };
   $("#cp").onclick = () => { const t = upd(); copy(t); log(t, "คัดลอก"); };
@@ -2142,11 +2161,41 @@ function briefSheet(items, title) {
     }
   };
 }
-$("#sendAll").onclick = () => {
-  const open = dayItems(SEL).filter(i => !i.done);
-  if (!open.length) { toast("ไม่มีงานค้างของวันนี้ ดูสรุปที่ส่งแล้วได้ที่ ประวัติ"); return; }
-  briefSheet(open, "สรุปประจำวัน");
+// Before sending, walk through every category once so nothing is forgotten.
+const HC_Q = {
+  vip: "แขก VIP หรือแขกมาถึงที่ต้องเตรียม", room: "ห้องที่ต้องให้ HK ทำ หรือ late check-out",
+  complaint: "แขกไม่พอใจที่ยังไม่จบ", maint: "ห้องเสีย หรือแจ้งช่างแล้วยังไม่เสร็จ",
+  billing: "มัดจำ บิล หรือเงินที่ค้าง", lost: "ของหาย หรือของฝากแขก", other: "เรื่องอื่นที่คนถัดไปควรรู้",
 };
+let HC = { day: "", ans: {} };
+function openHandoverCheck() {
+  if (HC.day !== SEL) HC = { day: SEL, ans: {} };
+  openSheet(`<h3>เช็กก่อนส่ง</h3><p class="note">ไล่ดูทีละหมวดกันลืม ใช้เวลาไม่ถึงนาที</p>
+    <div class="hc-top"><div class="pg-bar"><i id="hcFill"></i></div><span id="hcTxt"></span></div>
+    <div class="hc-list" id="hcList"></div>
+    <div class="form-foot"><button class="btn pri" id="hcNext"></button></div>`);
+  const draw = () => {
+    const open = dayItems(SEL).filter(i => !i.done);
+    const rows = CATS.map(c => { const n = open.filter(i => i.cat === c.id).length; return { c, n, a: n ? "has" : HC.ans[c.id] }; });
+    const ok = rows.filter(r => r.a).length;
+    $("#hcFill").style.width = Math.round(ok / rows.length * 100) + "%";
+    $("#hcTxt").textContent = `เช็กแล้ว ${ok}/${rows.length}`;
+    $("#hcList").innerHTML = rows.map(r => `<div class="hc-row ${r.a ? "ok" : ""}">${catIcon(r.c.id)}
+      <div class="hc-q"><b>${esc(CAT_SHORT[r.c.id])}</b><small>${esc(HC_Q[r.c.id])}</small></div>
+      <div class="hc-a">${r.n ? `<span class="hc-has">${IC.check}จดแล้ว ${r.n}</span><button type="button" class="mini" data-add="${r.c.id}">+ เพิ่ม</button>`
+        : `<button type="button" class="mini ${r.a === "none" ? "on" : ""}" data-none="${r.c.id}">ไม่มี</button><button type="button" class="mini" data-add="${r.c.id}">มี · จด</button>`}</div></div>`).join("");
+    const left = rows.length - ok;
+    $("#hcNext").innerHTML = left ? `ไปสรุป · ยังไม่เช็ก ${left} หมวด` : `${IC.check}เช็กครบ · ไปสรุป`;
+    $("#hcNext").onclick = () => briefSheet(dayItems(SEL).filter(i => !i.done), "สรุปประจำวัน", { unchecked: rows.filter(r => !r.a).map(r => CAT_SHORT[r.c.id]) });
+  };
+  $("#hcList").addEventListener("click", e => {
+    const no = e.target.closest("[data-none]"), add = e.target.closest("[data-add]");
+    if (no) { HC.ans[no.dataset.none] = HC.ans[no.dataset.none] === "none" ? "" : "none"; draw(); }
+    if (add) openTaskForm({ cat: add.dataset.add, date: SEL, onDone: openHandoverCheck });
+  });
+  draw();
+}
+$("#sendAll").onclick = () => openHandoverCheck();
 function copy(t) {
   const ok = () => toast("คัดลอกแล้ว วางในกลุ่ม LINE ได้เลย");
   const fallback = () => {
@@ -2235,6 +2284,7 @@ async function openTaskForm(pre = {}) {
     const btn = $("#tSave"); btn.disabled = true;
     try {
       await store.addItems([it]);
+      if (pre.onDone) { pre.onDone(); toast(`จดไว้แล้ว ✓ ห้อง ${it.room}`); return; }
       closeAll();
       if (view !== "home") show("home");
       if (it.dueDate !== SEL) setDay(it.dueDate);
@@ -2292,13 +2342,13 @@ function openSettings() {
   openSheet(`<h3>เมนู</h3>
     <div class="menu-list">
       ${canManage() ? `<button class="menu-item" id="goMgmt">${IC.chart}<span><b>Management</b><small>ภาพรวมงานค้างทั้งปี${isAdmin() ? " และบัญชีพนักงาน" : ""}</small></span>${IC.chev}</button>` : ""}
-      <button class="menu-item" id="goHist">${IC.receipt}<span><b>สรุปที่ส่งไลน์</b><small>ประวัติสรุปและใครรับเวรแล้ว</small></span>${IC.chev}</button>
+      <button class="menu-item" id="goHist">${IC.receipt}<span><b>สรุปที่ส่งไลน์</b><small>ประวัติสรุปที่ส่งไลน์</small></span>${IC.chev}</button>
     </div>
     ${ME ? `<div class="bcard acct">
       <div class="acct-row"><span class="avatar">${esc((ME.name || "?").slice(0, 1).toUpperCase())}</span>
         <div><div class="bhead">${esc(ME.name)} ${isAdmin() ? '<span class="tag ex">ผู้ดูแล</span>' : ""}</div><p class="note">${esc(showId(ME.email))}</p></div></div>
       <div class="row"><button class="btn sec" id="pwBtn">เปลี่ยนรหัสผ่าน</button><button class="btn sec" id="outBtn">ออกจากระบบ</button></div>
-    </div>` : `<div><label class="lab" for="sName">ชื่อของคุณ (ขึ้นในสรุปและตอนรับเวร)</label><input type="text" id="sName" value="${esc(P.name)}" placeholder="เช่น คิว (FOM)"></div>`}
+    </div>` : `<div><label class="lab" for="sName">ชื่อของคุณ (ขึ้นในสรุปที่ส่ง)</label><input type="text" id="sName" value="${esc(P.name)}" placeholder="เช่น คิว (FOM)"></div>`}
     ${SERVER.linePush ? `<label class="switch"><input type="checkbox" id="sLineDone" ${P.lineOnDone === false ? "" : "checked"}><span>แจ้งในกลุ่ม LINE เมื่องานเสร็จ</span></label>` : ""}
     ${ME && canNotify ? `<button class="btn sec" id="notiBtn">เปิดการแจ้งเตือนบนเครื่องนี้</button>` : ""}
     ${AUTH === "none" && (SERVER.pin || SERVER.ai) ? `<div><label class="lab" for="sPin">PIN ทีม (ใช้ AI และส่ง LINE)</label><input type="password" id="sPin" value="${esc(P.pin)}" autocomplete="off"></div>` : ""}

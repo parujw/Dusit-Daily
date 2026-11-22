@@ -1,6 +1,6 @@
 // POST /api/line-webhook  (set this URL as the Webhook URL in LINE Developers)
 // - "jarvis id" in a group: saves the group as the team's handover group and replies with its id
-// - "รับ" / "รับเวร" / "รับทราบ": records who acknowledged the latest brief
+// - "รับ" / "รับทราบ": records who acknowledged the latest summary
 import crypto from "node:crypto";
 import { FieldValue } from "firebase-admin/firestore";
 import { admin, TEAM_ID } from "./_lib.js";
@@ -49,7 +49,7 @@ export async function POST(request) {
         { acks: FieldValue.arrayUnion({ name, at: Date.now(), via: "line" }) },
         { merge: true },
       );
-      await reply(token, ev.replyToken, `รับทราบครับ ${name} รับเวรแล้ว ✅`);
+      await reply(token, ev.replyToken, `${name} รับทราบแล้ว ✅`);
     }
   }
   return new Response("ok");
