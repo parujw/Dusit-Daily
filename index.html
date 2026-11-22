@@ -556,7 +556,8 @@ pre.brief{white-space:pre-wrap;word-break:break-word;margin:0;background:var(--c
 .composer{display:flex;gap:8px;align-items:flex-end;background:rgba(6,22,38,.9);border:1px solid var(--hud-line);border-radius:22px;padding:6px;box-shadow:0 0 0 0 rgba(220,192,141,0);transition:box-shadow .2s,border-color .2s}
 .composer:focus-within{border-color:var(--hud-cyan);box-shadow:0 0 18px rgba(220,192,141,.3)}
 .composer textarea{border:0;background:none;color:var(--hud-text);min-height:0;padding:10px 4px;resize:none;border-radius:0;outline:none;line-height:1.4}
-.composer textarea::placeholder{color:var(--hud-dim)}
+.composer textarea::placeholder{color:var(--hud-dim);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.composer textarea{min-width:0;flex:1;height:44px}
 .mic-btn,.send-btn{flex:none;width:44px;height:44px;border-radius:50%;display:grid;place-items:center;transition:transform .12s}
 .mic-btn:active,.send-btn:active{transform:scale(.92)}
 .mic-btn{color:var(--hud-cyan);background:rgba(220,192,141,.1);box-shadow:inset 0 0 0 1.5px var(--hud-line)}
@@ -1837,7 +1838,7 @@ function openJarvis(cat, autoStart) {
       <div class="partial" id="partial"></div>
       <div class="composer">
         <button class="mic-btn" id="micBtn" aria-label="พูด">${IC.mic}</button>
-        <textarea id="note" rows="1" placeholder="พิมพ์หรือแตะไมค์เพื่อสั่งงาน" aria-label="ข้อความถึง Dusit Help"></textarea>
+        <textarea id="note" rows="1" placeholder="พิมพ์หรือแตะไมค์" aria-label="ข้อความถึง Dusit Help"></textarea>
         <button class="send-btn" id="sendBtn" aria-label="ส่ง">${IC.send}</button>
       </div>
     </div>`, "chat");
