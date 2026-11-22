@@ -41,7 +41,7 @@ export async function requireMember(request) {
       const tok = await a.auth.verifyIdToken(bearer);
       const prof = await a.db.doc(`users/${tok.uid}`).get();
       if (prof.exists && prof.data().team === TEAM_ID && !prof.data().disabled) {
-        return { name: prof.data().name || tok.email };
+        return { uid: tok.uid, name: prof.data().name || tok.email, role: prof.data().role || "staff" };
       }
       return json({ error: "บัญชีนี้ยังไม่อยู่ในทีม ให้ผู้ดูแลเพิ่มที่ Management > บัญชีพนักงาน" }, 403);
     } catch {
@@ -49,7 +49,21 @@ export async function requireMember(request) {
     }
   }
   const pin = process.env.TEAM_PIN;
-  if (pin && request.headers.get("x-team-pin") === pin) return { name: "PIN" };
+  if (pin && request.headers.get("x-team-pin") === pin) return { uid: "", name: "PIN", role: "admin" };
   if (!a && !pin) return json({ error: "เซิร์ฟเวอร์ยังไม่ได้ตั้ง TEAM_PIN หรือ FIREBASE_SERVICE_ACCOUNT" }, 503);
   return json({ error: "ต้องเข้าสู่ระบบหรือใส่ PIN ทีมในหน้าตั้งค่า" }, 401);
+}
+
+// Team knowledge for Dusit Help: one document, written only by the server (api/knowledge.js).
+export const knowledgeDoc = (a) => a.db.doc(`teams/${TEAM_ID}/meta/knowledge`);
+export async function loadKnowledge(a) {
+  if (!a) return [];
+  try {
+    const s = await knowledgeDoc(a).get();
+    const items = s.exists && Array.isArray(s.data().items) ? s.data().items : [];
+    return items.filter((k) => k && typeof k.text === "string" && k.text.trim());
+  } catch (e) {
+    console.warn("knowledge read failed", e?.message);
+    return [];
+  }
 }
