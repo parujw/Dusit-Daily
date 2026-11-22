@@ -25,7 +25,7 @@
   --gold:#b08a4f; --gold-hi:#dcc08d; --gold-ink:#8a6a35; --gold-soft:#f3ead9;
   --night:#0e1524; --night-2:#1b2438; --night-ink:#c9d0de;
   --bg:#f4f4f2; --card:#ffffff; --ink:#151821; --muted:#5b6270; --line:#e7e6e1;
-  --red:#d9473b; --red-ink:#b42318; --red-soft:#fbeae8;
+  --red:#e0705c; --red-ink:#b5503f; --red-soft:#fcefea;
   --amber:#e08a00; --amber-ink:#a35f00; --amber-soft:#fdf1dc;
   --green:#1f9d7a; --green-soft:#e2f4ee;
   --scrim:rgba(14,21,36,.55); --shadow:0 1px 2px rgba(14,21,36,.04),0 8px 24px rgba(14,21,36,.06);
@@ -39,7 +39,7 @@
   --gold:#c9a46a; --gold-hi:#e6cc9b; --gold-ink:#e0c28c; --gold-soft:#2e2718;
   --night:#121a2b; --night-2:#1f2a41; --night-ink:#c9d0de;
   --bg:#0a0d13; --card:#141922; --ink:#eef0f4; --muted:#8f97a6; --line:#242b37;
-  --red:#ff6a5c; --red-ink:#ff8a7e; --red-soft:#3a1b18; --amber:#f5a524; --amber-ink:#f5b54a; --amber-soft:#35290f;
+  --red:#f08a78; --red-ink:#f4a091; --red-soft:#36211d; --amber:#f5a524; --amber-ink:#f5b54a; --amber-soft:#35290f;
   --green:#3cc39c; --green-soft:#11322a; --scrim:rgba(0,0,0,.62); --shadow:0 1px 2px rgba(0,0,0,.3);
   --c-done:#5f8fe0; --c-open:#ec5a4c;
   color-scheme:dark}}
@@ -47,7 +47,7 @@
   --gold:#c9a46a; --gold-hi:#e6cc9b; --gold-ink:#e0c28c; --gold-soft:#2e2718;
   --night:#121a2b; --night-2:#1f2a41; --night-ink:#c9d0de;
   --bg:#0a0d13; --card:#141922; --ink:#eef0f4; --muted:#8f97a6; --line:#242b37;
-  --red:#ff6a5c; --red-ink:#ff8a7e; --red-soft:#3a1b18; --amber:#f5a524; --amber-ink:#f5b54a; --amber-soft:#35290f;
+  --red:#f08a78; --red-ink:#f4a091; --red-soft:#36211d; --amber:#f5a524; --amber-ink:#f5b54a; --amber-soft:#35290f;
   --green:#3cc39c; --green-soft:#11322a; --scrim:rgba(0,0,0,.62); --shadow:0 1px 2px rgba(0,0,0,.3);
   --c-done:#5f8fe0; --c-open:#ec5a4c;
   color-scheme:dark}
@@ -223,7 +223,7 @@ details.tbl-view summary{cursor:pointer;color:var(--gold-ink);font-weight:600;fo
 .nav-reactor{width:30px;height:30px;display:block}
 .nav-reactor .reactor{width:30px;height:30px;filter:drop-shadow(0 0 6px rgba(94,214,255,.6))}
 .nav-btn.help{color:#9fdcf5}
-.carrybox{margin-top:22px;border:1px solid color-mix(in srgb,var(--red) 30%,var(--line));border-radius:18px;background:var(--card);padding:4px 12px}
+.carrybox{margin-top:22px;border:1px solid var(--line);border-radius:18px;background:var(--card);padding:4px 12px}
 .carrybox summary{cursor:pointer;list-style:none;display:flex;align-items:center;gap:8px;padding:10px 2px;font-family:var(--f-display);font-weight:700;font-size:16px}
 .carrybox summary::-webkit-details-marker{display:none}
 .carrybox summary small{font-family:var(--f-body);font-weight:500;color:var(--muted);font-size:13px}
@@ -269,6 +269,16 @@ details.more > div{display:flex;flex-direction:column;gap:12px}
 .menu-item b{font-family:var(--f-display);font-size:16px}
 .menu-item small{color:var(--muted);font-size:13px}
 
+/* calm layer */
+.progress{display:flex;align-items:center;gap:10px;margin:12px 2px 0}
+.pg-bar{flex:1;height:8px;border-radius:99px;background:var(--line);overflow:hidden}
+.pg-bar i{display:block;height:100%;border-radius:99px;background:linear-gradient(90deg,var(--green),#5cc9a7);transition:width .5s ease}
+.progress span{font-size:13.5px;color:var(--muted);white-space:nowrap}
+@media (max-width:380px){.progress{flex-wrap:wrap}.progress span{white-space:normal}}
+.calm{margin-top:12px;padding:12px 14px;border-radius:16px;background:var(--green-soft);color:var(--ink);font-size:14px;line-height:1.55}
+.calm b{display:block;font-family:var(--f-display);margin-bottom:2px}
+.next-hint{margin:18px 0 -14px;font-size:13.5px;font-weight:600;color:var(--green)}
+
 /* status strip */
 .status{display:flex;align-items:center;gap:14px;flex-wrap:wrap;padding:16px 18px;border-radius:24px;color:#fff;
   background:radial-gradient(120% 120% at 100% 0%,rgba(220,192,141,.2),transparent 55%),linear-gradient(160deg,var(--night-2),var(--night));box-shadow:0 10px 30px rgba(14,21,36,.22)}
@@ -293,7 +303,8 @@ details.more > div{display:flex;flex-direction:column;gap:12px}
 .tasks{display:flex;flex-direction:column;gap:8px}
 .task{display:flex;align-items:stretch;background:var(--card);border:1px solid var(--line);border-radius:18px;box-shadow:var(--shadow);overflow:hidden;position:relative}
 .task::before{content:"";width:4px;flex:none;background:var(--line)}
-.task.now::before{background:var(--red)} .task.timed::before{background:var(--amber)} .task.follow::before{background:var(--gold)} .task.info::before{background:var(--green)}
+.task.now::before{background:var(--red)}
+.task.now .t-time.late b{color:var(--red-ink)} .task.timed::before{background:var(--amber)} .task.follow::before{background:var(--gold)} .task.info::before{background:var(--green)}
 .task.done{opacity:.6;box-shadow:none}
 .check{flex:none;width:54px;display:grid;place-items:center}
 .check svg{width:30px;height:30px;padding:5px;border-radius:50%;border:2px solid var(--line);color:transparent;transition:all .15s}
@@ -630,11 +641,13 @@ details.more summary{cursor:pointer;color:var(--gold-ink);font-size:13.5px;font-
     </div>
 
     <div class="filters" id="filters" role="tablist" aria-label="กรองงาน">
-      <button role="tab" data-f="all">ค้าง <b class="num" id="fAll">0</b></button>
-      <button role="tab" data-f="now" class="hot">ด่วน <b class="num" id="fNow">0</b></button>
+      <button role="tab" data-f="all">รอทำ <b class="num" id="fAll">0</b></button>
+      <button role="tab" data-f="now" class="hot">ทำก่อน <b class="num" id="fNow">0</b></button>
       <button role="tab" data-f="mine" id="fMineBtn">ถึงฉัน <b class="num" id="fMine">0</b></button>
-      <button role="tab" data-f="done">เสร็จ <b class="num" id="fDone">0</b></button>
+      <button role="tab" data-f="done">เสร็จแล้ว <b class="num" id="fDone">0</b></button>
     </div>
+    <div class="progress" id="progress" hidden><div class="pg-bar"><i id="pgFill"></i></div><span id="pgTxt"></span></div>
+    <div class="calm" id="calmNote" hidden></div>
 
     <div id="sections"></div>
   </section>
@@ -671,9 +684,9 @@ details.more summary{cursor:pointer;color:var(--gold-ink);font-size:13.5px;font-
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 10.5 12 4l8 6.5V20h-5v-5h-6v5H4z"/></svg>
       วันนี้
     </button>
-    <button class="fab" id="fab" aria-label="เพิ่มงาน">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" id="fabIco"><path d="M12 5v14M5 12h14"/></svg>
-      <span id="fabTxt">เพิ่มงาน</span>
+    <button class="fab" id="fab" aria-label="จดเรื่องไว้ให้ทีม">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" id="fabIco"><path d="M4 20h4L19 9l-4-4L4 16z"/><path d="M13.5 6.5l4 4"/></svg>
+      <span id="fabTxt">จดไว้</span>
     </button>
     <button class="nav-btn help" id="navHelp" aria-label="Dusit Help">
       <span class="nav-reactor" id="navReactor"></span>
@@ -1251,7 +1264,7 @@ function relTime(mins) {
   let t;
   if (a >= 1440) t = `${Math.floor(a / 1440)} วัน`;
   else { const h = Math.floor(a / 60), m = a % 60; t = h ? `${h} ชม.${m ? " " + m + " นาที" : ""}` : `${m} นาที`; }
-  return mins < 0 ? `เลย ${t}` : mins === 0 ? "ถึงเวลาแล้ว" : `อีก ${t}`;
+  return mins < 0 ? `เกินมา ${t}` : mins === 0 ? "ถึงเวลาแล้ว" : `อีก ${t}`;
 }
 const sameDay = (t, day) => t && ymd(new Date(t)) === day;
 const daysOld = it => Math.round((parseYmd(TODAY()) - parseYmd(itemDate(it))) / 864e5);
@@ -1279,10 +1292,10 @@ function groupTasks(items, day = SEL) {
   const now = rest0.filter(i => i.pri === "urgent" || (i.pri !== "info" && due(i) < 0)).sort(byDue);
   const rest = rest0.filter(i => !now.includes(i));
   return [
-    { key: "now", title: "ทำทันที", hint: "ด่วนหรือเลยเวลาแล้ว", list: now },
-    { key: "carry", title: "ค้างจากวันก่อน", hint: "ยังไม่ปิด เรียงจากเก่าสุด", list: carry },
-    { key: "timed", title: "ตามเวลา", hint: "มีเวลากำหนด เรียงจากใกล้สุด", list: rest.filter(i => i.pri !== "info" && i.due).sort(byDue) },
-    { key: "follow", title: "ติดตามให้จบ", hint: "ยังไม่มีเวลากำหนด", list: rest.filter(i => i.pri !== "info" && !i.due) },
+    { key: "now", title: "เริ่มที่นี่ก่อน", hint: "ด่วนหรือถึงเวลาแล้ว ทำทีละงานก็พอ", list: now },
+    { key: "carry", title: "ยกมาจากวันก่อน", hint: "เรียงจากเก่าสุด", list: carry },
+    { key: "timed", title: "มีเวลานัด", hint: "เรียงจากเวลาที่ใกล้ที่สุด", list: rest.filter(i => i.pri !== "info" && i.due).sort(byDue) },
+    { key: "follow", title: "ติดตามต่อ", hint: "ไม่มีเวลานัด ทำเมื่อว่าง", list: rest.filter(i => i.pri !== "info" && !i.due) },
     { key: "info", title: "แจ้งให้ทราบ", hint: "อ่านแล้วติ๊กได้เลย", list: rest.filter(i => i.pri === "info") },
   ];
 }
@@ -1297,7 +1310,7 @@ function taskHtml(it, tone) {
   const timeCls = m === null ? "" : m < 0 ? "late" : m <= 60 ? "soon" : "";
   const time = it.done
     ? `<div class="t-time"><small>${it.doneBy ? "ปิดโดย " + esc(it.doneBy) : "เสร็จแล้ว"}</small>${it.doneAt ? `<small>${esc(new Date(it.doneAt).toLocaleString("th-TH", sameDay(it.doneAt, TODAY()) ? { hour: "2-digit", minute: "2-digit" } : { day: "numeric", month: "short", hour: "2-digit", minute: "2-digit" }))}</small>` : ""}</div>`
-    : old ? `<div class="t-time late"><b class="num">${old}</b><small>วันที่ค้าง</small></div>`
+    : old ? `<div class="t-time late"><b class="num">${old}</b><small>วันแล้ว</small></div>`
     : it.due ? `<div class="t-time ${timeCls}"><b class="num">${esc(it.due)}</b><small>${relTime(m)}</small></div>` : "";
   return `<div class="swipe" data-swipe="${esc(it.id)}"><div class="swipe-bg" aria-hidden="true">${IC.check}${it.done ? "เปิดอีกครั้ง" : "เสร็จแล้ว"}</div><div class="task ${it.done ? "done" : tone}">
     <button class="check" data-check="${esc(it.id)}" aria-label="${it.done ? "เปิดงานนี้อีกครั้ง" : "ทำเสร็จแล้ว"}: ${esc(it.room)}" aria-pressed="${!!it.done}">${IC.check}</button>
@@ -1379,6 +1392,16 @@ function render() {
   $("#filters").style.gridTemplateColumns = `repeat(${me ? 4 : 3},minmax(0,1fr))`;
   $("#filters").querySelectorAll("[data-f]").forEach(b => b.setAttribute("aria-selected", String(b.dataset.f === P.filter)));
   $("#navHome").classList.toggle("on", view === "home");
+  // Show progress, not backlog: people cope better seeing what is done.
+  const total = openAll.length + doneDay.length;
+  $("#progress").hidden = !total;
+  if (total) {
+    $("#pgFill").style.width = Math.round(doneDay.length / total * 100) + "%";
+    $("#pgTxt").textContent = doneDay.length === 0 ? `วันนี้มี ${total} เรื่อง เริ่มจากเรื่องแรกได้เลย` : openAll.length === 0 ? `เสร็จครบ ${total} เรื่อง 🌿` : `ทำไปแล้ว ${doneDay.length} จาก ${total} · อีก ${openAll.length} เรื่อง`;
+  }
+  const heavy = SEL === TODAY() && urgentN >= 5;
+  $("#calmNote").hidden = !heavy;
+  if (heavy) $("#calmNote").innerHTML = `<b>วันนี้เรื่องเยอะหน่อย</b> ไม่ต้องรีบทำทุกอย่างพร้อมกัน เริ่มจากงานบนสุดทีละงาน ถ้าเกินมือ แตะงานแล้วเลือก “ส่งถึง” เพื่อนช่วยได้ครับ`;
 
   let html = "";
   if (ITEMS.some(i => i.ex)) html += `<div class="exbar"><span class="tag ex">ตัวอย่าง</span>รายการตอนนี้เป็นข้อมูลสมมติ <button id="clearEx">ล้างตัวอย่าง</button></div>`;
@@ -1391,22 +1414,24 @@ function render() {
     const items = P.filter === "mine" ? allDay.filter(i => i.assigneeUid === me) : allDay;
     const groups = groupTasks(items);
     const show = P.filter === "now" ? groups.slice(0, 2) : groups;
+    let first = true;
     for (const g of show) {
       if (!g.list.length) continue;
+      if (first && g.key !== "carry" && g.key !== "info") { html += `<p class="next-hint">👉 งานถัดไป</p>`; first = false; }
       if (g.key === "carry" && P.filter === "all" && groups[0].list.length + groups[2].list.length + groups[3].list.length + groups[4].list.length > 0) {
         const oldest = Math.max(...g.list.map(daysOld));
-        html += `<details class="carrybox" id="carryBox" ${P.carryOpen ? "open" : ""}><summary>ค้างจากวันก่อน <span class="cnt num" style="background:var(--red);color:#fff">${g.list.length}</span><small>เก่าสุด ${oldest} วัน</small></summary>
+        html += `<details class="carrybox" id="carryBox" ${P.carryOpen ? "open" : ""}><summary>ยกมาจากวันก่อน <span class="cnt num">${g.list.length}</span><small>เก่าสุด ${oldest} วัน</small></summary>
           <div class="tasks">${g.list.map(it => taskHtml(it, "now")).join("")}</div></details>`;
       } else html += section(g, g.key === "carry" ? "now" : g.key);
     }
     const open = items.filter(i => !i.done);
     if (!open.length) {
       const msg = P.filter === "mine" ? ["ไม่มีงานที่ส่งถึงคุณ", "งานที่เพื่อนส่งถึงคุณจะขึ้นที่นี่"]
-        : P.filter === "now" ? ["ไม่มีงานด่วน", "ไม่มีงานที่เลยเวลาหรือต้องทำทันที"]
+        : P.filter === "now" ? ["ไม่มีงานที่ต้องรีบ 🌿", "ทำงานที่เหลือตามจังหวะของคุณได้เลย"]
         : SEL < TODAY() ? ["ไม่มีงานค้างของวันนั้น", ""]
-        : items.length ? ["เคลียร์ครบแล้ว 👏", `วันนี้ปิดไป ${doneDay.length} งาน`]
-        : SEL > TODAY() ? ["ยังไม่มีงานที่นัดไว้", "แตะ “เพิ่มงาน” เพื่อเพิ่มงานล่วงหน้า"]
-        : ["ยังไม่มีงานวันนี้", "แตะ “เพิ่มงาน” ด้านล่าง หรือบอก Dusit Help"];
+        : items.length ? ["เรียบร้อยครบแล้ว 🌿", `วันนี้ทีมช่วยกันปิดไป ${doneDay.length} งาน ขอบคุณมากครับ`]
+        : SEL > TODAY() ? ["ยังไม่มีงานที่นัดไว้", "แตะ “จดไว้” เพื่อจดเรื่องล่วงหน้า"]
+        : ["วันนี้ยังโล่ง 🌿", "มีอะไรอยากฝากทีม แตะ “จดไว้” ด้านล่าง หรือบอก Dusit Help"];
       html += `<div class="empty"><b>${msg[0]}</b>${msg[1]}</div>`;
     }
   }
@@ -1503,8 +1528,9 @@ function toggleDone(id, wrap) {
   const go = () => store.updateItem(id, donePatch(done))
     .then(() => {
       const left = SEL === TODAY() ? dayItems(TODAY()).filter(i => !i.done && i.id !== id).length : 1;
-      if (done && left === 0) toast(`🎉 เคลียร์งานวันนี้ครบแล้ว`, () => store.updateItem(id, prev));
-      else toast(done ? `${it.room} เสร็จแล้ว${it.by && it.byUid !== myUid() ? " · แจ้ง " + it.by + " ให้แล้ว" : ""}` : `เปิด ${it.room} อีกครั้ง`, () => store.updateItem(id, prev));
+      const cheer = ["ขอบคุณครับ 🙏", "เยี่ยมเลย", "อีกนิดเดียว", "ทีละเรื่อง ไปได้ดี", "เก่งมาก"][Math.floor(Math.random() * 5)];
+      if (done && left === 0) toast(`🌿 เรียบร้อยครบทุกเรื่องแล้ว ขอบคุณที่ช่วยกันครับ`, () => store.updateItem(id, prev));
+      else toast(done ? `✓ ${it.room} เสร็จแล้ว · ${cheer}${it.by && it.byUid !== myUid() ? " · แจ้ง " + it.by + " ให้แล้ว" : ""}` : `เปิด ${it.room} อีกครั้ง`, () => store.updateItem(id, prev));
       if (done) afterClose(id);
     })
     .catch(e => { w?.classList.remove("leaving"); toast("บันทึกไม่สำเร็จ: " + (e.code || e.message)); });
@@ -1759,10 +1785,11 @@ function hudBriefing() {
   return `<div class="bubble bot"><span class="who">DUSIT HELP · BRIEFING</span>
     <div>${greet}ครับ${myName() ? " คุณ " + esc(myName()) : ""} สรุปสถานะวันนี้</div>
     <div class="brief-grid">
-      <div class="${g[0].list.length ? "hot" : ""}"><b class="num">${g[0].list.length}</b><span>ทำทันที</span></div>
-      <div class="${g[1].list.length ? "hot" : ""}"><b class="num">${g[1].list.length}</b><span>ค้างจากวันก่อน</span></div>
+      <div><b class="num">${g[0].list.length}</b><span>เริ่มก่อน</span></div>
+      <div><b class="num">${g[1].list.length}</b><span>ยกมา</span></div>
       <div><b class="num">${myUid() ? mine : open}</b><span>${myUid() ? "ส่งถึงคุณ" : "งานค้าง"}</span></div>
     </div>
+    <div>${g[0].list.length + g[1].list.length >= 5 ? "วันนี้เรื่องเยอะหน่อย ค่อย ๆ ไปทีละเรื่องนะครับ ผมช่วยจัดลำดับให้ได้" : "ไม่มีอะไรน่าห่วงครับ ค่อย ๆ ทำตามลำดับได้เลย"}</div>
     <div style="color:var(--hud-dim);font-size:14px">สั่งได้เลยครับ เช่น “1412 ผ้าม่านขาด ส่งให้ออม” · “915 แอร์เสร็จแล้ว” · “มีอะไรด่วนบ้าง” · “สรุปส่งไลน์”</div></div>`;
 }
 
@@ -2029,14 +2056,14 @@ function heuristic(text, cat) {
 function buildBrief(items, title) {
   const groups = groupTasks(items);
   const nowN = groups[0].list.length, carryN = groups[1].list.length;
-  const ICON = { now: "🔴", carry: "⏳", timed: "🟠", follow: "🟡", info: "🟢" };
+  const ICON = { now: "📌", carry: "⏳", timed: "🕒", follow: "🔁", info: "💬" };
   let t = `📋 สรุปงาน FO · ${thDate(SEL, { weekday: "short", day: "numeric", month: "short", year: "numeric" })} · ${title}\n`;
-  t += nowN || carryN ? `⚠️ ${[nowN ? `ทำทันที ${nowN}` : "", carryN ? `ค้างจากวันก่อน ${carryN}` : ""].filter(Boolean).join(" · ")} · ทั้งหมด ${items.length} งาน\n` : `ไม่มีงานด่วน · ทั้งหมด ${items.length} งาน\n`;
+  t += nowN || carryN ? `📌 ${[nowN ? `ทำก่อน ${nowN}` : "", carryN ? `ยกมาจากวันก่อน ${carryN}` : ""].filter(Boolean).join(" · ")} · ทั้งหมด ${items.length} งาน\n` : `ไม่มีเรื่องรีบ · ทั้งหมด ${items.length} เรื่อง\n`;
   for (const g of groups) {
     if (!g.list.length) continue;
     t += `\n${ICON[g.key]} ${g.title} (${g.list.length})\n`;
     for (const it of g.list) {
-      const carry = itemDate(it) < SEL ? ` · ค้างจาก ${thDate(itemDate(it), { day: "numeric", month: "short" })}` : "";
+      const carry = itemDate(it) < SEL ? ` · ยกมาจาก ${thDate(itemDate(it), { day: "numeric", month: "short" })}` : "";
       t += `• ${it.room}${it.guest ? " " + it.guest : ""}${it.due ? " · " + it.due : ""}${carry}${it.assignee ? " → " + it.assignee : ""}\n   ${it.action || it.summary}\n`;
       if (it.action && it.summary) t += `   (${it.summary})\n`;
     }
@@ -2137,12 +2164,12 @@ async function openTaskForm(pre = {}) {
   let cat = pre.cat || "room", pri = pre.pri || "follow", catPicked = !!pre.cat, to = pre.assigneeUid || "";
   const toChips = () => `<button type="button" class="chip" data-to="" aria-pressed="${to === ""}">ทุกคน</button>` +
     TEAM.filter(m => m.uid !== myUid()).map(m => `<button type="button" class="chip" data-to="${esc(m.uid)}" aria-pressed="${m.uid === to}">${esc(m.name)}</button>`).join("");
-  openSheet(`<h3>เพิ่มงาน</h3>
+  openSheet(`<h3>จดเรื่องไว้ให้ทีม</h3><p class="note">จดสั้น ๆ ก็พอ ระบบช่วยจัดหมวดให้</p>
     <form id="tForm" class="form" novalidate>
       <div><label class="lab" for="tRoom">ห้อง</label><input type="text" id="tRoom" class="room-in" inputmode="numeric" placeholder="เช่น 1208" autocomplete="off" enterkeyhint="next"></div>
-      <div><label class="lab" for="tSum">เจออะไร / ต้องทำอะไร</label><textarea id="tSum" style="min-height:76px" placeholder="เช่น ผ้าม่านขาด ต้องเปลี่ยนก่อนแขกเข้า"></textarea></div>
+      <div><label class="lab" for="tSum">เกิดอะไรขึ้น</label><textarea id="tSum" style="min-height:76px" placeholder="เช่น ผ้าม่านขาด ต้องเปลี่ยนก่อนแขกเข้า"></textarea></div>
       <div><span class="lab">ส่งถึง</span><div class="pick" id="tTo">${toChips()}</div></div>
-      <div><span class="lab">ความด่วน</span><div class="chips" id="tPri">${Object.keys(PRI).map(p => `<button type="button" class="chip ${p} ${p === pri ? "on" : ""}" data-p="${p}">${PRI[p]}</button>`).join("")}</div></div>
+      <div><span class="lab">รีบแค่ไหน</span><div class="chips" id="tPri">${Object.keys(PRI).map(p => `<button type="button" class="chip ${p} ${p === pri ? "on" : ""}" data-p="${p}">${PRI[p]}</button>`).join("")}</div></div>
       <div><span class="lab">หมวด<span class="auto-tag" id="catAuto" hidden>เลือกให้จากข้อความ</span></span>
         <div class="cat-row" id="tCats">${CATS.map(c => `<button type="button" class="cat-chip" data-cat="${c.id}" aria-pressed="${c.id === cat}">${catIcon(c.id)}<span>${esc(c.name)}</span></button>`).join("")}</div></div>
       <details class="more"><summary>รายละเอียดเพิ่ม · แขก · ต้องทำต่อ · วันที่ · เวลา</summary><div>
@@ -2154,7 +2181,7 @@ async function openTaskForm(pre = {}) {
         </div>
       </div></details>
       <p class="err" id="tErr" hidden></p>
-      <div class="form-foot"><button class="btn pri" type="submit" id="tSave">${IC.check}บันทึกงาน</button></div>
+      <div class="form-foot"><button class="btn pri" type="submit" id="tSave">${IC.check}จดไว้</button></div>
     </form>`);
   const drawTo = () => { const el = $("#tTo"); if (el) el.innerHTML = toChips(); };
   if (!TEAM.length && ME) loadTeam().then(drawTo);
@@ -2169,7 +2196,7 @@ async function openTaskForm(pre = {}) {
     e.preventDefault();
     const err = m => { $("#tErr").textContent = m; $("#tErr").hidden = !m; };
     const summary = $("#tSum").value.trim(), action = $("#tAct").value.trim();
-    if (!summary && !action) return err("ใส่ว่าเจออะไรหรือต้องทำอะไร");
+    if (!summary && !action) return err("พิมพ์สั้น ๆ ว่าเกิดอะไรขึ้นก่อนนะครับ");
     const m = TEAM.find(x => x.uid === to);
     const it = {
       ...normalize({ room: $("#tRoom").value.trim() || "—", guest: $("#tGuest").value.trim(), cat, pri, summary: summary || action, action: summary ? action : "", due: $("#tDue").value, dueDate: $("#tDate").value || SEL }),
@@ -2183,7 +2210,7 @@ async function openTaskForm(pre = {}) {
       if (view !== "home") show("home");
       if (it.dueDate !== SEL) setDay(it.dueDate);
       try { navigator.vibrate?.(10); } catch (x) {}
-      toast(`เพิ่มงาน ${it.room} แล้ว${m ? " · ส่งถึง " + m.name : ""}`, () => store.deleteItem(it.id));
+      toast(`จดไว้แล้ว ✓ ห้อง ${it.room}${m ? " · ส่งถึง " + m.name : ""}`, () => store.deleteItem(it.id));
       if (m && m.uid !== myUid()) setTimeout(() => { if (ITEMS.some(i => i.id === it.id)) afterAssign(it); }, 6000);
     } catch (x) { err("บันทึกไม่สำเร็จ: " + (x.code || x.message)); btn.disabled = false; }
   });
