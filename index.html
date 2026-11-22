@@ -836,7 +836,7 @@ const UI_EN = {
   "วันนี้": "Today", "จดไว้": "Note", "สรุปไลน์": "LINE summary", "รอทำ": "To do", "เสร็จแล้ว": "Done", "กลับไปวันนี้": "Back to today",
   "ตัวอย่าง": "Sample", "รายการตอนนี้เป็นข้อมูลสมมติ": "These are sample tasks", "ล้างตัวอย่าง": "Clear samples",
   "เริ่มที่นี่ก่อน": "Start here", "ด่วนหรือถึงเวลาแล้ว ทำทีละงานก็พอ": "Urgent or due. One at a time",
-  "ยกมาจากวันก่อน": "From earlier days", "เรียงจากเก่าสุด": "Oldest first", "มีเวลานัด": "Scheduled", "เรียงจากเวลาที่ใกล้ที่สุด": "Soonest first",
+  "ยกมาจากวันก่อน": "From earlier days", "เรียงจากเก่าสุด": "Oldest first", "ยังไม่ปิด ต้องทำต่อ เรียงจากเก่าสุด": "Still open, still to do. Oldest first", "มีเวลานัด": "Scheduled", "เรียงจากเวลาที่ใกล้ที่สุด": "Soonest first",
   "ติดตามต่อ": "Follow up", "ไม่มีเวลานัด ทำเมื่อว่าง": "No set time. Do when free", "แจ้งให้ทราบ": "For info", "อ่านแล้วติ๊กได้เลย": "Read, then tick it",
   "👉 งานถัดไป": "👉 Next task", "วันนี้เรื่องเยอะหน่อย": "Busy day today", "ดู": "Show", "ซ่อน": "Hide", "แสดง": "Show",
   "ไม่ต้องรีบทำทุกอย่างพร้อมกัน เริ่มจากงานบนสุดทีละงาน ถ้าเกินมือ แตะงานแล้วเลือก “ส่งถึง” เพื่อนช่วยได้ครับ": "No need to do everything at once. Start with the top task, one at a time. If it is too much, open a task and send it to a teammate.",
@@ -877,7 +877,7 @@ const UI_ZH = {
   "วันนี้": "今天", "จดไว้": "记录", "สรุปไลน์": "LINE汇总", "รอทำ": "待办", "เสร็จแล้ว": "已完成", "กลับไปวันนี้": "回到今天",
   "ตัวอย่าง": "示例", "รายการตอนนี้เป็นข้อมูลสมมติ": "以下为示例任务", "ล้างตัวอย่าง": "清除示例",
   "เริ่มที่นี่ก่อน": "先做这些", "ด่วนหรือถึงเวลาแล้ว ทำทีละงานก็พอ": "紧急或已到时间，一件一件来",
-  "ยกมาจากวันก่อน": "前几天遗留", "เรียงจากเก่าสุด": "从最早开始", "มีเวลานัด": "有约定时间", "เรียงจากเวลาที่ใกล้ที่สุด": "按时间先后",
+  "ยกมาจากวันก่อน": "前几天遗留", "เรียงจากเก่าสุด": "从最早开始", "ยังไม่ปิด ต้องทำต่อ เรียงจากเก่าสุด": "尚未完成，仍需处理，从最早开始", "มีเวลานัด": "有约定时间", "เรียงจากเวลาที่ใกล้ที่สุด": "按时间先后",
   "ติดตามต่อ": "继续跟进", "ไม่มีเวลานัด ทำเมื่อว่าง": "无固定时间，有空再做", "แจ้งให้ทราบ": "通知", "อ่านแล้วติ๊กได้เลย": "看完即可勾选",
   "👉 งานถัดไป": "👉 下一项", "วันนี้เรื่องเยอะหน่อย": "今天事情有点多", "ดู": "查看", "ซ่อน": "隐藏", "แสดง": "显示",
   "ไม่ต้องรีบทำทุกอย่างพร้อมกัน เริ่มจากงานบนสุดทีละงาน ถ้าเกินมือ แตะงานแล้วเลือก “ส่งถึง” เพื่อนช่วยได้ครับ": "不用一次全做完。从最上面一项开始，一件一件来。忙不过来时，打开任务选择“发送给”同事帮忙。",
@@ -1510,10 +1510,11 @@ const daysOld = it => Math.round((parseYmd(TODAY()) - parseYmd(itemDate(it))) / 
 // Tasks shown for a day. Today also carries every open task from earlier days.
 function dayItems(day) {
   const t = TODAY();
-  return ITEMS.filter(i => itemDate(i) === day || (day === t && !i.done && itemDate(i) < t));
+  // Unfinished work rolls forward: today and later days also list every open task from earlier days.
+  return ITEMS.filter(i => itemDate(i) === day || (day >= t && !i.done && itemDate(i) < day));
 }
 function dayMark(day) {
-  const list = ITEMS.filter(i => itemDate(i) === day);
+  const list = day >= TODAY() ? dayItems(day) : ITEMS.filter(i => itemDate(i) === day);
   if (!list.length) return "";
   const open = list.filter(i => !i.done);
   if (!open.length) return "done";
@@ -1531,7 +1532,7 @@ function groupTasks(items, day = SEL) {
   const rest = rest0.filter(i => !now.includes(i));
   return [
     { key: "now", title: "เริ่มที่นี่ก่อน", hint: "ด่วนหรือถึงเวลาแล้ว ทำทีละงานก็พอ", list: now },
-    { key: "carry", title: "ยกมาจากวันก่อน", hint: "เรียงจากเก่าสุด", list: carry },
+    { key: "carry", title: "ยกมาจากวันก่อน", hint: "ยังไม่ปิด ต้องทำต่อ เรียงจากเก่าสุด", list: carry },
     { key: "timed", title: "มีเวลานัด", hint: "เรียงจากเวลาที่ใกล้ที่สุด", list: rest.filter(i => i.pri !== "info" && i.due).sort(byDue) },
     { key: "follow", title: "ติดตามต่อ", hint: "ไม่มีเวลานัด ทำเมื่อว่าง", list: rest.filter(i => i.pri !== "info" && !i.due) },
     { key: "info", title: "แจ้งให้ทราบ", hint: "อ่านแล้วติ๊กได้เลย", list: rest.filter(i => i.pri === "info") },
@@ -1653,11 +1654,7 @@ function render() {
     for (const g of show) {
       if (!g.list.length) continue;
       if (first && g.key !== "carry" && g.key !== "info") { html += `<p class="next-hint">👉 งานถัดไป</p>`; first = false; }
-      if (g.key === "carry" && P.filter === "all" && groups[0].list.length + groups[2].list.length + groups[3].list.length + groups[4].list.length > 0) {
-        const oldest = Math.max(...g.list.map(daysOld));
-        html += `<details class="carrybox" id="carryBox" ${P.carryOpen ? "open" : ""}><summary>ยกมาจากวันก่อน <span class="cnt num">${g.list.length}</span><small>เก่าสุด ${oldest} วัน</small></summary>
-          <div class="tasks">${g.list.map(it => taskHtml(it, "now")).join("")}</div></details>`;
-      } else html += section(g, g.key === "carry" ? "now" : g.key);
+      html += section(g, g.key === "carry" ? "now" : g.key);
     }
     const open = items.filter(i => !i.done);
     if (!open.length) {
@@ -1671,7 +1668,6 @@ function render() {
     }
   }
   $("#sections").innerHTML = html;
-  const cb = $("#carryBox"); if (cb) cb.addEventListener("toggle", () => { P.carryOpen = cb.open; savePrefs(); });
   renderBriefs();
   if (view === "year") renderYearSoon();
 }
