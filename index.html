@@ -214,8 +214,8 @@ details.tbl-view summary{cursor:pointer;color:var(--gold-ink);font-weight:600;fo
 .sum-btn{display:inline-flex;align-items:center;gap:6px;min-height:38px;padding:7px 14px 7px 11px;border-radius:99px;font-family:var(--f-display);font-weight:700;font-size:14px;color:#fff;background:#06c755;box-shadow:inset 0 1px 0 rgba(255,255,255,.3),0 4px 12px rgba(6,199,85,.3);transition:transform .12s}
 .sum-btn:active{transform:scale(.95)}
 .sum-btn svg{width:16px;height:16px}
-.filters{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:6px;padding:5px;border-radius:18px;background:var(--card);border:1px solid var(--line);box-shadow:var(--shadow)}
-.filters button{display:flex;flex-direction:column;align-items:center;gap:0;padding:7px 2px;border-radius:13px;font-size:13.5px;font-weight:600;color:var(--muted);transition:background .15s,color .15s}
+.filters{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:6px;padding:5px;border-radius:18px;background:var(--card);border:1px solid var(--line);box-shadow:var(--shadow)}
+.filters button{display:flex;flex-direction:row;align-items:baseline;justify-content:center;gap:8px;padding:8px 2px;border-radius:13px;font-size:13.5px;font-weight:600;color:var(--muted);transition:background .15s,color .15s}
 .filters b{font-family:var(--f-display);font-size:22px;line-height:1.15;color:var(--ink)}
 .filters .hot b{color:var(--red-ink)}
 .filters button[aria-selected="true"]{background:var(--ink);color:color-mix(in srgb,var(--bg) 80%,transparent)}
@@ -673,8 +673,6 @@ details.more summary{cursor:pointer;color:var(--gold-ink);font-size:13.5px;font-
 
     <div class="filters" id="filters" role="tablist" aria-label="กรองงาน">
       <button role="tab" data-f="all">รอทำ <b class="num" id="fAll">0</b></button>
-      <button role="tab" data-f="now" class="hot">ทำก่อน <b class="num" id="fNow">0</b></button>
-      <button role="tab" data-f="mine" id="fMineBtn">ถึงฉัน <b class="num" id="fMine">0</b></button>
       <button role="tab" data-f="done">เสร็จแล้ว <b class="num" id="fDone">0</b></button>
     </div>
     <div class="progress" id="progress" hidden><div class="pg-bar"><i id="pgFill"></i></div><span id="pgTxt"></span></div>
@@ -1443,11 +1441,8 @@ function render() {
   const mineOpen = me ? openAll.filter(i => i.assigneeUid === me) : [];
   const doneDay = ITEMS.filter(i => i.done && (itemDate(i) === SEL || sameDay(i.doneAt, SEL)));
   const urgentN = groupsAll[0].list.length + groupsAll[1].list.length;
-  if (!me && P.filter === "mine") P.filter = "all";
-  if (!["all", "now", "mine", "done"].includes(P.filter)) P.filter = "all";
-  $("#fAll").textContent = openAll.length; $("#fNow").textContent = urgentN; $("#fMine").textContent = mineOpen.length; $("#fDone").textContent = doneDay.length;
-  $("#fMineBtn").hidden = !me;
-  $("#filters").style.gridTemplateColumns = `repeat(${me ? 4 : 3},minmax(0,1fr))`;
+  if (!["all", "done"].includes(P.filter)) P.filter = "all";
+  $("#fAll").textContent = openAll.length; $("#fDone").textContent = doneDay.length;
   $("#filters").querySelectorAll("[data-f]").forEach(b => b.setAttribute("aria-selected", String(b.dataset.f === P.filter)));
   $("#navHome").classList.toggle("on", view === "home");
   // Show progress, not backlog: people cope better seeing what is done.
