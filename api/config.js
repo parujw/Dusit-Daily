@@ -3,6 +3,7 @@ export function GET() {
   return Response.json(
     {
       ai: Boolean(process.env.ANTHROPIC_API_KEY),
+      translate: Boolean(process.env.GOOGLE_TRANSLATE_API_KEY || process.env.ANTHROPIC_API_KEY),
       linePush: Boolean(process.env.LINE_CHANNEL_ACCESS_TOKEN),
       pin: Boolean(process.env.TEAM_PIN),
     },

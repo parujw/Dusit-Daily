@@ -90,6 +90,11 @@ LINE Notify ปิดบริการแล้ว จึงใช้ Messaging
    - ถ้ายังไม่ตั้ง บอทจะตอบ Group ID ให้นำไปใส่ `LINE_GROUP_ID`
 6. Redeploy บน Vercel ปุ่ม "ส่งเข้ากลุ่มทีม" จะขึ้นแทน "เปิดใน LINE" ในหน้าสรุปส่งไลน์
 
+### 5. แปลภาษา (ไม่บังคับ)
+- **ฟรีทันที:** ให้พนักงานใช้ตัวแปลของมือถือ (Safari: aA → แปล, Chrome: ⋮ → แปล) โดยตั้งภาษาในแอปเป็นไทย
+- **แปลเนื้อหางานอัตโนมัติ:** สร้าง API key ของ Google Cloud Translation (console.cloud.google.com → APIs & Services → เปิด Cloud Translation API → Credentials → Create API key → จำกัด key ให้ใช้ได้กับ Cloud Translation API เท่านั้น) แล้วใส่ใน Vercel เป็น `GOOGLE_TRANSLATE_API_KEY` และ Redeploy ฟรีเดือนละ 500,000 ตัวอักษร ถ้าไม่มี key นี้จะใช้ Claude แทน (ถ้ามี `ANTHROPIC_API_KEY`)
+- การแปลแสดงบนจออย่างเดียว ไม่แก้ข้อมูลงานที่บันทึกไว้
+
 ## ความปลอดภัยและ PDPA
 - API ทุกตัวต้องมี Firebase ID token ของสมาชิกทีม หรือ PIN ทีม ถ้าไม่ได้ตั้งทั้งสองอย่าง API จะปฏิเสธ
 - Webhook ตรวจลายเซ็น `x-line-signature` ทุกครั้ง

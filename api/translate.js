@@ -1,5 +1,6 @@
 // POST /api/translate  { texts: string[], lang: "th" | "en" | "zh" }  ->  { translations: string[] }
 // Display-only translation of task text for staff who read another language.
+// Uses Google Cloud Translation when GOOGLE_TRANSLATE_API_KEY is set, otherwise Claude.
 // Nothing is written anywhere: the app shows the result and keeps the original data unchanged.
 import Anthropic from "@anthropic-ai/sdk";
 import { json, requireMember } from "./_lib.js";
@@ -16,6 +17,30 @@ export async function POST(request) {
   const lang = LANG[b?.lang] ? b.lang : null;
   const texts = Array.isArray(b?.texts) ? b.texts.slice(0, 40).map((t) => String(t || "").slice(0, 500)) : [];
   if (!lang || !texts.length) return json({ error: "ไม่มีข้อความให้แปล" }, 400);
+
+  // Google Cloud Translation first when a key is set (cheap, free tier), otherwise Claude.
+  const gkey = process.env.GOOGLE_TRANSLATE_API_KEY;
+  if (gkey) {
+    try {
+      const r = await fetch(`https://translation.googleapis.com/language/translate/v2?key=${encodeURIComponent(gkey)}`, {
+        method: "POST",
+        headers: { "content-type": "application/json" },
+        body: JSON.stringify({ q: texts, target: { th: "th", en: "en", zh: "zh-CN" }[lang], format: "text" }),
+      });
+      const j = await r.json().catch(() => ({}));
+      if (!r.ok) {
+        console.error("Google translate failed", r.status, j?.error?.message);
+        return json({ error: r.status === 403 ? "Google Translate key ใช้ไม่ได้ (ตรวจว่าเปิด Cloud Translation API แล้ว)" : "แปลไม่สำเร็จ" }, 502);
+      }
+      const tr = (j?.data?.translations || []).map((t) => String(t.translatedText || ""));
+      if (tr.length !== texts.length) return json({ error: "แปลไม่ครบ" }, 502);
+      return json({ translations: tr, via: "google" });
+    } catch (e) {
+      console.error("Google translate error", e?.message);
+      return json({ error: "แปลไม่สำเร็จ" }, 502);
+    }
+  }
+  if (!process.env.ANTHROPIC_API_KEY) return json({ error: "ยังไม่ได้ตั้งตัวแปลภาษาใน Vercel" }, 503);
 
   const schema = {
     type: "object",
