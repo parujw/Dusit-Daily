@@ -62,14 +62,12 @@ export async function POST(request) {
   const user = (hintCat ? `หมวดที่ผู้ใช้เลือกไว้: ${hintCat} (ใช้เมื่อไม่ชัดเจน)\n\n` : "") + `ข้อความ:\n"""${text}"""`;
 
   try {
-    const res = await client.beta.messages.create({
-      model: "claude-opus-5-5",
+    const res = await client.messages.create({
+      model: "claude-haiku-5-5",
       max_tokens: 16000,
       // Short extraction: low effort keeps the wait at the counter short.
       output_config: { effort: "low", format: { type: "json_schema", schema: SCHEMA } },
       // If a request is declined by a safety classifier, the API retries it on a fallback model.
-      betas: ["server-side-fallback-2026-07-01"],
-      fallbacks: "default",
       system: SYSTEM,
       messages: [{ role: "user", content: user }],
     });

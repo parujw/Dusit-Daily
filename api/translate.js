@@ -45,12 +45,10 @@ async function viaClaude(texts, lang) {
     additionalProperties: false,
   };
   try {
-    const res = await client.beta.messages.create({
-      model: "claude-opus-5-5",
+    const res = await client.messages.create({
+      model: "claude-haiku-5-5",
       max_tokens: 16000,
       output_config: { effort: "low", format: { type: "json_schema", schema } },
-      betas: ["server-side-fallback-2026-07-01"],
-      fallbacks: "default",
       system:
         `You translate short hotel Front Office task notes into ${LANG[lang]} for hotel staff. ` +
         `Keep room numbers, times, guest initials, names, and terms like VIP, HK, F&B, late check-out as they are. ` +

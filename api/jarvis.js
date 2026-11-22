@@ -129,14 +129,11 @@ export async function POST(request) {
   ];
 
   try {
-    const res = await client.beta.messages.create({
-      model: "claude-opus-5-5",
+    const res = await client.messages.create({
+      model: "claude-haiku-5-5",
       max_tokens: 16000,
       // Commands at the counter need a quick answer; low effort keeps the wait short.
       output_config: { effort: "low", format: { type: "json_schema", schema: SCHEMA } },
-      // If a safety classifier declines the request, the API retries it on a fallback model.
-      betas: ["server-side-fallback-2026-07-01"],
-      fallbacks: "default",
       system,
       messages: msgs,
     });
