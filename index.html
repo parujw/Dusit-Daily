@@ -299,11 +299,10 @@ details.more > div{display:flex;flex-direction:column;gap:12px}
 .hc-has{display:inline-flex;align-items:center;gap:4px;font-size:13px;font-weight:600;color:var(--green)}
 .hc-has svg{width:15px;height:15px}
 
-.tr{text-decoration:underline dotted color-mix(in srgb,var(--muted) 50%,transparent);text-underline-offset:3px}
+.tr{-webkit-touch-callout:none;-webkit-user-select:none;user-select:none;text-decoration:underline dotted color-mix(in srgb,var(--muted) 50%,transparent);text-underline-offset:3px}
 .lang-row{display:flex;gap:8px;flex-wrap:wrap}
 .lang-row .chip[aria-pressed="true"]{background:var(--night);border-color:var(--night);color:#fff}
 
-.phone-tr > div p{margin-top:6px}
 
 /* status strip */
 .status{display:flex;align-items:center;gap:14px;flex-wrap:wrap;padding:16px 18px;border-radius:24px;color:#fff;
@@ -873,14 +872,7 @@ const UI_EN = {
   "ปัดการ์ดไปทางขวา หรือแตะวงกลม เมื่อทำงานเสร็จ": "Swipe a card right, or tap the circle, when it's done",
   "ยังไม่มีแจ้งเตือน": "No notifications yet", "เปิดการแจ้งเตือนบนเครื่องนี้": "Turn on notifications on this device",
   "แจ้งในกลุ่ม LINE เมื่องานเสร็จ": "Post to the LINE group when tasks are done", "กลับไปหน้าเข้าสู่ระบบ": "Back to sign in",
-  "แปล": "Translate", "แปลเนื้อหา": "Task translation", "ยังไม่ได้ตั้ง": "Not set up", "แปลด้วยมือถือ (ฟรี ไม่ต้องตั้งค่า)": "Use your phone's translator (free)",
-  "iPhone · Safari:": "iPhone · Safari:", "Android · Chrome:": "Android · Chrome:",
-  "แตะ aA ที่แถบที่อยู่ → แปลเป็นภาษาที่ต้องการ": "Tap aA in the address bar → Translate to your language",
-  "แตะ ⋮ → แปล → เลือกภาษา": "Tap ⋮ → Translate → choose a language",
-  "ตั้งภาษาในแอปเป็น “ไทย” ก่อน แล้วให้มือถือแปลทั้งหน้า จะได้ไม่แปลซ้ำซ้อน ถ้าเปิดจากไอคอนบนหน้าจอโฮมแล้วไม่มีปุ่มแปล ให้เปิดผ่าน Safari หรือ Chrome แทน": "Set the app language to Thai first, then let the phone translate the whole page. If you opened the app from the home-screen icon and see no Translate option, open it in Safari or Chrome instead.",
-  "ตอนนี้เปิดจากไอคอนบนหน้าจอโฮม จึงไม่มีปุ่มแปล": "Opened from the home-screen icon, so there is no Translate button",
-  "คัดลอกลิงก์ไปเปิดใน Safari หรือ Chrome แล้วเข้าสู่ระบบอีกครั้ง": "Copy the link, open it in Safari or Chrome and sign in again",
-  "คัดลอกลิงก์แอป": "Copy app link", "คัดลอกลิงก์แล้ว เปิด Safari แล้ววางได้เลย": "Link copied. Open Safari and paste it",
+  "แปล": "Translate", "แปลเนื้อหา": "Task translation", "ยังไม่ได้ตั้ง": "Not set up",
   "ซิงก์กับทีม": "Synced with team", "เก็บในเครื่องนี้เท่านั้น": "This device only", "โหมดทดลอง": "Demo",
   "เปิดใช้": "On", "โหมดพื้นฐาน": "Basic mode", "ส่งอัตโนมัติ": "Auto send", "แชร์/คัดลอก": "Share/copy",
   "เช่น 1208": "e.g. 1208", "เช่น ผ้าม่านขาด ต้องเปลี่ยนก่อนแขกเข้า": "e.g. torn curtain, replace before the guest arrives",
@@ -924,13 +916,7 @@ const UI_ZH = {
   "ปัดการ์ดไปทางขวา หรือแตะวงกลม เมื่อทำงานเสร็จ": "完成后向右滑卡片或点圆圈",
   "ยังไม่มีแจ้งเตือน": "暂无通知", "เปิดการแจ้งเตือนบนเครื่องนี้": "在本设备开启通知",
   "แจ้งในกลุ่ม LINE เมื่องานเสร็จ": "任务完成时发到LINE群", "กลับไปหน้าเข้าสู่ระบบ": "返回登录",
-  "แปล": "翻译", "แปลเนื้อหา": "内容翻译", "ยังไม่ได้ตั้ง": "未设置", "แปลด้วยมือถือ (ฟรี ไม่ต้องตั้งค่า)": "使用手机自带翻译（免费）",
-  "แตะ aA ที่แถบที่อยู่ → แปลเป็นภาษาที่ต้องการ": "点地址栏的 aA → 翻译成所需语言",
-  "แตะ ⋮ → แปล → เลือกภาษา": "点 ⋮ → 翻译 → 选择语言",
-  "ตั้งภาษาในแอปเป็น “ไทย” ก่อน แล้วให้มือถือแปลทั้งหน้า จะได้ไม่แปลซ้ำซ้อน ถ้าเปิดจากไอคอนบนหน้าจอโฮมแล้วไม่มีปุ่มแปล ให้เปิดผ่าน Safari หรือ Chrome แทน": "先把应用语言设为“ไทย”，再用手机翻译整页，避免重复翻译。如果从主屏幕图标打开没有翻译按钮，请改用 Safari 或 Chrome 打开。",
-  "ตอนนี้เปิดจากไอคอนบนหน้าจอโฮม จึงไม่มีปุ่มแปล": "从主屏幕图标打开，因此没有翻译按钮",
-  "คัดลอกลิงก์ไปเปิดใน Safari หรือ Chrome แล้วเข้าสู่ระบบอีกครั้ง": "复制链接到 Safari 或 Chrome 打开，并重新登录",
-  "คัดลอกลิงก์แอป": "复制应用链接", "คัดลอกลิงก์แล้ว เปิด Safari แล้ววางได้เลย": "链接已复制，打开 Safari 粘贴即可",
+  "แปล": "翻译", "แปลเนื้อหา": "内容翻译", "ยังไม่ได้ตั้ง": "未设置",
   "ซิงก์กับทีม": "已与团队同步", "เก็บในเครื่องนี้เท่านั้น": "仅本设备", "โหมดทดลอง": "演示",
   "เปิดใช้": "已开启", "โหมดพื้นฐาน": "基础模式", "ส่งอัตโนมัติ": "自动发送", "แชร์/คัดลอก": "分享/复制",
   "เช่น 1208": "例如 1208", "เช่น ผ้าม่านขาด ต้องเปลี่ยนก่อนแขกเข้า": "例如 窗帘破了，客人入住前更换",
@@ -977,35 +963,47 @@ const yrShow = y => P.lang === "en" || P.lang === "zh" ? y : y + 543;
 const TR_KEY = "dd-tr-v1";
 let TR = {}; try { TR = JSON.parse(localStorage.getItem(TR_KEY) || "{}"); } catch (e) {}
 const trSave = () => { try { const k = Object.keys(TR); if (k.length > 3000) k.slice(0, k.length - 3000).forEach(x => delete TR[x]); localStorage.setItem(TR_KEY, JSON.stringify(TR)); } catch (e) {} };
+const TL = () => P.lang === "en" || P.lang === "zh" ? P.lang : "th";
+// Thai readers always see other-language text in Thai; en/zh readers choose menus only or menus + task text.
+const trContent = () => TL() === "th" || (P.trMode || "all") === "all";
+const canTr = () => !!(claudeSample || SERVER.translate || SERVER.ai);
 function needsTr(t) {
   if (!t || t.length < 2) return false;
-  const th = /[฀-๿]/.test(t), zh = /[一-鿿]/.test(t), lat = /[A-Za-z]{3,}/.test(t);
-  if (P.lang === "en") return th || zh;
-  if (P.lang === "zh") return th || (lat && !zh);
-  return !th && (zh || lat);
+  const th = /[฀-๿]/.test(t), cjk = /[一-鿿぀-ヿ가-힯]/.test(t);
+  // Words in Latin letters, ignoring codes like VIP, HK, F&B, OOO, room numbers.
+  const lat = /[A-Za-z]{3,}/.test(t.replace(/\b[A-Z0-9&\/.-]{2,}\b/g, ""));
+  if (TL() === "en") return th || cjk;
+  if (TL() === "zh") return th || ((lat || /[぀-ヿ가-힯]/.test(t)) && !/[一-鿿]/.test(t));
+  return !th && (cjk || lat);
 }
-let trQueue = new Set(), trTimer = null, trBusy = false;
+let trQueue = new Set(), trTimer = null, trBusy = false, trPause = 0, trWarned = false;
 async function trFlush() {
-  if (trBusy || !trQueue.size) return;
+  if (trBusy || !trQueue.size || !canTr() || Date.now() < trPause) return;
+  const lang = TL();
   const texts = [...trQueue].slice(0, 30); texts.forEach(t => trQueue.delete(t));
   trBusy = true;
   try {
     let out = null;
     if (claudeSample) {
-      const r = await claudeSample.json(`Translate each short hotel Front Office note into ${{ th: "Thai", en: "English", zh: "Simplified Chinese" }[P.lang]}. Keep room numbers, times, names and terms like VIP, HK, F&B. Reply only with a JSON array of strings, one per input, same order.\n\n${JSON.stringify(texts)}`, { modelTier: "quick" });
+      const r = await claudeSample.json(`Translate each short hotel Front Office note into ${{ th: "Thai", en: "English", zh: "Simplified Chinese" }[lang]}. Keep room numbers, times, names and terms like VIP, HK, F&B. Reply only with a JSON array of strings, one per input, same order.\n\n${JSON.stringify(texts)}`, { modelTier: "quick" });
       out = Array.isArray(r) ? r : r?.translations;
-    } else if (SERVER.translate || SERVER.ai) out = (await api("translate", { texts, lang: P.lang })).translations;
-    if (Array.isArray(out) && out.length === texts.length) { texts.forEach((t, i) => { TR[P.lang + "\u0001" + t] = String(out[i]); }); trSave(); applyI18n(); }
-  } catch (e) { console.warn("translate", e); }
+    } else out = (await api("translate", { texts, lang })).translations;
+    if (Array.isArray(out) && out.length === texts.length) { texts.forEach((t, i) => { TR[lang + "\u0001" + t] = String(out[i]); }); trSave(); applyI18n(); }
+  } catch (e) {
+    console.warn("translate", e);
+    const quota = /เพดาน|โควตา/.test(e?.message || "");
+    trPause = Date.now() + (quota ? 30 : 2) * 60000; // try again later, not on every screen update
+    if (quota && !trWarned) { trWarned = true; toast(e.message); }
+  }
   trBusy = false;
   if (trQueue.size) trFlush();
 }
 let i18nBusy = false;
 function applyI18n(root = document.body) {
-  if (i18nBusy || !P.lang || (P.lang === "th" && P.trMode !== "all")) return;
+  if (i18nBusy || (TL() === "th" && !canTr())) return;
   i18nBusy = true;
   try {
-    if (P.lang !== "th") {
+    if (TL() !== "th") {
       const w = document.createTreeWalker(root, NodeFilter.SHOW_TEXT, { acceptNode: n => n.parentElement?.closest("[data-c],script,style,textarea,pre,.brief,#v-login .login-brand h1") ? NodeFilter.FILTER_REJECT : NodeFilter.FILTER_ACCEPT });
       const nodes = []; while (w.nextNode()) nodes.push(w.currentNode);
       for (const n of nodes) { const v = trUI(n.nodeValue); if (v !== n.nodeValue) n.nodeValue = v; }
@@ -1013,19 +1011,31 @@ function applyI18n(root = document.body) {
         for (const a of ["placeholder", "aria-label"]) { const v = el.getAttribute(a); if (v) { const t = trUI(v); if (t !== v) el.setAttribute(a, t); } }
       });
     }
-    if (P.trMode === "all") {
+    if (trContent() && canTr()) {
       root.querySelectorAll?.("[data-c]").forEach(el => {
         if (el.classList.contains("caret")) return;
         const src = el.dataset.src || el.textContent.trim();
         if (!needsTr(src)) return;
-        const hit = TR[P.lang + "\u0001" + src];
-        if (hit) { if (el.textContent !== hit) { el.dataset.src = src; el.title = src; el.textContent = hit; el.classList.add("tr"); } }
+        const hit = TR[TL() + "\u0001" + src];
+        if (hit) { if (el.textContent !== hit) { el.dataset.src = src; el.textContent = hit; el.classList.add("tr"); } }
         else trQueue.add(src);
       });
-      if (trQueue.size) { clearTimeout(trTimer); trTimer = setTimeout(trFlush, 400); }
+      if (trQueue.size && Date.now() >= trPause) { clearTimeout(trTimer); trTimer = setTimeout(trFlush, 400); }
     }
   } finally { i18nBusy = false; }
 }
+// Press and hold translated text to see what was originally written.
+(() => {
+  let t = null, held = false;
+  const stop = () => { clearTimeout(t); t = null; };
+  document.addEventListener("pointerdown", e => {
+    const el = e.target.closest?.(".tr[data-src]"); held = false; stop();
+    if (el) t = setTimeout(() => { held = true; toast(({ en: "Original: ", zh: "原文：" }[TL()] || "ต้นฉบับ: ") + el.dataset.src); }, 500);
+  });
+  ["pointerup", "pointercancel", "pointermove"].forEach(ev => document.addEventListener(ev, e => { if (ev !== "pointermove" || Math.abs(e.movementX) + Math.abs(e.movementY) > 6) stop(); }));
+  document.addEventListener("click", e => { if (held) { held = false; e.preventDefault(); e.stopPropagation(); } }, true);
+  document.addEventListener("contextmenu", e => { if (e.target.closest?.(".tr[data-src]")) e.preventDefault(); });
+})();
 new MutationObserver(() => { if (!i18nBusy) requestAnimationFrame(() => applyI18n()); })
   .observe(document.body, { childList: true, subtree: true, characterData: true });
 
@@ -1354,7 +1364,7 @@ const Team = {
 
 // ---------------- server features ----------------
 let SERVER = { ai: false, translate: false, linePush: false, pin: false };
-fetch("api/config", { cache: "no-store" }).then(r => r.ok ? r.json() : {}).then(j => { SERVER = { ...SERVER, ...j }; }).catch(() => {});
+fetch("api/config", { cache: "no-store" }).then(r => r.ok ? r.json() : {}).then(j => { SERVER = { ...SERVER, ...j }; applyI18n(); }).catch(() => {});
 
 async function api(path, body) {
   const headers = body === null ? {} : { "content-type": "application/json" };
@@ -2091,7 +2101,7 @@ const ACT_IC = { add: "plus", close: "check", update: "pen", delete: "trash", br
 function drawChat() {
   const el = $("#chat"); if (!el) return;
   el.innerHTML = hudBriefing() + CHAT.map((m, i) => m.role === "user"
-    ? `<div class="bubble me" data-c>${esc(m.content)}</div>`
+    ? `<div class="bubble me">${esc(m.content)}</div>`
     : `<div class="bubble bot"><span class="who">DUSIT HELP</span>${m.pending ? '<div class="scan" aria-label="Dusit Help กำลังคิด"><span>กำลังคิด…</span><i></i></div>' : `<div class="say ${m.fresh ? "caret" : ""}" data-i="${i}" data-c>${m.fresh ? "" : esc(m.content).replace(/\n/g, "<br>")}</div>`}
       ${(m.actions || []).map((a, j) => `<div class="act ${a.kind}"><span class="act-ic" aria-hidden="true">${IC[ACT_IC[a.kind]] || IC.dots}</span><span class="act-t">${esc(a.label)}</span>${
         a.brief ? `<button class="mini gold" data-brief="${i}:${j}">ดูและส่ง</button>`
@@ -2560,7 +2570,6 @@ function openItem(id) {
 }
 
 // ---------------- settings ----------------
-const isStandalone = () => { try { return navigator.standalone === true || matchMedia("(display-mode: standalone)").matches; } catch (e) { return false; } };
 function openSettings() {
   const canNotify = "Notification" in window && Notification.permission === "default";
   openSheet(`<h3>เมนู</h3>
@@ -2575,36 +2584,28 @@ function openSettings() {
     </div>` : `<div><label class="lab" for="sName">ชื่อของคุณ (ขึ้นในสรุปที่ส่ง)</label><input type="text" id="sName" value="${esc(P.name)}" placeholder="เช่น คิว (FOM)"></div>`}
     <div><span class="lab">ภาษา / Language / 语言</span>
       <div class="lang-row" id="sLang">${[["th", "ไทย"], ["en", "English"], ["zh", "中文"]].map(([k, n]) => `<button type="button" class="chip" data-lang="${k}" aria-pressed="${(P.lang || "th") === k}">${n}</button>`).join("")}</div></div>
-    <div><span class="lab" id="sModeLab">แปล</span>
-      <div class="lang-row" id="sMode">${[["ui", "แปลเฉพาะเมนู"], ["all", "แปลเมนูและเนื้อหางาน"]].map(([k, n]) => `<button type="button" class="chip" data-mode="${k}" aria-pressed="${(P.trMode || "ui") === k}">${n}</button>`).join("")}</div>
+    <div><div id="sModeWrap"><span class="lab" id="sModeLab">แปล</span>
+      <div class="lang-row" id="sMode">${[["ui", "แปลเฉพาะเมนู"], ["all", "แปลเมนูและเนื้อหางาน"]].map(([k, n]) => `<button type="button" class="chip" data-mode="${k}" aria-pressed="${(P.trMode || "all") === k}">${n}</button>`).join("")}</div></div>
       <p class="note" style="margin-top:6px" id="sModeNote"></p></div>
-    <details class="more phone-tr"><summary>แปลด้วยมือถือ (ฟรี ไม่ต้องตั้งค่า)</summary><div>
-      <p class="note"><b>iPhone · Safari:</b> แตะ aA ที่แถบที่อยู่ → แปลเป็นภาษาที่ต้องการ</p>
-      <p class="note"><b>Android · Chrome:</b> แตะ ⋮ → แปล → เลือกภาษา</p>
-      <p class="note">ตั้งภาษาในแอปเป็น “ไทย” ก่อน แล้วให้มือถือแปลทั้งหน้า จะได้ไม่แปลซ้ำซ้อน ถ้าเปิดจากไอคอนบนหน้าจอโฮมแล้วไม่มีปุ่มแปล ให้เปิดผ่าน Safari หรือ Chrome แทน</p>
-      ${isStandalone() ? `<p class="note"><b>ตอนนี้เปิดจากไอคอนบนหน้าจอโฮม จึงไม่มีปุ่มแปล</b> คัดลอกลิงก์ไปเปิดใน Safari หรือ Chrome แล้วเข้าสู่ระบบอีกครั้ง</p>
-      <div class="row"><button type="button" class="btn sec" id="copyLink">คัดลอกลิงก์แอป</button></div>` : ""}
-    </div></details>
     ${SERVER.linePush ? `<label class="switch"><input type="checkbox" id="sLineDone" ${P.lineOnDone === false ? "" : "checked"}><span>แจ้งในกลุ่ม LINE เมื่องานเสร็จ</span></label>` : ""}
     ${ME && canNotify ? `<button class="btn sec" id="notiBtn">เปิดการแจ้งเตือนบนเครื่องนี้</button>` : ""}
     ${AUTH === "none" && (SERVER.pin || SERVER.ai) ? `<div><label class="lab" for="sPin">PIN ทีม (ใช้ AI และส่ง LINE)</label><input type="password" id="sPin" value="${esc(P.pin)}" autocomplete="off"></div>` : ""}
     <p class="note"><span>${AUTH === "demo" ? "โหมดทดลอง" : store.mode === "cloud" ? "ซิงก์กับทีม" : "เก็บในเครื่องนี้เท่านั้น"}</span> · AI: <span>${claudeSample || SERVER.ai ? "เปิดใช้" : "โหมดพื้นฐาน"}</span> · <span>แปลเนื้อหา</span>: <span>${claudeSample || SERVER.translate ? "เปิดใช้" : "ยังไม่ได้ตั้ง"}</span> · LINE: <span>${SERVER.linePush ? "ส่งอัตโนมัติ" : "แชร์/คัดลอก"}</span></p>
     <button class="btn pri" id="saveSet">บันทึก</button>`);
-  if ($("#copyLink")) $("#copyLink").onclick = () => {
-    const url = location.origin + "/";
-    try { navigator.clipboard.writeText(url).then(() => toast("คัดลอกลิงก์แล้ว เปิด Safari แล้ววางได้เลย"), () => toast(url)); } catch (e) { toast(url); }
-  };
-  let lang = P.lang || "th", mode = P.trMode || "ui";
+  let lang = P.lang || "th", mode = P.trMode || "all";
+  const TH_NOTE = SERVER.translate || SERVER.ai || claudeSample
+    ? "ข้อความที่เพื่อนพิมพ์เป็นภาษาอื่น จะแสดงเป็นภาษาไทยให้อัตโนมัติ ข้อมูลจริงไม่เปลี่ยน กดค้างที่ข้อความเพื่อดูต้นฉบับ"
+    : "ยังไม่ได้ตั้งตัวแปลภาษาใน Vercel ข้อความภาษาอื่นจะแสดงตามต้นฉบับ";
   const NOTE = {
     ui: { th: "", en: "Only buttons and labels are translated. Task text stays as written.", zh: "只翻译按钮和标签，任务内容保持原文。" },
-    all: { th: "งานที่เพื่อนจดเป็นภาษาอื่นจะแสดงเป็นไทย ข้อมูลจริงไม่เปลี่ยน แตะค้างที่ข้อความเพื่อดูต้นฉบับ", en: "Task text is shown translated on this device only. Saved tasks stay as written.", zh: "任务内容仅在本设备翻译显示，已保存的任务不会改变。" },
+    all: { th: "งานที่เพื่อนจดเป็นภาษาอื่นจะแสดงเป็นไทย ข้อมูลจริงไม่เปลี่ยน กดค้างที่ข้อความเพื่อดูต้นฉบับ", en: "Task text is shown translated on this device only. Saved tasks stay as written.", zh: "任务内容仅在本设备翻译显示，已保存的任务不会改变。" },
   };
-  const langNote = () => { $("#sModeNote").textContent = NOTE[mode][lang]; };
+  const langNote = () => { $("#sModeWrap").hidden = lang === "th"; $("#sModeNote").textContent = lang === "th" ? TH_NOTE : NOTE[mode][lang]; };
   langNote();
   $("#sLang").addEventListener("click", e => { const b = e.target.closest("[data-lang]"); if (!b) return; lang = b.dataset.lang; $("#sLang").querySelectorAll("[data-lang]").forEach(x => x.setAttribute("aria-pressed", String(x.dataset.lang === lang))); langNote(); });
   $("#sMode").addEventListener("click", e => { const b = e.target.closest("[data-mode]"); if (!b) return; mode = b.dataset.mode; $("#sMode").querySelectorAll("[data-mode]").forEach(x => x.setAttribute("aria-pressed", String(x.dataset.mode === mode))); langNote(); });
   $("#saveSet").onclick = () => {
-    if (lang !== (P.lang || "th") || mode !== (P.trMode || "ui")) { P.lang = lang; P.trMode = mode; savePrefs(); location.reload(); return; }
+    if (lang !== (P.lang || "th") || (lang !== "th" && mode !== (P.trMode || "all"))) { P.lang = lang; P.trMode = mode; savePrefs(); location.reload(); return; }
     if ($("#sName")) P.name = $("#sName").value.trim();
     if ($("#sLineDone")) P.lineOnDone = $("#sLineDone").checked;
     if ($("#sPin")) P.pin = $("#sPin").value.trim();
