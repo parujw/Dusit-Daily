@@ -49,16 +49,16 @@ export async function POST(request) {
     const name = String(b.name || "").trim().slice(0, 40);
     const role = b.role === "admin" ? "admin" : "staff";
     const password = String(b.password || "");
-    if (!EMAIL.test(email)) return json({ error: "อีเมลไม่ถูกต้อง" }, 400);
+    if (!EMAIL.test(email)) return json({ error: "ชื่อผู้ใช้หรืออีเมลไม่ถูกต้อง" }, 400);
     if (!name) return json({ error: "ใส่ชื่อที่จะแสดงในแอป" }, 400);
-    if (password.length < 8) return json({ error: "รหัสผ่านต้องยาวอย่างน้อย 8 ตัว" }, 400);
+    if (password.length < 6) return json({ error: "รหัสผ่านต้องยาวอย่างน้อย 6 ตัว" }, 400);
     try {
       const u = await a.auth.createUser({ email, password, displayName: name });
       await a.db.doc(`users/${u.uid}`).set({ email, name, role, team: TEAM_ID, createdAt: Date.now(), createdBy: tok.uid });
       await teamRef.set({ members: FieldValue.arrayUnion(email) }, { merge: true });
       return json({ uid: u.uid });
     } catch (e) {
-      if (e.code === "auth/email-already-exists") return json({ error: "อีเมลนี้มีบัญชีอยู่แล้ว" }, 409);
+      if (e.code === "auth/email-already-exists") return json({ error: "ชื่อผู้ใช้หรืออีเมลนี้มีบัญชีอยู่แล้ว" }, 409);
       if (e.code === "auth/invalid-password") return json({ error: "รหัสผ่านสั้นเกินไป" }, 400);
       console.error(e);
       return json({ error: "สร้างบัญชีไม่สำเร็จ" }, 500);
@@ -73,7 +73,7 @@ export async function POST(request) {
 
   if (b.action === "password") {
     const password = String(b.password || "");
-    if (password.length < 8) return json({ error: "รหัสผ่านต้องยาวอย่างน้อย 8 ตัว" }, 400);
+    if (password.length < 6) return json({ error: "รหัสผ่านต้องยาวอย่างน้อย 6 ตัว" }, 400);
     await a.auth.updateUser(uid, { password });
     await a.auth.revokeRefreshTokens(uid);
     return json({ ok: true });

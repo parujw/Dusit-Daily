@@ -34,9 +34,9 @@ export async function POST(request) {
   const email = String(b.email || "").trim().toLowerCase();
   const name = String(b.name || "").trim().slice(0, 40);
   const password = String(b.password || "");
-  if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) return json({ error: "อีเมลไม่ถูกต้อง" }, 400);
+  if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) return json({ error: "ชื่อผู้ใช้หรืออีเมลไม่ถูกต้อง" }, 400);
   if (!name) return json({ error: "ใส่ชื่อที่จะแสดงในแอป" }, 400);
-  if (password.length < 8) return json({ error: "รหัสผ่านต้องยาวอย่างน้อย 8 ตัว" }, 400);
+  if (password.length < 6) return json({ error: "รหัสผ่านต้องยาวอย่างน้อย 6 ตัว" }, 400);
 
   try {
     let user;

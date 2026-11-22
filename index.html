@@ -412,7 +412,7 @@ details.more summary{cursor:pointer;color:var(--gold-ink);font-size:13.5px;font-
       <p>เข้าสู่ระบบเพื่อดูงานที่ต้องทำต่อของทีม</p>
     </div>
     <form id="loginForm" class="form login-card" novalidate>
-      <div><label class="lab" for="lEmail">อีเมล</label><input type="email" id="lEmail" autocomplete="username" inputmode="email" placeholder="name@example.com"></div>
+      <div><label class="lab" for="lEmail">ชื่อผู้ใช้หรืออีเมล</label><input type="text" id="lEmail" autocomplete="username" autocapitalize="none" spellcheck="false" placeholder="เช่น admin"></div>
       <div><label class="lab" for="lPass">รหัสผ่าน</label>
         <div class="pw"><input type="password" id="lPass" autocomplete="current-password"><button type="button" id="lShow">แสดง</button></div></div>
       <p class="err" id="lErr" hidden></p>
@@ -425,8 +425,8 @@ details.more summary{cursor:pointer;color:var(--gold-ink);font-size:13.5px;font-
       <div><b class="bhead">ตั้งค่าครั้งแรก</b><p class="note">สร้างบัญชีผู้ดูแลคนแรกของทีม ใช้ได้ครั้งเดียว ต้องใช้รหัสตั้งค่า (SETUP_CODE) ที่ตั้งไว้ใน Vercel</p></div>
       <div><label class="lab" for="suCode">รหัสตั้งค่า</label><input type="password" id="suCode" autocomplete="off"></div>
       <div><label class="lab" for="suName">ชื่อที่แสดงในแอป</label><input type="text" id="suName" autocomplete="name"></div>
-      <div><label class="lab" for="suEmail">อีเมล</label><input type="email" id="suEmail" autocomplete="username" inputmode="email"></div>
-      <div><label class="lab" for="suPass">รหัสผ่าน (อย่างน้อย 8 ตัว)</label><input type="password" id="suPass" autocomplete="new-password"></div>
+      <div><label class="lab" for="suEmail">ชื่อผู้ใช้หรืออีเมล</label><input type="text" id="suEmail" autocomplete="username" autocapitalize="none" spellcheck="false" placeholder="เช่น admin"></div>
+      <div><label class="lab" for="suPass">รหัสผ่าน (อย่างน้อย 6 ตัว)</label><input type="password" id="suPass" autocomplete="new-password"></div>
       <p class="err" id="suErr" hidden></p>
       <button class="btn pri" type="submit" id="suBtn">สร้างผู้ดูแลและเข้าสู่ระบบ</button>
       <button class="link" type="button" id="setupBack">กลับไปหน้าเข้าสู่ระบบ</button>
@@ -646,6 +646,21 @@ const LocalStore = (() => {
 const AUTH = CFG.firebase ? "firebase" : (Array.isArray(window.JARVIS_DEMO_USERS) ? "demo" : "none");
 let ME = null; // { uid, email, name, role }
 const myName = () => ME?.name || P.name || "";
+// Accounts can use a plain username (e.g. "admin"). Firebase needs an email, so a username is
+// stored as <username>@staff.<authDomain>; no mail is ever sent there.
+const USER_DOMAIN = "staff." + (CFG.firebase?.authDomain || "dusitdaily.local");
+function toLogin(v) {
+  v = String(v || "").trim().toLowerCase();
+  if (!v || v.includes("@")) return v;
+  return `${v}@${USER_DOMAIN}`;
+}
+const isUsername = v => /^[a-z0-9._-]{3,30}$/.test(String(v || "").trim().toLowerCase());
+const showId = e => String(e || "").endsWith("@" + USER_DOMAIN) ? e.slice(0, -USER_DOMAIN.length - 1) : (e || "");
+function checkId(v) {
+  v = String(v || "").trim();
+  if (v.includes("@") ? !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v) : !isUsername(v)) throw new Error("ชื่อผู้ใช้ใช้ a-z 0-9 . _ - ยาว 3–30 ตัว หรือใส่อีเมล");
+  return toLogin(v);
+}
 const myUid = () => ME?.uid || "";
 const isAdmin = () => ME?.role === "admin";
 
@@ -757,9 +772,9 @@ function setMe(u) {
 
 // ---------------- login page ----------------
 const AUTH_ERR = {
-  "auth/invalid-credential": "อีเมลหรือรหัสผ่านไม่ถูกต้อง",
-  "auth/wrong-password": "อีเมลหรือรหัสผ่านไม่ถูกต้อง",
-  "auth/user-not-found": "อีเมลหรือรหัสผ่านไม่ถูกต้อง",
+  "auth/invalid-credential": "ชื่อผู้ใช้หรือรหัสผ่านไม่ถูกต้อง",
+  "auth/wrong-password": "ชื่อผู้ใช้หรือรหัสผ่านไม่ถูกต้อง",
+  "auth/user-not-found": "ชื่อผู้ใช้หรือรหัสผ่านไม่ถูกต้อง",
   "auth/invalid-email": "รูปแบบอีเมลไม่ถูกต้อง",
   "auth/too-many-requests": "ลองผิดหลายครั้ง รอสักครู่แล้วลองใหม่",
   "auth/user-disabled": "บัญชีนี้ถูกปิดการใช้งาน",
@@ -782,13 +797,14 @@ $("#setupForm").addEventListener("submit", async e => {
   e.preventDefault();
   const err = m => { $("#suErr").textContent = m; $("#suErr").hidden = !m; };
   const btn = $("#suBtn"); btn.disabled = true; btn.textContent = "กำลังสร้าง…"; err("");
-  const body = { code: $("#suCode").value, name: $("#suName").value.trim(), email: $("#suEmail").value.trim(), password: $("#suPass").value };
+  let body;
   try {
+    body = { code: $("#suCode").value, name: $("#suName").value.trim(), email: checkId($("#suEmail").value), password: $("#suPass").value };
     const r = await fetch("api/setup", { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify(body) });
     const j = await r.json().catch(() => ({}));
     if (!r.ok) throw new Error(j.error || "สร้างไม่สำเร็จ");
     $("#setupForm").hidden = true; $("#loginForm").hidden = false; $("#setupOpen").hidden = true;
-    $("#lEmail").value = body.email;
+    $("#lEmail").value = showId(body.email);
     await fb.authM.signInWithEmailAndPassword(fb.auth, body.email, body.password);
     toast("สร้างผู้ดูแลแล้ว ยินดีต้อนรับ");
   } catch (x) { err(x.message); }
@@ -796,8 +812,8 @@ $("#setupForm").addEventListener("submit", async e => {
 });
 $("#loginForm").addEventListener("submit", async e => {
   e.preventDefault();
-  const email = $("#lEmail").value.trim(), pass = $("#lPass").value;
-  if (!email || !pass) return loginError("ใส่อีเมลและรหัสผ่าน");
+  const email = toLogin($("#lEmail").value), pass = $("#lPass").value;
+  if (!email || !pass) return loginError("ใส่ชื่อผู้ใช้และรหัสผ่าน");
   loginError(""); const btn = $("#lBtn"); btn.disabled = true; btn.textContent = "กำลังเข้าสู่ระบบ…";
   try {
     if (AUTH === "demo") { const u = await Demo.login(email, pass); setMe({ uid: u.uid, email: u.email, name: u.name, role: u.role }); }
@@ -808,6 +824,7 @@ $("#loginForm").addEventListener("submit", async e => {
 $("#lShow").onclick = () => { const i = $("#lPass"); const show = i.type === "password"; i.type = show ? "text" : "password"; $("#lShow").textContent = show ? "ซ่อน" : "แสดง"; };
 $("#lForgot").onclick = async () => {
   const email = $("#lEmail").value.trim();
+  if (email && !email.includes("@")) return loginError("บัญชีแบบชื่อผู้ใช้ไม่มีอีเมล ให้ผู้ดูแลตั้งรหัสใหม่ที่ Management > บัญชีพนักงาน");
   if (AUTH === "demo") return loginError("โหมดทดลอง: ให้ผู้ดูแลตั้งรหัสผ่านใหม่ในหน้าจัดการทีม");
   if (!email) return loginError("ใส่อีเมลก่อน แล้วกดลืมรหัสผ่านอีกครั้ง");
   try { await fb.authM.sendPasswordResetEmail(fb.auth, email); loginError(""); $("#lNote").textContent = `ส่งลิงก์ตั้งรหัสผ่านใหม่ไปที่ ${email} แล้ว (ถ้ามีบัญชีนี้ในระบบ)`; }
@@ -820,7 +837,7 @@ async function signOutNow() {
   toast("ออกจากระบบแล้ว");
 }
 async function changePassword(cur, next) {
-  if (next.length < 8) throw new Error("รหัสผ่านใหม่ต้องยาวอย่างน้อย 8 ตัว");
+  if (next.length < 6) throw new Error("รหัสผ่านใหม่ต้องยาวอย่างน้อย 6 ตัว");
   if (AUTH === "demo") {
     const list = Demo.users(); const u = list.find(x => x.uid === ME.uid);
     if (!u || u.hash !== await sha256(u.email + ":" + cur)) throw new Error("รหัสผ่านปัจจุบันไม่ถูกต้อง");
@@ -841,10 +858,9 @@ const Team = {
   async add(m) {
     if (AUTH === "demo") {
       const list = Demo.users(); const email = m.email.trim().toLowerCase();
-      if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) throw new Error("อีเมลไม่ถูกต้อง");
       if (!m.name.trim()) throw new Error("ใส่ชื่อที่จะแสดงในแอป");
-      if (m.password.length < 8) throw new Error("รหัสผ่านต้องยาวอย่างน้อย 8 ตัว");
-      if (list.some(u => u.email === email)) throw new Error("อีเมลนี้มีบัญชีอยู่แล้ว");
+      if (m.password.length < 6) throw new Error("รหัสผ่านต้องยาวอย่างน้อย 6 ตัว");
+      if (list.some(u => u.email === email)) throw new Error("ชื่อผู้ใช้นี้มีบัญชีอยู่แล้ว");
       list.push({ uid: "demo-" + uid(), email, name: m.name.trim(), role: m.role, hash: await sha256(email + ":" + m.password) });
       Demo.save(list); return;
     }
@@ -852,7 +868,7 @@ const Team = {
   },
   async setPassword(id, password) {
     if (AUTH === "demo") {
-      if (password.length < 8) throw new Error("รหัสผ่านต้องยาวอย่างน้อย 8 ตัว");
+      if (password.length < 6) throw new Error("รหัสผ่านต้องยาวอย่างน้อย 6 ตัว");
       const list = Demo.users(); const u = list.find(x => x.uid === id); u.hash = await sha256(u.email + ":" + password); Demo.save(list); return;
     }
     await api("users", { action: "password", uid: id, password });
@@ -1786,7 +1802,7 @@ function openSettings() {
   openSheet(`<h3>ตั้งค่า</h3>
     ${ME ? `<div class="bcard acct">
       <div class="acct-row"><span class="avatar">${esc((ME.name || "?").slice(0, 1).toUpperCase())}</span>
-        <div><div class="bhead">${esc(ME.name)} ${isAdmin() ? '<span class="tag ex">ผู้ดูแล</span>' : ""}</div><p class="note">${esc(ME.email)}</p></div></div>
+        <div><div class="bhead">${esc(ME.name)} ${isAdmin() ? '<span class="tag ex">ผู้ดูแล</span>' : ""}</div><p class="note">${esc(showId(ME.email))}</p></div></div>
       <div class="row"><button class="btn sec" id="pwBtn">เปลี่ยนรหัสผ่าน</button><button class="btn sec" id="outBtn">ออกจากระบบ</button></div>
       ${isAdmin() ? `<button class="btn dark" id="teamBtn">จัดการบัญชีพนักงาน</button>` : ""}
     </div>` : `<div><label class="lab" for="sName">ชื่อของคุณ (ขึ้นในสรุปและตอนรับเวร)</label><input type="text" id="sName" value="${esc(P.name)}" placeholder="เช่น คิว (FOM)"></div>`}
@@ -1811,7 +1827,7 @@ function openPassword() {
   openSheet(`<h3>เปลี่ยนรหัสผ่าน</h3>
     <form id="pwForm" class="form" novalidate>
       <div><label class="lab" for="pCur">รหัสผ่านปัจจุบัน</label><input type="password" id="pCur" autocomplete="current-password"></div>
-      <div><label class="lab" for="pNew">รหัสผ่านใหม่ (อย่างน้อย 8 ตัว)</label><input type="password" id="pNew" autocomplete="new-password"></div>
+      <div><label class="lab" for="pNew">รหัสผ่านใหม่ (อย่างน้อย 6 ตัว)</label><input type="password" id="pNew" autocomplete="new-password"></div>
       <div><label class="lab" for="pNew2">ยืนยันรหัสผ่านใหม่</label><input type="password" id="pNew2" autocomplete="new-password"></div>
       <p class="err" id="pErr" hidden></p>
       <button class="btn pri" type="submit">บันทึกรหัสผ่านใหม่</button>
@@ -1867,8 +1883,8 @@ async function renderTeam() {
         <div><label class="lab" for="mName">ชื่อที่แสดงในแอป</label><input type="text" id="mName" placeholder="เช่น ออม" autocomplete="off"></div>
         <div><label class="lab" for="mRole">สิทธิ์</label><select id="mRole"><option value="staff">พนักงาน</option><option value="admin">ผู้ดูแล</option></select></div>
       </div>
-      <div><label class="lab" for="mEmail">อีเมล (ใช้เข้าสู่ระบบ)</label><input type="email" id="mEmail" autocomplete="off" placeholder="name@example.com"></div>
-      <div><label class="lab" for="mPass">รหัสผ่านเริ่มต้น (อย่างน้อย 8 ตัว)</label>
+      <div><label class="lab" for="mEmail">ชื่อผู้ใช้หรืออีเมล (ใช้เข้าสู่ระบบ)</label><input type="text" id="mEmail" autocomplete="off" autocapitalize="none" spellcheck="false" placeholder="เช่น aom หรือ name@example.com"></div>
+      <div><label class="lab" for="mPass">รหัสผ่านเริ่มต้น (อย่างน้อย 6 ตัว)</label>
         <div class="pwrow"><input type="text" id="mPass" autocomplete="off"><button class="mini" type="button" id="mGen">สุ่มรหัส</button></div></div>
       <p class="err" id="mErr" hidden></p>
       <button class="btn pri" type="submit" id="mAdd">สร้างบัญชี</button>
@@ -1879,7 +1895,7 @@ async function renderTeam() {
   let users = [];
   const drawList = () => {
     const q = ($("#tmQ").value || "").trim().toLowerCase();
-    const list = users.filter(u => !q || (u.name + " " + u.email).toLowerCase().includes(q));
+    const list = users.filter(u => !q || (u.name + " " + showId(u.email)).toLowerCase().includes(q));
     const act = users.filter(u => !u.disabled);
     $("#tmStats").innerHTML = `<div class="kpi"><div class="k">ใช้งานอยู่</div><div class="v num">${act.length}</div></div>
       <div class="kpi"><div class="k">ผู้ดูแล</div><div class="v num">${act.filter(u => u.role === "admin").length}</div></div>
@@ -1888,7 +1904,7 @@ async function renderTeam() {
       const me = u.uid === myUid();
       return `<div class="member ${u.disabled ? "off" : ""}" data-uid="${esc(u.uid)}">
         <span class="avatar">${esc((u.name || "?").slice(0, 1).toUpperCase())}</span>
-        <div class="m-t"><b>${esc(u.name)}${me ? " (คุณ)" : ""} <span class="role ${u.role === "admin" ? "admin" : ""}">${u.disabled ? "ปิดใช้งาน" : u.role === "admin" ? "ผู้ดูแล" : "พนักงาน"}</span></b><small>${esc(u.email)}</small></div>
+        <div class="m-t"><b>${esc(u.name)}${me ? " (คุณ)" : ""} <span class="role ${u.role === "admin" ? "admin" : ""}">${u.disabled ? "ปิดใช้งาน" : u.role === "admin" ? "ผู้ดูแล" : "พนักงาน"}</span></b><small>${esc(showId(u.email))}</small></div>
         ${me ? "" : `<div class="m-acts">${u.disabled
           ? `<button class="mini" data-act="enable">เปิดใช้อีกครั้ง</button>`
           : `<button class="mini" data-act="pw">ตั้งรหัสใหม่</button><button class="mini" data-act="role">${u.role === "admin" ? "เปลี่ยนเป็นพนักงาน" : "ตั้งเป็นผู้ดูแล"}</button><button class="mini" data-act="remove">ปิดบัญชี</button>`}</div>`}
@@ -1907,7 +1923,7 @@ async function renderTeam() {
     try {
       if (b.dataset.act === "pw") {
         if (row.querySelector(".pw-inline")) return;
-        row.insertAdjacentHTML("beforeend", `<form class="pw-inline"><input type="text" placeholder="รหัสใหม่ อย่างน้อย 8 ตัว" aria-label="รหัสผ่านใหม่ของ ${esc(u.name)}" autocomplete="off"><button class="mini" type="button" data-gen>สุ่ม</button><button class="mini gold" type="submit">บันทึก</button></form>`);
+        row.insertAdjacentHTML("beforeend", `<form class="pw-inline"><input type="text" placeholder="รหัสใหม่ อย่างน้อย 6 ตัว" aria-label="รหัสผ่านใหม่ของ ${esc(u.name)}" autocomplete="off"><button class="mini" type="button" data-gen>สุ่ม</button><button class="mini gold" type="submit">บันทึก</button></form>`);
         const f = row.querySelector(".pw-inline"), inp = f.querySelector("input");
         inp.focus();
         f.querySelector("[data-gen]").onclick = () => { inp.value = randomPassword(); };
@@ -1927,7 +1943,7 @@ async function renderTeam() {
     const err = m => { $("#mErr").textContent = m; $("#mErr").hidden = !m; };
     const btn = $("#mAdd"); btn.disabled = true;
     try {
-      const m = { name: $("#mName").value.trim(), email: $("#mEmail").value.trim(), password: $("#mPass").value, role: $("#mRole").value };
+      const m = { name: $("#mName").value.trim(), email: checkId($("#mEmail").value), password: $("#mPass").value, role: $("#mRole").value };
       await Team.add(m);
       err(""); toast(`สร้างบัญชี ${m.name} แล้ว`); ["mName", "mEmail", "mPass"].forEach(id => $("#" + id).value = ""); load();
     } catch (x) { err(x.message || "สร้างไม่สำเร็จ"); }
