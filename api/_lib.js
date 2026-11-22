@@ -6,16 +6,19 @@ import { getFirestore } from "firebase-admin/firestore";
 export const TEAM_ID = process.env.TEAM_ID || "fo";
 
 let adminReady = null;
+// Why Firebase Admin is not available (shown on the setup screen; never the secret itself).
+export let adminProblem = "";
 /** Firebase Admin, or null when FIREBASE_SERVICE_ACCOUNT is not set. */
 export function admin() {
   if (adminReady !== null) return adminReady || null;
   const raw = process.env.FIREBASE_SERVICE_ACCOUNT;
-  if (!raw) return (adminReady = false) || null;
+  if (!raw) { adminProblem = "no_service_account"; return (adminReady = false) || null; }
   try {
     const app = getApps()[0] || initializeApp({ credential: cert(JSON.parse(raw)) });
     adminReady = { auth: getAuth(app), db: getFirestore(app) };
   } catch (e) {
     console.error("Firebase Admin init failed:", e.message);
+    adminProblem = "bad_service_account";
     adminReady = false;
   }
   return adminReady || null;

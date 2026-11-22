@@ -789,7 +789,17 @@ function showLogin(on) {
 function loginError(msg) { const e = $("#lErr"); e.textContent = msg; e.hidden = !msg; }
 function loginReady(ok) {
   $("#lBtn").disabled = !ok; $("#lNote").textContent = ok ? "" : "กำลังเชื่อมต่อ…";
-  if (ok && AUTH === "firebase") fetch("api/setup", { cache: "no-store" }).then(r => r.ok ? r.json() : {}).then(j => { $("#setupOpen").hidden = !j.needsSetup; }).catch(() => {});
+  if (ok && AUTH === "firebase") fetch("api/setup", { cache: "no-store" }).then(r => r.ok ? r.json() : {}).then(j => {
+    $("#setupOpen").hidden = !j.needsSetup;
+    const why = {
+      no_service_account: "ระบบหลังบ้านยังไม่พร้อม: ไม่พบ FIREBASE_SERVICE_ACCOUNT ใน Vercel (ตรวจว่าเลือก Production แล้วกด Redeploy)",
+      bad_service_account: "ระบบหลังบ้านยังไม่พร้อม: FIREBASE_SERVICE_ACCOUNT อ่านไม่ได้ ให้วางเนื้อหาไฟล์ JSON ใหม่ทั้งไฟล์ แล้ว Redeploy",
+      no_firestore: "ระบบหลังบ้านยังไม่พร้อม: ยังไม่ได้สร้าง Firestore Database ใน Firebase",
+      firestore_error: "ระบบหลังบ้านยังไม่พร้อม: ต่อ Firestore ไม่ได้ ลองใหม่อีกครั้ง",
+    }[j.problem];
+    if (why) $("#lNote").textContent = why;
+    else if (j.needsSetup && !j.setupCode) $("#lNote").textContent = "ทีมยังไม่มีผู้ดูแล: ใส่ SETUP_CODE ใน Vercel แล้ว Redeploy เพื่อใช้ปุ่มตั้งค่าครั้งแรก";
+  }).catch(() => {});
 }
 $("#setupOpen").onclick = () => { $("#loginForm").hidden = true; $("#setupForm").hidden = false; $("#suCode").focus(); };
 $("#setupBack").onclick = () => { $("#setupForm").hidden = true; $("#loginForm").hidden = false; };

@@ -3,7 +3,7 @@
 // POST /api/setup  { code, name, email, password }
 // Works only while no admin exists, and only with SETUP_CODE set in Vercel.
 import crypto from "node:crypto";
-import { admin, json, TEAM_ID } from "./_lib.js";
+import { admin, adminProblem, json, TEAM_ID } from "./_lib.js";
 import { FieldValue } from "firebase-admin/firestore";
 
 async function hasAdmin(a) {
@@ -13,9 +13,12 @@ async function hasAdmin(a) {
 
 export async function GET() {
   const a = admin();
-  if (!a) return json({ needsSetup: false, ready: false });
-  try { return json({ needsSetup: !(await hasAdmin(a)), ready: true }); }
-  catch (e) { console.error(e); return json({ needsSetup: false, ready: false }); }
+  if (!a) return json({ needsSetup: false, ready: false, problem: adminProblem });
+  try { return json({ needsSetup: !(await hasAdmin(a)), ready: true, setupCode: Boolean(process.env.SETUP_CODE) }); }
+  catch (e) {
+    console.error("setup check failed:", e.code, e.message);
+    return json({ needsSetup: false, ready: false, problem: e.code === 5 || /NOT_FOUND/.test(e.message) ? "no_firestore" : "firestore_error" });
+  }
 }
 
 export async function POST(request) {
