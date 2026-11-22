@@ -1,4 +1,4 @@
-// POST /api/handover  { day, from, open, done, upcoming, noIssue, unchecked }  ->  { text }
+// POST /api/handover  { lang, day, from, open, done, upcoming, noIssue, unchecked }  ->  { text }
 // Writes a professional LINE handover message from the day's tasks (Claude Haiku).
 // Read-only: it only turns the task data the app sends into text; nothing is saved here.
 import Anthropic from "@anthropic-ai/sdk";
@@ -6,6 +6,7 @@ import { json, requireMember } from "./_lib.js";
 
 const client = new Anthropic(); // reads ANTHROPIC_API_KEY
 
+const LANGS = { th: "ภาษาไทย", en: "English", zh: "简体中文 (Simplified Chinese)" };
 const SYSTEM = `คุณเป็นหัวหน้าแผนก Front Office โรงแรม 5 ดาวในกรุงเทพฯ เขียนข้อความส่งต่องานให้ทีมทาง LINE จากข้อมูล JSON ที่ได้รับ
 
 รูปแบบ (ข้อความธรรมดาสำหรับ LINE):
@@ -33,6 +34,9 @@ const SYSTEM = `คุณเป็นหัวหน้าแผนก Front Off
 
 ความยาว: ไม่เกิน 2,500 ตัวอักษร ถ้ายาวเกิน ให้ย่อหัวข้อ "เสร็จแล้ววันนี้" ก่อน (เช่น "และอีก 5 เรื่อง")
 ตอบเป็นข้อความที่พร้อมส่งเท่านั้น ไม่ต้องอธิบายหรือใส่คำนำ`;
+// For English or Chinese, the whole message is written in that language from the start.
+const langRule = (lang) => lang === "th" ? "" :
+  `\n\nภาษา: เขียนทั้งข้อความเป็น ${LANGS[lang]} ตั้งแต่ต้น รวมถึงบรรทัดแรก หัวข้อ ภาพรวม บรรทัด "ผู้ส่ง" "วันนี้ไม่มีประเด็นเรื่อง" "ยังไม่ได้เช็กหมวด" และคำขอบคุณ ให้แปลความหมายเป็นภาษานั้นแบบที่โรงแรมใช้จริง ข้อมูลงานที่เป็นภาษาไทยให้แปลเป็นภาษานั้นด้วย คงเลขห้อง เวลา ชื่อพนักงาน ชื่อแขกแบบย่อ และคำอย่าง VIP HK F&B ไว้ตามเดิม ใช้ day และ dayLabel ตามที่ให้มา ไม่ต้องแปลงปี`;
 
 const clip = (s, n) => String(s ?? "").slice(0, n);
 const task = (i) => ({
@@ -50,6 +54,7 @@ export async function POST(request) {
 
   let b;
   try { b = await request.json(); } catch { return json({ error: "ข้อมูลไม่ถูกต้อง" }, 400); }
+  const lang = LANGS[b?.lang] ? b.lang : "th";
   const data = {
     day: clip(b?.day, 60), from: clip(b?.from, 40) || "-",
     open: list(b?.open, 120), done: list(b?.done, 60), upcoming: list(b?.upcoming, 80),
@@ -63,7 +68,7 @@ export async function POST(request) {
       max_tokens: 8000,
       // A handover is read by the whole team, so it gets a little more care than a chat reply.
       output_config: { effort: "medium" },
-      system: SYSTEM,
+      system: SYSTEM + langRule(lang),
       messages: [{ role: "user", content: `ข้อมูลงาน (JSON):\n${JSON.stringify(data)}` }],
     });
     if (res.stop_reason === "refusal") return json({ error: "AI ไม่เขียนข้อความนี้ ใช้สรุปมาตรฐานแทนได้" }, 422);
