@@ -2549,11 +2549,19 @@ function buildBrief(items, title, opts = {}) {
       t += `${++no}. ${room}${cut(clean(it.action || it.summary), 140)} (นัด ${fd(itemDate(it), { day: "numeric", month: "short" })}${it.due ? " " + it.due + " น." : ""})${it.assignee ? `\n   ${it.assignee} ดูแล` : ""}\n`;
     }
   }
-  // Everything finished today, one line each.
+  // Everything finished today, in full and numbered like the other sections.
   if (fin.length) {
-    t += `\n✅ เสร็จแล้ววันนี้ (${fin.length})\n`;
-    for (const i of fin.slice(0, 20)) t += `• ${i.room && i.room !== "—" ? "ห้อง " + i.room + " " : ""}${cut(clean(i.action || i.summary), 60)}${i.doneBy ? ` (${i.doneBy})` : ""}\n`;
-    if (fin.length > 20) t += `• และอีก ${fin.length - 20} เรื่อง\n`;
+    t += `\n✅ เสร็จแล้ววันนี้\n`;
+    for (const it of fin.slice(0, 30)) {
+      const room = it.room && it.room !== "—" ? `ห้อง ${it.room}${it.guest ? " " + clean(it.guest) : ""} ` : (it.guest ? clean(it.guest) + " " : "");
+      const what = clean(it.action || it.summary);
+      t += `${++no}. ${room}${cut(what, 140)}\n`;
+      const why = it.action && it.summary && !what.includes(clean(it.summary)) ? cut(clean(it.summary), 100) : "";
+      const at = it.doneAt ? new Date(it.doneAt).toLocaleTimeString("th-TH", { hour: "2-digit", minute: "2-digit", hour12: false }) : "";
+      const more = [why, `เสร็จแล้ว${it.doneBy ? "โดย " + it.doneBy : ""}${at ? ` (${at} น.)` : ""}`].filter(Boolean);
+      t += `   ${more.join(" · ")}\n`;
+    }
+    if (fin.length > 30) t += `และอีก ${fin.length - 30} เรื่อง\n`;
   }
   // Tomorrow, so the next person can plan.
   const tmr = ymd(new Date(parseYmd(SEL).getTime() + 864e5));
