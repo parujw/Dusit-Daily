@@ -419,6 +419,17 @@ details.more summary{cursor:pointer;color:var(--gold-ink);font-size:13.5px;font-
       <button class="btn pri" type="submit" id="lBtn">เข้าสู่ระบบ</button>
       <button class="link" type="button" id="lForgot">ลืมรหัสผ่าน</button>
       <p class="note" id="lNote"></p>
+      <button class="btn sec" type="button" id="setupOpen" hidden>ตั้งค่าครั้งแรก: สร้างผู้ดูแล</button>
+    </form>
+    <form id="setupForm" class="form login-card" novalidate hidden>
+      <div><b class="bhead">ตั้งค่าครั้งแรก</b><p class="note">สร้างบัญชีผู้ดูแลคนแรกของทีม ใช้ได้ครั้งเดียว ต้องใช้รหัสตั้งค่า (SETUP_CODE) ที่ตั้งไว้ใน Vercel</p></div>
+      <div><label class="lab" for="suCode">รหัสตั้งค่า</label><input type="password" id="suCode" autocomplete="off"></div>
+      <div><label class="lab" for="suName">ชื่อที่แสดงในแอป</label><input type="text" id="suName" autocomplete="name"></div>
+      <div><label class="lab" for="suEmail">อีเมล</label><input type="email" id="suEmail" autocomplete="username" inputmode="email"></div>
+      <div><label class="lab" for="suPass">รหัสผ่าน (อย่างน้อย 8 ตัว)</label><input type="password" id="suPass" autocomplete="new-password"></div>
+      <p class="err" id="suErr" hidden></p>
+      <button class="btn pri" type="submit" id="suBtn">สร้างผู้ดูแลและเข้าสู่ระบบ</button>
+      <button class="link" type="button" id="setupBack">กลับไปหน้าเข้าสู่ระบบ</button>
     </form>
   </section>
 
@@ -761,7 +772,28 @@ function showLogin(on) {
   else { $("#lPass").value = ""; show(view === "login" ? "home" : view); }
 }
 function loginError(msg) { const e = $("#lErr"); e.textContent = msg; e.hidden = !msg; }
-function loginReady(ok) { $("#lBtn").disabled = !ok; $("#lNote").textContent = ok ? "" : "กำลังเชื่อมต่อ…"; }
+function loginReady(ok) {
+  $("#lBtn").disabled = !ok; $("#lNote").textContent = ok ? "" : "กำลังเชื่อมต่อ…";
+  if (ok && AUTH === "firebase") fetch("api/setup", { cache: "no-store" }).then(r => r.ok ? r.json() : {}).then(j => { $("#setupOpen").hidden = !j.needsSetup; }).catch(() => {});
+}
+$("#setupOpen").onclick = () => { $("#loginForm").hidden = true; $("#setupForm").hidden = false; $("#suCode").focus(); };
+$("#setupBack").onclick = () => { $("#setupForm").hidden = true; $("#loginForm").hidden = false; };
+$("#setupForm").addEventListener("submit", async e => {
+  e.preventDefault();
+  const err = m => { $("#suErr").textContent = m; $("#suErr").hidden = !m; };
+  const btn = $("#suBtn"); btn.disabled = true; btn.textContent = "กำลังสร้าง…"; err("");
+  const body = { code: $("#suCode").value, name: $("#suName").value.trim(), email: $("#suEmail").value.trim(), password: $("#suPass").value };
+  try {
+    const r = await fetch("api/setup", { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify(body) });
+    const j = await r.json().catch(() => ({}));
+    if (!r.ok) throw new Error(j.error || "สร้างไม่สำเร็จ");
+    $("#setupForm").hidden = true; $("#loginForm").hidden = false; $("#setupOpen").hidden = true;
+    $("#lEmail").value = body.email;
+    await fb.authM.signInWithEmailAndPassword(fb.auth, body.email, body.password);
+    toast("สร้างผู้ดูแลแล้ว ยินดีต้อนรับ");
+  } catch (x) { err(x.message); }
+  btn.disabled = false; btn.textContent = "สร้างผู้ดูแลและเข้าสู่ระบบ";
+});
 $("#loginForm").addEventListener("submit", async e => {
   e.preventDefault();
   const email = $("#lEmail").value.trim(), pass = $("#lPass").value;

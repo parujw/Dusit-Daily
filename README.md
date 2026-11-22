@@ -68,7 +68,9 @@ firestore.rules     ให้เฉพาะอีเมลในรายชื
    firebase use --add          # เลือกโปรเจกต์
    firebase deploy --only firestore:rules
    ```
-7. สร้างบัญชีผู้ดูแลคนแรก (ครั้งเดียว) จากเครื่องที่มีไฟล์ service account:
+7. สร้างบัญชีผู้ดูแลคนแรก (ครั้งเดียว) เลือกทางใดทางหนึ่ง
+   - **จากมือถือ:** ใส่ `SETUP_CODE` (ตั้งเองอย่างน้อย 8 ตัว) ใน Vercel แล้ว Redeploy เปิดเว็บ กด "ตั้งค่าครั้งแรก: สร้างผู้ดูแล" ใส่รหัสตั้งค่า ชื่อ อีเมล รหัสผ่าน ปุ่มนี้จะหายไปเมื่อทีมมีผู้ดูแลแล้ว (ลบ `SETUP_CODE` ทิ้งหลังใช้ได้)
+   - **จากคอม** ที่มีไฟล์ service account:
    ```bash
    npm install
    FIREBASE_SERVICE_ACCOUNT="$(cat service-account.json)" TEAM_ID=fo \
