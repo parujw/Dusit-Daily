@@ -2125,7 +2125,7 @@ function buildBrief(items, title, opts = {}) {
       if (it.action && it.summary) t += `   (${it.summary})\n`;
     }
   }
-  if (opts.unchecked) t += opts.unchecked.length ? `\nยังไม่ได้เช็ก: ${opts.unchecked.join(", ")}` : `\n✅ เช็กครบทุกหมวดแล้ว`;
+  if (opts.noIssue && opts.noIssue.length) t += `\nวันนี้ไม่มีประเด็นเรื่อง: ${opts.noIssue.join(", ")}`;
   t += `\nผู้ส่ง: ${myName() || "-"}`;
   return t;
 }
@@ -2214,7 +2214,7 @@ function openHandoverCheck() {
         : `<button type="button" class="mini ${r.a === "none" ? "on" : ""}" data-none="${r.c.id}">ไม่มี</button><button type="button" class="mini" data-add="${r.c.id}">มี · จด</button>`}</div></div>`).join("");
     const left = rows.length - ok;
     $("#hcNext").innerHTML = left ? `ไปสรุป · ยังไม่เช็ก ${left} หมวด` : `${IC.check}เช็กครบ · ไปสรุป`;
-    $("#hcNext").onclick = () => briefSheet(dayItems(SEL).filter(i => !i.done), "สรุปประจำวัน", { unchecked: rows.filter(r => !r.a).map(r => CAT_SHORT[r.c.id]) });
+    $("#hcNext").onclick = () => briefSheet(dayItems(SEL).filter(i => !i.done), "สรุปประจำวัน", { unchecked: rows.filter(r => !r.a).map(r => CAT_SHORT[r.c.id]), noIssue: rows.filter(r => !r.n).map(r => CAT_SHORT[r.c.id]) });
   };
   $("#hcList").addEventListener("click", e => {
     const no = e.target.closest("[data-none]"), add = e.target.closest("[data-add]");
