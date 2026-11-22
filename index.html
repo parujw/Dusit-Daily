@@ -2511,7 +2511,8 @@ function buildBrief(items, title, opts = {}) {
   const fd = (d, o) => opts.loc ? parseYmd(d).toLocaleDateString(opts.loc, o) : thDate(d, o);
   const clean = x => String(x || "").replace(/\s+/g, " ").trim();
   const cut = (x, n) => x.length > n ? x.slice(0, n - 1).trimEnd() + "…" : x;
-  const pt = ENDING();
+  const pt = opts.loc ? "" : ENDING();
+  const hm = x => opts.loc ? x : `${x} น.`;
   const groups = groupTasks(items);
   const n = items.length, urgentN = groups.find(g => g.key === "now").list.length;
   const rec = dayRecord(SEL), fin = rec.done;
@@ -2544,7 +2545,7 @@ function buildBrief(items, title, opts = {}) {
     for (const it of g.list) {
       const room = it.room && it.room !== "—" ? `ห้อง ${it.room}${it.guest ? " " + clean(it.guest) : ""} ` : (it.guest ? clean(it.guest) + " " : "");
       const what = clean(it.action || it.summary);
-      t += `${++no}. ${room}${cut(what, 140)}${it.due ? ` (${it.due} น.)` : ""}\n`;
+      t += `${++no}. ${room}${cut(what, 140)}${it.due ? ` (${hm(it.due)})` : ""}\n`;
       const why = it.action && it.summary && !what.includes(clean(it.summary)) ? cut(clean(it.summary), 100) : "";
       const days = itemDate(it) < SEL ? Math.round((parseYmd(SEL) - parseYmd(itemDate(it))) / 864e5) : 0;
       const more = [why, it.assignee ? `${it.assignee} ดูแล` : "", days ? `ค้างมา ${days} วัน` : ""].filter(Boolean);
@@ -2563,8 +2564,9 @@ function buildBrief(items, title, opts = {}) {
     for (const d of days) {
       const list = ahead.filter(i => itemDate(i) === d);
       const shown = list.filter((i, k) => k < 5 || rec.added.includes(i));
-      t += `${d === tmr ? "พรุ่งนี้ " : ""}${fd(d, { weekday: "short", day: "numeric", month: "short" })}\n`;
-      for (const it of shown) t += `${line(it)}${it.due ? ` (${it.due} น.)` : ""}${it.assignee ? `\n   ${it.assignee} ดูแล` : ""}\n`;
+      // Each day stands out: a blank line before it and a marker, so days don't blend into the tasks.
+      t += `${d === days[0] ? "" : "\n"}▸ ${d === tmr ? "พรุ่งนี้ · " : ""}${fd(d, { weekday: "short", day: "numeric", month: "short" })}\n`;
+      for (const it of shown) t += `${line(it)}${it.due ? ` (${hm(it.due)})` : ""}${it.assignee ? `\n   ${it.assignee} ดูแล` : ""}\n`;
       if (list.length > shown.length) t += `และอีก ${list.length - shown.length} เรื่อง (ดูในแอป)\n`;
     }
   }
@@ -2576,7 +2578,7 @@ function buildBrief(items, title, opts = {}) {
       t += `${line(it)}\n`;
       const why = it.action && it.summary && !what.includes(clean(it.summary)) ? cut(clean(it.summary), 100) : "";
       const at = it.doneAt ? new Date(it.doneAt).toLocaleTimeString("th-TH", { hour: "2-digit", minute: "2-digit", hour12: false }) : "";
-      const more = [why, `เสร็จแล้ว${it.doneBy ? "โดย " + it.doneBy : ""}${at ? ` (${at} น.)` : ""}`].filter(Boolean);
+      const more = [why, `เสร็จแล้ว${it.doneBy ? "โดย " + it.doneBy : ""}${at ? ` (${hm(at)})` : ""}`].filter(Boolean);
       t += `   ${more.join(" · ")}\n`;
     }
     if (fin.length > 30) t += `และอีก ${fin.length - 30} เรื่อง\n`;
