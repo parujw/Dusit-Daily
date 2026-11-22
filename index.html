@@ -527,7 +527,7 @@ pre.brief{white-space:pre-wrap;word-break:break-word;margin:0;background:var(--c
 .sheet.chat .sheet-top{background:transparent}
 .sheet.chat .grab{background:rgba(220,192,141,.35)}
 .sheet.chat .sheet-x{background:rgba(255,255,255,.06);border-color:var(--hud-line);color:var(--hud-cyan)}
-.jv-head{display:flex;gap:14px;align-items:center;padding:4px 0 10px;border-bottom:1px solid var(--hud-line)}
+.jv-head{display:flex;gap:14px;align-items:center;padding:4px 52px 10px 0;border-bottom:1px solid var(--hud-line)}
 .jv-title{flex:1;min-width:0}
 .jv-title h3{font-family:var(--f-hud);font-weight:700;font-size:22px;letter-spacing:.14em;text-transform:uppercase;color:#fff;text-shadow:0 0 14px rgba(220,192,141,.55)}
 .hud-status{display:flex;align-items:center;gap:8px;font-family:var(--f-hud);font-size:13px;letter-spacing:.04em;color:var(--hud-cyan);margin-top:2px}
@@ -871,6 +871,8 @@ const UI_EN = {
   "ปัดการ์ดไปทางขวา หรือแตะวงกลม เมื่อทำงานเสร็จ": "Swipe a card right, or tap the circle, when it's done",
   "ยังไม่มีแจ้งเตือน": "No notifications yet", "เปิดการแจ้งเตือนบนเครื่องนี้": "Turn on notifications on this device",
   "แจ้งในกลุ่ม LINE เมื่องานเสร็จ": "Post to the LINE group when tasks are done", "กลับไปหน้าเข้าสู่ระบบ": "Back to sign in",
+  "แปล": "Translate", "ซิงก์กับทีม": "Synced with team", "เก็บในเครื่องนี้เท่านั้น": "This device only", "โหมดทดลอง": "Demo",
+  "เปิดใช้": "On", "โหมดพื้นฐาน": "Basic mode", "ส่งอัตโนมัติ": "Auto send", "แชร์/คัดลอก": "Share/copy",
   "เช่น 1208": "e.g. 1208", "เช่น ผ้าม่านขาด ต้องเปลี่ยนก่อนแขกเข้า": "e.g. torn curtain, replace before the guest arrives",
   "เช่น แจ้ง HK เปลี่ยนก่อน 14:00": "e.g. ask HK to replace it by 14:00", "เช่น admin": "e.g. admin", };
 const UI_ZH = {
@@ -912,6 +914,8 @@ const UI_ZH = {
   "ปัดการ์ดไปทางขวา หรือแตะวงกลม เมื่อทำงานเสร็จ": "完成后向右滑卡片或点圆圈",
   "ยังไม่มีแจ้งเตือน": "暂无通知", "เปิดการแจ้งเตือนบนเครื่องนี้": "在本设备开启通知",
   "แจ้งในกลุ่ม LINE เมื่องานเสร็จ": "任务完成时发到LINE群", "กลับไปหน้าเข้าสู่ระบบ": "返回登录",
+  "แปล": "翻译", "ซิงก์กับทีม": "已与团队同步", "เก็บในเครื่องนี้เท่านั้น": "仅本设备", "โหมดทดลอง": "演示",
+  "เปิดใช้": "已开启", "โหมดพื้นฐาน": "基础模式", "ส่งอัตโนมัติ": "自动发送", "แชร์/คัดลอก": "分享/复制",
   "เช่น 1208": "例如 1208", "เช่น ผ้าม่านขาด ต้องเปลี่ยนก่อนแขกเข้า": "例如 窗帘破了，客人入住前更换",
   "เช่น แจ้ง HK เปลี่ยนก่อน 14:00": "例如 通知HK在14:00前更换", "เช่น admin": "例如 admin",
 };
@@ -2013,7 +2017,7 @@ function hudBriefing() {
   const items = dayItems(TODAY());
   const open = items.filter(i => !i.done).length;
   const done = ITEMS.filter(i => i.done && (itemDate(i) === TODAY() || sameDay(i.doneAt, TODAY()))).length;
-  return `<div class="bubble bot"><span class="who">DUSIT HELP · วันนี้</span>
+  return `<div class="bubble bot"><span class="who">DUSIT HELP · <span>วันนี้</span></span>
     <div class="brief-grid two">
       <div><b class="num">${open}</b><span>รอทำ</span></div>
       <div><b class="num">${done}</b><span>เสร็จแล้ว</span></div>
@@ -2557,10 +2561,14 @@ function openSettings() {
     ${SERVER.linePush ? `<label class="switch"><input type="checkbox" id="sLineDone" ${P.lineOnDone === false ? "" : "checked"}><span>แจ้งในกลุ่ม LINE เมื่องานเสร็จ</span></label>` : ""}
     ${ME && canNotify ? `<button class="btn sec" id="notiBtn">เปิดการแจ้งเตือนบนเครื่องนี้</button>` : ""}
     ${AUTH === "none" && (SERVER.pin || SERVER.ai) ? `<div><label class="lab" for="sPin">PIN ทีม (ใช้ AI และส่ง LINE)</label><input type="password" id="sPin" value="${esc(P.pin)}" autocomplete="off"></div>` : ""}
-    <p class="note">${AUTH === "demo" ? "โหมดทดลอง: บัญชีและงานเก็บในเบราว์เซอร์นี้" : store.mode === "cloud" ? "ซิงก์กับทีม" : "เก็บในเครื่องนี้เท่านั้น"} · AI: ${claudeSample ? "Claude (ในแอป Claude)" : SERVER.ai ? "Claude" : "โหมดพื้นฐาน"} · LINE: ${SERVER.linePush ? "ส่งอัตโนมัติ" : "แชร์/คัดลอก"}</p>
+    <p class="note"><span>${AUTH === "demo" ? "โหมดทดลอง" : store.mode === "cloud" ? "ซิงก์กับทีม" : "เก็บในเครื่องนี้เท่านั้น"}</span> · AI: <span>${claudeSample || SERVER.ai ? "เปิดใช้" : "โหมดพื้นฐาน"}</span> · LINE: <span>${SERVER.linePush ? "ส่งอัตโนมัติ" : "แชร์/คัดลอก"}</span></p>
     <button class="btn pri" id="saveSet">บันทึก</button>`);
   let lang = P.lang || "th", mode = P.trMode || "ui";
-  const langNote = () => { $("#sModeNote").textContent = mode === "all" ? (lang === "th" ? "งานที่เพื่อนจดเป็นภาษาอื่นจะแสดงเป็นไทย ข้อมูลจริงไม่เปลี่ยน แตะค้างที่ข้อความเพื่อดูต้นฉบับ" : "Task text is shown translated on this device only. Saved tasks stay as written.") : (lang === "th" ? "" : "Only buttons and labels are translated. Task text stays as written."); };
+  const NOTE = {
+    ui: { th: "", en: "Only buttons and labels are translated. Task text stays as written.", zh: "只翻译按钮和标签，任务内容保持原文。" },
+    all: { th: "งานที่เพื่อนจดเป็นภาษาอื่นจะแสดงเป็นไทย ข้อมูลจริงไม่เปลี่ยน แตะค้างที่ข้อความเพื่อดูต้นฉบับ", en: "Task text is shown translated on this device only. Saved tasks stay as written.", zh: "任务内容仅在本设备翻译显示，已保存的任务不会改变。" },
+  };
+  const langNote = () => { $("#sModeNote").textContent = NOTE[mode][lang]; };
   langNote();
   $("#sLang").addEventListener("click", e => { const b = e.target.closest("[data-lang]"); if (!b) return; lang = b.dataset.lang; $("#sLang").querySelectorAll("[data-lang]").forEach(x => x.setAttribute("aria-pressed", String(x.dataset.lang === lang))); langNote(); });
   $("#sMode").addEventListener("click", e => { const b = e.target.closest("[data-mode]"); if (!b) return; mode = b.dataset.mode; $("#sMode").querySelectorAll("[data-mode]").forEach(x => x.setAttribute("aria-pressed", String(x.dataset.mode === mode))); langNote(); });
