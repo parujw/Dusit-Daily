@@ -74,7 +74,7 @@ export async function POST(request) {
   let b;
   try { b = await request.json(); } catch { return json({ error: "ข้อมูลไม่ถูกต้อง" }, 400); }
   const lang = LANG[b?.lang] ? b.lang : null;
-  const texts = Array.isArray(b?.texts) ? b.texts.slice(0, 40).map((t) => String(t || "").slice(0, 500)) : [];
+  const texts = Array.isArray(b?.texts) ? b.texts.slice(0, 40).map((t) => String(t || "").slice(0, 2000)) : [];
   // Same text twice in one request is sent to the provider once.
   if (!lang || !texts.length) return json({ error: "ไม่มีข้อความให้แปล" }, 400);
 

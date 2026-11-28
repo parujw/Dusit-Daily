@@ -11,9 +11,19 @@ export async function POST(request) {
 
   let body;
   try { body = await request.json(); } catch { return json({ error: "ข้อมูลไม่ถูกต้อง" }, 400); }
-  let text = String(body?.text || "").trim();
+  const text = String(body?.text || "").trim();
   if (!text) return json({ error: "ไม่มีข้อความ" }, 400);
-  if (text.length > 4900) text = text.slice(0, 4880) + "\n…(ตัดเพราะยาวเกิน LINE)";
+  // LINE takes 5,000 characters per message and 5 messages per push: split long summaries
+  // at line breaks instead of cutting them.
+  const parts = [];
+  let cur = "";
+  for (const line of text.split("\n")) {
+    const l = line.length > 4800 ? line.slice(0, 4800) : line;
+    if (cur && (cur + "\n" + l).length > 4800) { parts.push(cur); cur = l; }
+    else cur = cur ? cur + "\n" + l : l;
+  }
+  if (cur) parts.push(cur);
+  if (parts.length > 5) return json({ error: "สรุปยาวเกินที่ LINE ส่งได้ในครั้งเดียว ลองคัดลอกแล้ววางเอง" }, 413);
 
   const a = admin();
   let to = process.env.LINE_GROUP_ID || "";
@@ -26,7 +36,7 @@ export async function POST(request) {
   const r = await fetch("https://api.line.me/v2/bot/message/push", {
     method: "POST",
     headers: { "content-type": "application/json", authorization: `Bearer ${token}` },
-    body: JSON.stringify({ to, messages: [{ type: "text", text }] }),
+    body: JSON.stringify({ to, messages: parts.map((p) => ({ type: "text", text: p })) }),
   });
   if (!r.ok) {
     console.error("LINE push failed", r.status, await r.text());

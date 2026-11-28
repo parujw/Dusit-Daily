@@ -2536,52 +2536,41 @@ function buildBrief(items, title, opts = {}) {
   if (!n) t += `\nวันนี้ไม่มีงานค้าง${fin.length ? ` เสร็จไปแล้ว ${fin.length} เรื่อง` : ""}${tmrPart}${!fin.length && !tmrN ? " ส่งต่อได้เลย" : ""}${pt}\n`;
   else t += `\nวันนี้ยังเหลือ ${n} เรื่อง${urgentN ? ` ด่วน ${urgentN} เรื่อง` : ""}${fin.length ? ` เสร็จไปแล้ว ${fin.length} เรื่อง` : ""}${tmrPart}${pt}\n`;
 
-  // Tasks, numbered across the whole message so the team can reply "ข้อ 3 เรียบร้อย".
-  const HEAD = { now: `🔴 เรื่องด่วน ฝากทำก่อน${pt ? "นะ" + pt : ""}`, timed: "🕒 งานที่มีเวลาวันนี้", carry: "⏳ ยกมาจากวันก่อน", follow: "📌 ฝากติดตาม", info: "💬 แจ้งไว้ให้ทราบ" };
+  // Body: grouped by date ("30.11.26"), numbered straight through, full text with the staff's own
+  // line breaks kept, the person responsible as "@name", like the team's own handover notes.
+  const dot = d => { const [y, m, dd] = d.split("-"); return `${dd}.${m}.${y.slice(2)}`; };
+  const lines = x => String(x || "").split(/\r?\n/).map(l => l.replace(/[ \t]+/g, " ").trim()).filter(Boolean);
   let no = 0;
-  for (const g of groups) {
-    if (!g.list.length) continue;
-    t += `\n${HEAD[g.key]}\n`;
-    for (const it of g.list) {
-      const room = it.room && it.room !== "—" ? `ห้อง ${it.room}${it.guest ? " " + clean(it.guest) : ""} ` : (it.guest ? clean(it.guest) + " " : "");
-      const what = clean(it.action || it.summary);
-      t += `${++no}. ${room}${cut(what, 140)}${it.due ? ` (${hm(it.due)})` : ""}\n`;
-      const why = it.action && it.summary && !what.includes(clean(it.summary)) ? cut(clean(it.summary), 100) : "";
-      const days = itemDate(it) < SEL ? Math.round((parseYmd(SEL) - parseYmd(itemDate(it))) / 864e5) : 0;
-      const more = [why, it.assignee ? `${it.assignee} ดูแล` : "", days ? `ค้างมา ${days} วัน` : ""].filter(Boolean);
-      if (more.length) t += `   ${more.join(" · ")}\n`;
-    }
-  }
-  const line = it => {
-    const room = it.room && it.room !== "—" ? `ห้อง ${it.room}${it.guest ? " " + clean(it.guest) : ""} ` : (it.guest ? clean(it.guest) + " " : "");
-    return `${++no}. ${room}${cut(clean(it.action || it.summary), 140)}`;
+  const item = (it, extra = "", hot = false) => {
+    const body = lines(it.action || it.summary);
+    if (!body.length) body.push("-");
+    if (it.action && it.summary && !clean(it.action).includes(clean(it.summary))) body.push(...lines(it.summary));
+    const r = it.room && it.room !== "—" ? String(it.room) : "";
+    const lead = [r && !body[0].includes(r) ? `ห้อง ${r}` : "", it.guest && !body[0].includes(clean(it.guest)) ? clean(it.guest) : ""].filter(Boolean).join(" ");
+    const time = it.due && !body.join(" ").includes(it.due) ? ` (${it.due})` : "";
+    const who = it.assignee ? ` @${it.assignee}` : "";
+    const flag = hot || (it.pri === "urgent" && !it.done) ? "🔴 " : "";
+    let out = `${++no}. ${flag}${lead ? lead + " " : ""}${body[0]}${time}${who}${extra}\n`;
+    for (const l of body.slice(1)) out += `   ${l}\n`;
+    return out;
   };
-
-  // Look-ahead by day. Up to 5 per day; anything recorded today is always shown.
-  if (ahead.length) {
-    t += `\n📅 งานล่วงหน้า\n`;
-    const days = [...new Set(ahead.map(itemDate))];
-    for (const d of days) {
-      const list = ahead.filter(i => itemDate(i) === d);
-      const shown = list.filter((i, k) => k < 5 || rec.added.includes(i));
-      // Each day stands out: a blank line before it and a marker, so days don't blend into the tasks.
-      t += `${d === days[0] ? "" : "\n"}▸ ${d === tmr ? "พรุ่งนี้ · " : ""}${fd(d, { weekday: "short", day: "numeric", month: "short" })}\n`;
-      for (const it of shown) t += `${line(it)}${it.due ? ` (${hm(it.due)})` : ""}${it.assignee ? `\n   ${it.assignee} ดูแล` : ""}\n`;
-      if (list.length > shown.length) t += `และอีก ${list.length - shown.length} เรื่อง (ดูในแอป)\n`;
-    }
+  // Today: urgent → timed → carried → follow up → for info (same order as the home page).
+  if (n) {
+    t += `\n${dot(SEL)}\n`;
+    for (const g of groups) for (const it of g.list) t += item(it, itemDate(it) < SEL ? ` (ยกมาจาก ${dot(itemDate(it))})` : "", g.key === "now");
   }
-  // Everything finished today, in full and numbered like the other sections.
+  // The next days, each under its own date; nothing is cut.
+  for (const d of [...new Set(ahead.map(itemDate))]) {
+    t += `\n${dot(d)}\n`;
+    for (const it of ahead.filter(i => itemDate(i) === d)) t += item(it);
+  }
+  // Finished today, numbered like the rest, with who finished it and when.
   if (fin.length) {
-    t += `\n✅ เสร็จแล้ววันนี้\n`;
-    for (const it of fin.slice(0, 30)) {
-      const what = clean(it.action || it.summary);
-      t += `${line(it)}\n`;
-      const why = it.action && it.summary && !what.includes(clean(it.summary)) ? cut(clean(it.summary), 100) : "";
-      const at = it.doneAt ? new Date(it.doneAt).toLocaleTimeString("th-TH", { hour: "2-digit", minute: "2-digit", hour12: false }) : "";
-      const more = [why, `เสร็จแล้ว${it.doneBy ? "โดย " + it.doneBy : ""}${at ? ` (${hm(at)})` : ""}`].filter(Boolean);
-      t += `   ${more.join(" · ")}\n`;
+    t += `\n✅ เสร็จแล้ว ${dot(SEL)}\n`;
+    for (const it of fin) {
+      const at = it.doneAt ? new Date(it.doneAt).toLocaleTimeString("en-GB", { hour: "2-digit", minute: "2-digit", hour12: false }) : "";
+      t += item({ ...it, pri: "", assignee: "" }, ` · เสร็จ${it.doneBy ? "โดย " + it.doneBy : ""}${at ? " " + at : ""}`);
     }
-    if (fin.length > 30) t += `และอีก ${fin.length - 30} เรื่อง\n`;
   }
   let tail = "";
   if (opts.noIssue && opts.noIssue.length) tail += `วันนี้ไม่มีประเด็นเรื่อง: ${opts.noIssue.join(", ")}\n`;
